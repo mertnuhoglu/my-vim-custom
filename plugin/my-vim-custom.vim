@@ -20,8 +20,8 @@ command! Ezshrc e ~/.zshrc
 "map <press Ctrl-V><press Ctrl-K> :ls<press Ctrl-V><press Enter>
 
 " split window
-nnoremap <silent> ıv :wincmd v<cr>
-nnoremap <silent> ıs :wincmd s<cr>
+nnoremap <silent> ıv :wincmd v<cr>:wincmd l<cr>
+nnoremap <silent> ıs :wincmd s<cr>:wincmd j<cr>
 
 " Close others
 nnoremap <silent> ıo :wincmd o<cr>
@@ -80,7 +80,7 @@ nnoremap <Leader>a <C-W>=<CR>
 nnoremap ş :ta 
 nnoremap <Leader>a <C-w>=<cr>
 
-noremap <F3> :VoomToggle markdown<CR>
+noremap <S-F3> :VoomToggle markdown<CR>
 " copy current line from start to line end
 nnoremap <Leader>üç ^y$
 
@@ -138,17 +138,17 @@ nnoremap ır :tabprevious<CR>
 
 nnoremap <silent> <leader>ll :call ToggleList("Location List", 'l')<CR>
 
-" quick movements in insert mode 
+" quick arrow movements in insert mode 
 "inoremap II <Esc>I
 "inoremap AA <Esc>A
 "inoremap OO <Esc>O
 "inoremap DD <Esc>ddi
-inoremap ø <Esc>o
-inoremap ¿ <Left>
-inoremap µ <Down>
-inoremap ¬ <Up>
-inoremap ¥ <Right>
-inoremap æ <End>
+"inoremap ø <Esc>o
+"inoremap ¿ <Left>
+"inoremap µ <Down>
+"inoremap ¬ <Up>
+"inoremap ¥ <Right>
+"inoremap æ <End>
 "inoremap ≥ <Home>
 
 
@@ -168,13 +168,13 @@ nnoremap t :
 nnoremap cm :Commands<cr>
 " mnemonics: cl = ls = Files
 nnoremap cl :Files<cr>
-nnoremap cp :Windows<cr>
+nnoremap cw :Windows<cr>
 nnoremap cnt :SwitchToNerdTree<cr>
 " mnemonics: c command, nt nerdtree
 nnoremap cnf :NERDTreeFind<cr>
 
 " Filter text
-nnoremap <silent> <S-F3> :redir @a<CR>:g//<CR>:redir END<CR>:new<CR>:put! a<CR>
+"nnoremap <silent> <S-F3> :redir @a<CR>:g//<CR>:redir END<CR>:new<CR>:put! a<CR>
 
 " ctrlp
 "nnoremap <c-p> :CtrlP $HOME/dropbox_btg<CR>
@@ -302,17 +302,17 @@ nnoremap <Leader>u yyp<c-v>$r-
 
 " plehn work
 let $PLEHNPROJECT = '$HOME/Dropbox2/projects/SEC_Filings/parser/'
-command! CdPlehnDocs cd $KEYNOTE/plehn
-command! CdPlehnCodes cd $PLEHNPROJECT
-command! Cd10k cd $PLEHNPROJECT . 'filings/10k/'
-command! EFlowDocumentationPlehn e $HOME/projects/SEC_Filings/parser/flow.otl
-command! EFlowAutomatic e $HOME/projects/SEC_Filings/parser/automatic_flow.otl
-command! EMySecFilings e $HOME/.vim/bundle/my-sec-filings/plugin/my-sec-filings.vim
+"command! CdPlehnDocs cd $KEYNOTE/plehn
+"command! CdPlehnCodes cd $PLEHNPROJECT
+"command! Cd10k cd $PLEHNPROJECT . 'filings/10k/'
+"command! EFlowDocumentationPlehn e $HOME/projects/SEC_Filings/parser/flow.otl
+"command! EFlowAutomatic e $HOME/projects/SEC_Filings/parser/automatic_flow.otl
+"command! EMySecFilings e $HOME/.vim/bundle/my-sec-filings/plugin/my-sec-filings.vim
 
 " projects for others
 let $EVAMPROJECT = '$HOME/projects/study/study_evammoa'
-command! ENotesEvamMoa e $EVAMPROJECT/notes_evam.otl
-command! EPragmaNotes e $HOME/gdrive/IntelligentSearchAssistant/customer_development/meeting_notes_pragma.otl
+"command! ENotesEvamMoa e $EVAMPROJECT/notes_evam.otl
+"command! EPragmaNotes e $HOME/gdrive/IntelligentSearchAssistant/customer_development/meeting_notes_pragma.otl
 
 " Cd commands
 let $KEYNOTE = '$HOME/gdrive/Apps/MindMup/'
@@ -332,7 +332,7 @@ command! CdProjects cd $PROJECTS
 "command! CdNotationalData cd $NOTATIONALDATA
 "let $STUDY = '$HOME/projects/study'
 "let $ITR = '$HOME/projects/itr'
-"let $ITR_DOC = '$HOME/projects/itr/itr_documentation'
+"let $ITR_DOC = '$HOME/projects/itr/vrp_doc'
 "let $VRP_PSK = '$VRP_PSK'
 "let $YUML2DATA_WT = '$YUML2DATA_WT'
 "let $DATA_MODEL = '$DATA_MODEL'
@@ -343,23 +343,22 @@ let $BQdatarun = '$BIZQUALIFY/BQ-data-run'
 let $BigQuery = '$BIZQUALIFY/BigQuery'
 let $BzqWebapp = '$BIZQUALIFY/web_app'
 let $BzqDoc = '$BIZQUALIFY/bq_doc'
+command! Cdmn cd $MYNOTES
 command! Cdstudy cd $STUDY
 command! Cdbdoc cd $BzqDoc
 command! Cditr cd $ITR
-command! Cditrdoc cd $ITR_DOC
+command! Cdvrpdoc cd $VRP_DOC
+command! Cdpmap cd $PMAP
+command! Cdpvrp cd $PVRP
 command! Cditd cd $ITR_DOC
 command! Cditrvrppsk cd $VRP_PSK
 command! Cdvrppsk Cditrvrppsk 
 command! Cdyuml2datawt cd $YUML2DATA_WT
 command! Cdy2dwt Cdyuml2datawt
 command! Cdy2dr cd $YUML2DATA_R
-command! CdBizqualify cd $BIZQUALIFY
-command! Cdbqdatarun cd $BQdatarun
-command! Cdbigquery cd $BigQuery
-command! Cdbzqwebapp cd $BzqWebapp
-command! Cdbzq CdBizqualify
-command! Cdbdr Cdbqdatarun
-command! Cdbq Cdbigquery
+command! Cdbzq cd $BIZQUALIFY
+command! Cdbdr cd $BQdatarun
+command! Cdbq cd $BigQuery
 command! Cdbw Cdbzqwebapp
 command! EDersHaftalik :e "$HOME/gdrive/Apps/Notational Data/ders_ozne_ben_nesne/haftalik_ders.otl"
 
@@ -445,17 +444,19 @@ command! Espsk EStudyPostgrestStarterKit
 command! Esvrpc EStudyVrpCyclejs
 command! Elb e $HOME/projects/study/logbook
 command! Esvim e ~/projects/study/vim/study_vim.Rmd
-command! EStudyVrp e ~/projects/itr/itr_documentation/study/study_vrp.Rmd
+command! EStudyVrp e ~/projects/itr/vrp_doc/study/study_vrp.Rmd
 command! Esvrp EStudyVrp
 
 " prj/ files  
 command! ENotesNhv e ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/notes_nhv.md
 command! ENotesDscp e ~/gdrive/mynotes/prj/dscp/notes_dscp.otl
 command! Ends ENotesDscp 
-command! EDocItr e ~/projects/itr/itr_documentation/doc_itr.md
+command! EDocItr e ~/projects/itr/vrp_doc/doc_itr.md
 command! Edi EDocItr
 command! ENotesItr e ~/gdrive/mynotes/prj/itr/notes_itr.md
+command! ENotesPvrp e ~/gdrive/mynotes/prj/itr/notes_pvrp.md
 command! Eni ENotesItr 
+command! Enp ENotesPvrp 
 command! Enit ENotesItr 
 command! ENotesBzq e ~/gdrive/mynotes/prj/bzq/notes_bzq.md
 command! Enbzq ENotesBzq
@@ -1125,6 +1126,7 @@ nnoremap <silent> <Leader><Enter> :call fzf#run({
 function! MRU_LoadList()
 	return readfile(g:MRU_File)
 endfun
+command! Ehistoryvim exec 'e ' . g:MRU_File
 command! FZFTest call fzf#run({
 \ 'source':  readfile("/Users/mertnuhoglu/projects/study/js/vrp/cyclejs_vrp.Rmd"),
 \ 'down':    '40%' })
@@ -1827,3 +1829,28 @@ fu! Utl_AddressScheme_yt(url, fragment, dispMode)
 	return  Utl_AddressScheme_http(btUrl, a:fragment, a:dispMode)
 endfu
 
+function! ConvertMarksTxt2MarksTsv()
+	" Convert `^M` into new line
+	%s//\r/g
+	" delete number lines such as 24
+	g/^\d\+$/d
+	" wrap text lines inside double quotes
+	%s#\(^\D.*\n\)\+#"\0"#
+	" put ### at the start of each scene
+	g/^"$/ s/\n/###/g
+	" replace all newlines 
+	%s/\n/@@@/g
+	" put each scene into a new line
+	%s/###/\r/g
+	" delete the last @@@
+	%s/@@@"$/"/
+	" delete all intermediate time digits
+	%s#--> \([0-9:,]\+@@@[0-9:,]\+ --> \)\+#--> #g
+	%s/@@@"/\t"/
+	%s/ --> /\t/
+	g/^@@@$/d
+	%s/@@@/ <br> /g
+	%s/([A-Z]\+)//g
+	%s#\(\d\d\),\(\d\d\d\)#\1.\2#g
+endfunction
+command! ConvertMarksTxt2MarksTsv call ConvertMarksTxt2MarksTsv()
