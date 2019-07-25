@@ -1041,6 +1041,10 @@ command! Swb SurroundWithBrackets
 nnoremap <Leader>sb :Swb<CR>
 command! SurroundWithBackQuotesUntilSpace normal v/\s\|$\<cr\>S`e
 nnoremap <Leader>ss :SurroundWithBackQuotesUntilSpace<CR>
+command! ReplaceWithCloze normal viwc[...]
+nnoremap <Leader>rc :ReplaceWithCloze<CR>
+command! ReplaceWithCloze2 normal vt c[...]
+nnoremap <Leader>rt :ReplaceWithCloze2<CR>
 "nnoremap w e
 "nnoremap e w
 "onoremap ie iw
@@ -1834,8 +1838,12 @@ function! ConvertMarksTxt2MarksTsv()
 	%s//\r/g
 	" delete number lines such as 24
 	g/^\d\+$/d
+	" delete html tags
+	%s/<\/\?\w\+>//g
 	" wrap text lines inside double quotes
-	%s#\(^\D.*\n\)\+#"\0"#
+	" note that a text line may start with -.'":;, symbols
+	%s/"/'/g
+	v/^\d\d:\d\d:\d\d/ s/\(^\([-()# .'":;,]\|\k\).*\n\)\+/"\0"/
 	" put ### at the start of each scene
 	g/^"$/ s/\n/###/g
 	" replace all newlines 
@@ -1854,3 +1862,6 @@ function! ConvertMarksTxt2MarksTsv()
 	%s#\(\d\d\),\(\d\d\d\)#\1.\2#g
 endfunction
 command! ConvertMarksTxt2MarksTsv call ConvertMarksTxt2MarksTsv()
+
+command! Convert2Unicode set bomb | set fileencoding=utf-8 <CR>
+
