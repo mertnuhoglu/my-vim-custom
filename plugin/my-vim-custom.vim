@@ -12,6 +12,7 @@
 " Paste
 
 let $MYNOTES = '~/gdrive/mynotes/'
+let $MYREPO = '~/projects/myrepo'
 
 command! Ezshrc e ~/.zshrc
 
@@ -321,13 +322,13 @@ let $KEYNOTE = '$HOME/gdrive/Apps/MindMup/'
 "let $DROPBOX = '$HOME/gdrive/'
 "let $MYNOTES = '$HOME/gdrive/mynotes/'
 "let $DSCP = '$HOME/projects/dewey/dscp/'
-command! CdContent cd $MYNOTES/content
-command! Cdc CdContent 
-command! CdVim cd $HOME/.vim
+command! CdContent cd $MYNOTES/content | :pwd
+command! Cdc CdContent  | :pwd
+command! CdVim cd $HOME/.vim | :pwd
 " cd to keynote export/import directory
-command! CdScripts cd '$HOME/projects/scripts'
-command! CdKeynote cd $KEYNOTE
-command! CdProjects cd $PROJECTS
+command! CdScripts cd '$HOME/projects/scripts' | :pwd
+command! CdKeynote cd $KEYNOTE | :pwd
+command! CdProjects cd $PROJECTS | :pwd
 " copy file name to system clipboard
 "command! CdNotationalData cd $NOTATIONALDATA
 "let $STUDY = '$HOME/projects/study'
@@ -343,29 +344,33 @@ let $BQdatarun = '$BIZQUALIFY/BQ-data-run'
 let $BigQuery = '$BIZQUALIFY/BigQuery'
 let $BzqWebapp = '$BIZQUALIFY/web_app'
 let $BzqDoc = '$BIZQUALIFY/bq_doc'
-command! Cdmn cd $MYNOTES
-command! Cdstudy cd $STUDY
-command! Cdbdoc cd $BzqDoc
-command! Cditr cd $ITR
-command! Cdvrpdoc cd $VRP_DOC
-command! Cdpmap cd $PMAP
-command! Cdpvrp cd $PVRP
-command! Cditd cd $ITR_DOC
-command! Cditrvrppsk cd $VRP_PSK
-command! Cdvrppsk Cditrvrppsk 
-command! Cdyuml2datawt cd $YUML2DATA_WT
-command! Cdy2dwt Cdyuml2datawt
-command! Cdy2dr cd $YUML2DATA_R
-command! Cdbzq cd $BIZQUALIFY
-command! Cdbdr cd $BQdatarun
-command! Cdbq cd $BigQuery
-command! Cdbw Cdbzqwebapp
+command! Cdmn cd $MYNOTES | :pwd
+command! Cdstudy cd $STUDY | :pwd
+command! Cdbdoc cd $BzqDoc | :pwd
+command! Cditr cd $ITR | :pwd
+command! Cdvrpdoc cd $VRP_DOC | :pwd
+command! Cdpalet cd $DENTAS_PALET | :pwd
+command! Cdpeyman cd $PEYMAN_PROJECT_DIR | :pwd
+command! Cdpmap cd $PMAP | :pwd
+command! Cdpvrp cd $PVRP | :pwd
+command! Cdpvrpr cd $PVRPR | :pwd
+command! Cditd cd $ITR_DOC | :pwd
+command! Cditrvrppsk cd $VRP_PSK | :pwd
+command! Cdvrppsk Cditrvrppsk  | :pwd
+command! Cdyuml2datawt cd $YUML2DATA_WT | :pwd
+command! Cdy2dwt Cdyuml2datawt | :pwd
+command! Cdy2dr cd $YUML2DATA_R | :pwd
+command! Cdbzq cd $BIZQUALIFY | :pwd
+command! Cdbdr cd $BQdatarun | :pwd
+command! Cdbq cd $BigQuery | :pwd
+command! Cdbw Cdbzqwebapp | :pwd
+command! Cdbyr cd $MYREPO | :pwd
 command! EDersHaftalik :e "$HOME/gdrive/Apps/Notational Data/ders_ozne_ben_nesne/haftalik_ders.otl"
 
 " E commands
 
 " mynotes/ files
-command! EStuff e $MYNOTES/stuff.otl
+command! EStuff e $MYREPO/stuff.otl
 command! Est EStuff
 command! TStuff tabnew | b stuff.otl
 command! EIndexNotes e $HOME/gdrive/mynotes/index_notes.otl
@@ -416,6 +421,8 @@ command! Eceng e ~/gdrive/mynotes/content/code/cother/cenglish.md
 command! Eseng e ~/projects/study/other/study_english.Rmd
 command! EStudyBash e ~/projects/study/bash/study_bash.Rmd
 command! Esbash EStudyBash 
+command! Escode e ~/projects/study/code/study_code.Rmd
+command! Esc Escode
 command! EStudyDb e ~/projects/study/db/study_db.Rmd
 command! Esdb EStudyDb 
 command! EExamplesDb e ~/projects/study/db/examples_db.Rmd
@@ -442,20 +449,21 @@ command! EStudyVrpCyclejs e ~/projects/study/js/vrp/cyclejs_vrp.Rmd
 command! EStudyPostgrestStarterKit e ~/projects/study/db/study_postgrest_starter_kit.Rmd
 command! Espsk EStudyPostgrestStarterKit 
 command! Esvrpc EStudyVrpCyclejs
-command! Elb e $HOME/projects/study/logbook
+"command! Elb e $HOME/projects/study/logbook
 command! Esvim e ~/projects/study/vim/study_vim.Rmd
-command! EStudyVrp e ~/projects/itr/vrp_doc/study/study_vrp.Rmd
+command! EStudyVrp e ~/projects/itr/vrp/vrp_doc/study/study_vrp.Rmd
 command! Esvrp EStudyVrp
 
 " prj/ files  
 command! ENotesNhv e ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/notes_nhv.md
 command! ENotesDscp e ~/gdrive/mynotes/prj/dscp/notes_dscp.otl
 command! Ends ENotesDscp 
-command! EDocItr e ~/projects/itr/vrp_doc/doc_itr.md
+command! EDocItr e ~/projects/itr/vrp/vrp_doc/doc_itr.md
 command! Edi EDocItr
 command! ENotesItr e ~/gdrive/mynotes/prj/itr/notes_itr.md
 command! ENotesPvrp e ~/gdrive/mynotes/prj/itr/notes_pvrp.md
 command! Eni ENotesItr 
+command! Enkinesin e ~/gdrive/mynotes/prj/biz/startup_projects/kinesin/notes_kinesin.md
 command! Enp ENotesPvrp 
 command! Enit ENotesItr 
 command! ENotesBzq e ~/gdrive/mynotes/prj/bzq/notes_bzq.md
@@ -480,34 +488,34 @@ command! EDataflow e $HOME/.vim/bundle/vim-dataflow-generator-r/plugin/vim-dataf
 command! EMyMertProjects e $HOME/.vim/bundle/my-mert-projects/plugin/my-mert-projects.vim
 
 " mynotes/nproduct files
-command! EIdea e ~/gdrive/mynotes/nx/nproduct/nidea/nidea.md
+command! EIdea e ~/projects/myrepo/nx/nproduct/nidea/nidea.md
 command! Eid EIdea 
 command! Enid EIdea 
-command! Enidc e $HOME/gdrive/mynotes/nx/nproduct/nidea/nidea_content.md
-command! ENotesAnki e ~/gdrive/mynotes/nx/nproduct/nanki/notes_anki.md
+command! Enidc e $HOME/projects/myrepo/nx/nproduct/nidea/nidea_content.md
+command! ENotesAnki e ~/projects/myrepo/nx/nproduct/nanki/notes_anki.md
 command! Ena ENotesAnki
-command! ENSettings e ~/gdrive/mynotes/nx/nsettings.md
+command! ENSettings e ~/projects/myrepo/nx/nsettings.md
 command! Enstt ENSettings 
 command! Egstt Enstt
-command! ENotes e ~/gdrive/mynotes/nx/nnote.md
+command! ENotes e ~/projects/myrepo/nx/nnote.md
 command! Enn ENotes
 
 " mynotes/general files 
-command! EGConventions e ~/gdrive/mynotes/general/conventions.md
+command! EGConventions e ~/projects/myrepo/general/conventions.md
 command! Egc EGConventions 
-command! EGConventionsNaming e ~/gdrive/mynotes/general/conventions_naming.md
+command! EGConventionsNaming e ~/projects/myrepo/general/conventions_naming.md
 command! Egcn EGConventionsNaming 
-command! EGProcesses e ~/gdrive/mynotes/general/processes.md
+command! EGProcesses e ~/projects/myrepo/general/processes.md
 command! Egprc EGProcesses
-command! Emetrics e ~/gdrive/mynotes/general/metrics.otl
+command! Emetrics e ~/projects/myrepo/general/metrics.otl
 command! Emt Emetrics
-command! EGRules e ~/gdrive/mynotes/general/rules.md
+command! EGRules e ~/projects/myrepo/general/rules.md
 command! Egr EGRules
-command! EGQuality e ~/gdrive/mynotes/general/quality.md
+command! EGQuality e ~/projects/myrepo/general/quality.md
 command! Egq EGQuality
-command! EGKms e ~/gdrive/mynotes/general/kms/kms_ideas.md
+command! EGKms e ~/projects/myrepo/general/kms/kms_ideas.md
 command! Egkms EGKms
-command! EGKmsRef e ~/gdrive/mynotes/general/kms/refcard_kms.md
+command! EGKmsRef e ~/projects/myrepo/general/kms/refcard_kms.md
 command! Egkr EGKmsRef
 
 " mynotes/ other files
@@ -1007,11 +1015,33 @@ function! ElogbookItr()
   " goal:
   " Elb -> 
   " e ~/projects/study/logbook/2017-11-27.md"
-  let cmd = 'e ' . $ITR_DOC . '/log/log_' . strftime("%Y%m%d") . '.md'
+  let cmd = 'e ' . $ITR_DOC . '/log/log_itr_' . strftime("%Y%m%d") . '.md'
   echo cmd
   execute cmd
 endfunction
 command! Elbitr call ElogbookItr()
+
+function! ElogbookBzq()
+  " opens logbook of today
+  " goal:
+  " Elb -> 
+  " e ~/projects/study/logbook/2017-11-27.md"
+  let cmd = 'e ' . $BQdatarun . '/datarun/log_bzq_' . strftime("%Y%m%d") . '.md'
+  echo cmd
+  execute cmd
+endfunction
+command! Elbbzq call ElogbookBzq()
+
+function! ElogbookMyr()
+  " opens logbook of today
+  " goal:
+  " Elb -> 
+  " e ~/projects/study/logbook/2017-11-27.md"
+  let cmd = 'e ' . $MYREPO . '/logbook/log_myr_' . strftime("%Y%m%d") . '.md'
+  echo cmd
+  execute cmd
+endfunction
+command! Elbmyr call ElogbookMyr()
 
 command! Rmarkdown :!R -e 'rmarkdown::render("%")'
 command! OpenHtml :execute '!open ' . expand("%:r") . '.html'
@@ -1045,6 +1075,8 @@ command! ReplaceWithCloze normal viwc[...]
 nnoremap <Leader>rc :ReplaceWithCloze<CR>
 command! ReplaceWithCloze2 normal vt c[...]
 nnoremap <Leader>rt :ReplaceWithCloze2<CR>
+" create new tab
+nnoremap <Leader>te :tabe<CR>
 "nnoremap w e
 "nnoremap e w
 "onoremap ie iw
@@ -1053,6 +1085,7 @@ nnoremap <Leader>rt :ReplaceWithCloze2<CR>
 "nnoremap dw de
 "nnoremap ce cw
 "nnoremap cw ce
+
 
 function! OutputSplitWindow(...)
   " this function output the result of the Ex command into a split scratch buffer
@@ -1137,8 +1170,9 @@ command! FZFTest call fzf#run({
 command! FZFMru call fzf#run({
 \ 'source':  MRU_LoadList(),
 \ 'sink':    'edit',
-\ 'options': '-m -x +s --bind "?:toggle-preview,ctrl-a:select-all,ctrl-d:deselect-all" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
+\  'options': '-m -x +s --bind "P:toggle-preview,J:down,K:up,D:page-down,U:page-up,up:preview-up,down:preview-down,f1:execute(less -f {}),Y:execute-silent(printf %\"s\" {+} | pbcopy)+abort,C:execute-silent(printf %\"s\" $PWD/ {+} | pbcopy | echo)+abort,L:execute(less {})" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
 \ 'down':    '40%' })
+"\ 'options': '-m -x +s --bind "?:toggle-preview,ctrl-a:select-all,ctrl-d:deselect-all" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
 command! FM FZFMru
 command! History FZFMru
 
@@ -1178,8 +1212,8 @@ endfunction
 
 " open buffers search
 command! Buffers call fzf#run(fzf#wrap({ 
-      \  'source': map(range(1, bufnr('$'))
-      \  , 'bufname(v:val)')
+      \  'source': map(range(1, bufnr('$')), 'bufname(v:val)')
+			\  ,'options': '-m -x +s --bind "P:toggle-preview,J:down,K:up,D:page-down,U:page-up,up:preview-up,down:preview-down,f1:execute(less -f {}),Y:execute-silent(printf %\"s\" {+} | pbcopy)+abort,C:execute-silent(printf %\"s\" $PWD/ {+} | pbcopy | echo)+abort,L:execute(less {})" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"'
       \  }))
 nnoremap cb :Buffers<CR>
 
@@ -1319,6 +1353,7 @@ nnoremap <Leader>üb :call BuildAndRunBabelNodeScript()<cr>
 " toggle full screen for window
 " https://stackoverflow.com/a/15584901/29246
 :noremap <Leader>t :tab split<CR>
+:noremap <Leader>to :tabonly<CR>
 " to close tab :wq
 
 let g:javascript_conceal_function             = "ƒ"
@@ -1462,8 +1497,11 @@ command! -bang -nargs=* Ag
   \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
   \                 <bang>0)
 
-command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+command! Files call fzf#run({
+\ 'source':     'fd . --color=never --hidden --type=file ' . getcwd(),
+\ 'sink':    'edit',
+\  'options': '-m -x +s --bind "P:toggle-preview,J:down,K:up,D:page-down,U:page-up,up:preview-up,down:preview-down,f1:execute(less -f {}),Y:execute-silent(printf %\"s\" {+} | pbcopy)+abort,C:execute-silent(printf %\"s\" $PWD/ {+} | pbcopy | echo)+abort,L:execute(less {})" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
+\ 'down':    '40%' })
 
 " preview enabled with "?" key
 " hidden by default
@@ -1475,7 +1513,7 @@ command! -bang -nargs=* Fr
 	\   <bang>0)
 
 command! Ffp call fzf#run({
-\ 'source':     'fd . --color=never --hidden --type=file ~/projects/study/js/vrp/ex/cyclejs_vrp/ex15/src/10_05/ ~/projects/itr/vrp_psk01/db/src/ ~/projects/itr/vrp_yuml2data01/template_data_model/',
+\ 'source':     'fd . --color=never --hidden --type=file ~/projects/study/js/vrp/ex/cyclejs_vrp/ex15/src/10_05/ ~/projects/itr/vrp/vrp_psk01/db/src/ ~/projects/itr/vrp_yuml2data01/template_data_model/',
 \ 'sink':    'edit',
 \ 'options': '-m -x +s --bind "?:toggle-preview,ctrl-a:select-all,ctrl-d:deselect-all" --color "hl:4,hl+:12" --preview-window "right:50%" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
 \ 'down':    '40%' })
@@ -1765,6 +1803,7 @@ function! s:ColorSchemeToggle()
 	"echo v
 	if (&background == 'light')
 		set background=dark
+		highlight Normal guibg=#1b2631
 	else
 		set background=light
 	endif
@@ -1864,4 +1903,43 @@ endfunction
 command! ConvertMarksTxt2MarksTsv call ConvertMarksTxt2MarksTsv()
 
 command! Convert2Unicode set bomb | set fileencoding=utf-8 <CR>
+command! P :pwd
 
+function! SurroundTagsWithBracketsAndQuotes()
+	" surround tags: with []
+	g/^tags:/ s/\(\w\+\) /"\1", /g
+	g/^tags:/ s/\(\w\+\)$/"\1"/g
+	g/^tags:/ s/\(^tags: \)\@<=\(.*\)/[\2]/
+	g/^categories:/ s/\(\w\+\) /"\1", /g
+	g/^categories:/ s/\(\w\+\)$/"\1"/g
+	g/^categories:/ s/\(^categories: \)\@<=\(.*\)/[\2]/
+endfunction
+command! SurroundTagsWithBracketsAndQuotes call SurroundTagsWithBracketsAndQuotes()
+function! MigrateRmdToHugo()
+	" remove curly braces like {bash}
+	%s/{\<\(bash\|js\|css\|html\|r\)\>}/\1/
+	:SurroundTagsWithBracketsAndQuotes
+	%s#github.com/mertnuhoglu/study/js#github.com/mertnuhoglu/study/tree/master/js#
+	" delete <style> tags upto </style>
+	g/^<style>/ .,/^<\/style>$/ d
+	g/^path:/ s/Rmd$/md/
+	g/r set-options/ .,+3 d
+	" replace img/x.png with /image/x.png
+	%s#(img/\([^)]\+.png\)#(/images/\1#
+	%s#(data/\([^)]\+.png\)#(/images/\1#
+	%s#(data/img/\([^)]\+.png\)#(/images/\1#
+	%s#(/assets/img/\([^)]\+.png\)#(/images/\1#
+	" indent comment lines
+	%s/^#>/  #>/
+	%s/## \[\(\d\+\)/  ## \[\1/
+endfunction
+command! MigrateRmdToHugo call MigrateRmdToHugo()
+
+command! -nargs=* -complete=dir F2 call fff#Run(<q-args>)
+
+command! Eclikes e $LIKED_TWEETS_CSV
+command! Ecfollowers e $FOLLOWERS_CSV
+command! Eccontacts e $CONTACTS_CSV
+command! Ectweets e $TWEETS_CSV
+command! Ecmentions e $MENTIONS_CSV
+command! Ecpocket e $POCKET_CSV
