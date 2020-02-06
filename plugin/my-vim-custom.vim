@@ -33,7 +33,7 @@ nnoremap <silent> ık :wincmd h<cr>
 nnoremap <silent> ım :wincmd j<cr>
 nnoremap <silent> ıl :wincmd k<cr>
 nnoremap <silent> ıy :wincmd l<cr>
-nnoremap <silent> ıt :tabedit<cr>:
+nnoremap <silent> ıt :tabedit<cr>
 map <silent> <A-k> :wincmd h<cr>
 map <silent> <A-m> :wincmd j<cr>
 map <silent> <A-l> :wincmd k<cr>
@@ -344,9 +344,12 @@ let $BQdatarun = '$BIZQUALIFY/BQ-data-run'
 let $BigQuery = '$BIZQUALIFY/BigQuery'
 let $BzqWebapp = '$BIZQUALIFY/web_app'
 let $BzqDoc = '$BIZQUALIFY/bq_doc'
+let $KNS = '$KNS'
+let $NHV = '$NHV'
 command! Cdmn cd $MYNOTES | :pwd
 command! Cdstudy cd $STUDY | :pwd
 command! Cdbdoc cd $BzqDoc | :pwd
+command! Cdkns cd $KNS | :pwd
 command! Cditr cd $ITR | :pwd
 command! Cdvrpdoc cd $VRP_DOC | :pwd
 command! Cdpalet cd $DENTAS_PALET | :pwd
@@ -418,6 +421,10 @@ command! Ecs ECStuff
 command! Eceng e ~/gdrive/mynotes/content/code/cother/cenglish.md
 
 " study/ files
+command! Esclojurescript e ~/projects/study/clj/study_clojurescript.md
+command! Escj Esclojurescript
+command! Esclojure e ~/projects/study/clj/study_clojure.md
+command! Escl Esclojure
 command! Eseng e ~/projects/study/other/study_english.Rmd
 command! EStudyBash e ~/projects/study/bash/study_bash.Rmd
 command! Esbash EStudyBash 
@@ -433,6 +440,8 @@ command! EExamplesBash e ~/projects/study/bash/examples_bash.Rmd
 command! Eeb EExamplesBash 
 command! EStudyR e ~/projects/study/r/study_r.Rmd
 command! Esr EStudyR 
+command! EStudyShiny e ~/projects/study/r/shiny/study_shiny.Rmd
+command! Ess EStudyShiny
 command! EExamplesR e ~/projects/study/r/examples_r.Rmd
 command! Eer EExamplesR 
 command! EStudyJs e ~/projects/study/js/study_js.Rmd
@@ -453,6 +462,8 @@ command! Esvrpc EStudyVrpCyclejs
 command! Esvim e ~/projects/study/vim/study_vim.Rmd
 command! EStudyVrp e ~/projects/itr/vrp/vrp_doc/study/study_vrp.Rmd
 command! Esvrp EStudyVrp
+command! Erefbookmarks e ~/projects/study/code/refbookmarks.md
+command! Erb Erefbookmarks
 
 " prj/ files  
 command! ENotesNhv e ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/notes_nhv.md
@@ -466,6 +477,8 @@ command! Eni ENotesItr
 command! Enkinesin e ~/gdrive/mynotes/prj/biz/startup_projects/kinesin/notes_kinesin.md
 command! Enp ENotesPvrp 
 command! Enit ENotesItr 
+command! ENotesKns e $KNS/notes_kinesin.md
+command! Enkns ENotesKns
 command! ENotesBzq e ~/gdrive/mynotes/prj/bzq/notes_bzq.md
 command! Enbzq ENotesBzq
 command! Enb ENotesBzq
@@ -532,7 +545,7 @@ command! Ensfp e $HOME/gdrive/mynotes/sfp/notes_sfp.otl
 
 " dotfiles
 command! EBashProfile e $HOME/.bash_profile
-command! Ezshrc e $HOME/.zshrc
+command! Ezshrc e $HOME/.zshenv
 command! Ezs Ezshrc 
 command! EFzfRefbash e $HOME/projects/private_dotfiles/fzf/refbash.txt
 command! Efrb EFzfRefbash
@@ -818,9 +831,7 @@ endfunction
 command! OpenRef call OpenRef()
 
 function! OpenStuff()
-	cd $MYNOTES
-	e activities.otl
-	e stuff.otl
+	Estuff
 endfunction	
 command! OpenStuff call OpenStuff()
 
@@ -831,7 +842,7 @@ endfunction
 command! OpenItrNotes call OpenItrNotes()
 
 " in md + otl files use zn instead of zm 
-nmap zn :set ft=votl \| :norm! mnzMzrzr'n \| :set expandtab \| :retab \| :norm! 'n<cr>
+nmap zn :set ft=votl \| :norm! mnzMzrzr'nzm \| :set expandtab \| :retab \| :norm! 'n<cr>
 nmap zV znzMzv
 nmap zö zMzvzczOzt
 " next section
@@ -1021,6 +1032,17 @@ function! ElogbookItr()
 endfunction
 command! Elbitr call ElogbookItr()
 
+function! ElogbookVrpr()
+  " opens logbook of today
+  " goal:
+  " Elb -> 
+  " e ~/projects/study/logbook/2017-11-27.md"
+  let cmd = 'e ' . $VRPRAPI . '/doc/log/log_vrprapi_' . strftime("%Y%m%d") . '.md'
+  echo cmd
+  execute cmd
+endfunction
+command! Elbvrpr call ElogbookVrpr()
+
 function! ElogbookBzq()
   " opens logbook of today
   " goal:
@@ -1042,6 +1064,28 @@ function! ElogbookMyr()
   execute cmd
 endfunction
 command! Elbmyr call ElogbookMyr()
+
+function! ElogbookKns()
+  " opens logbook of today
+  " goal:
+  " Elb -> 
+  " e ~/projects/study/logbook/2017-11-27.md"
+  let cmd = 'e ' . $KNS . '/logbook/log_kns_' . strftime("%Y%m%d") . '.md'
+  echo cmd
+  execute cmd
+endfunction
+command! Elbkns call ElogbookKns()
+
+function! ElogbookNhv()
+  " opens logbook of today
+  " goal:
+  " Elb -> 
+  " e ~/projects/study/logbook/2017-11-27.md"
+  let cmd = 'e ' . $NHV . '/log_nhv_' . strftime("%Y%m%d") . '.md'
+  echo cmd
+  execute cmd
+endfunction
+command! Elbnhv call ElogbookNhv()
 
 command! Rmarkdown :!R -e 'rmarkdown::render("%")'
 command! OpenHtml :execute '!open ' . expand("%:r") . '.html'
@@ -1122,7 +1166,7 @@ endfunction
 command! BLines2 call fzf#run({
 \ 'source':  s:buffer_lines(),
 \ 'sink':    'edit',
-\ 'options': '-m -x +s --bind "?:toggle-preview,ctrl-a:select-all,ctrl-d:deselect-all" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
+\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
 \ 'down':    '40%' })
 command! BLines3 call fzf#vim#md_headers()
 
@@ -1155,7 +1199,7 @@ endfunction
 nnoremap <silent> <Leader><Enter> :call fzf#run({
 \   'source':  reverse(<sid>buflist()),
 \   'sink':    function('<sid>bufopen'),
-\   'options': '+m',
+\ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
 \   'down':    '40%'
 \ })<CR>
 "\   'down':    len(<sid>buflist()) + 2
@@ -1170,9 +1214,7 @@ command! FZFTest call fzf#run({
 command! FZFMru call fzf#run({
 \ 'source':  MRU_LoadList(),
 \ 'sink':    'edit',
-\  'options': '-m -x +s --bind "P:toggle-preview,J:down,K:up,D:page-down,U:page-up,up:preview-up,down:preview-down,f1:execute(less -f {}),Y:execute-silent(printf %\"s\" {+} | pbcopy)+abort,C:execute-silent(printf %\"s\" $PWD/ {+} | pbcopy | echo)+abort,L:execute(less {})" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
-\ 'down':    '40%' })
-"\ 'options': '-m -x +s --bind "?:toggle-preview,ctrl-a:select-all,ctrl-d:deselect-all" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
+\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
 command! FM FZFMru
 command! History FZFMru
 
@@ -1213,7 +1255,7 @@ endfunction
 " open buffers search
 command! Buffers call fzf#run(fzf#wrap({ 
       \  'source': map(range(1, bufnr('$')), 'bufname(v:val)')
-			\  ,'options': '-m -x +s --bind "P:toggle-preview,J:down,K:up,D:page-down,U:page-up,up:preview-up,down:preview-down,f1:execute(less -f {}),Y:execute-silent(printf %\"s\" {+} | pbcopy)+abort,C:execute-silent(printf %\"s\" $PWD/ {+} | pbcopy | echo)+abort,L:execute(less {})" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"'
+			\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
       \  }))
 nnoremap cb :Buffers<CR>
 
@@ -1500,7 +1542,7 @@ command! -bang -nargs=* Ag
 command! Files call fzf#run({
 \ 'source':     'fd . --color=never --hidden --type=file ' . getcwd(),
 \ 'sink':    'edit',
-\  'options': '-m -x +s --bind "P:toggle-preview,J:down,K:up,D:page-down,U:page-up,up:preview-up,down:preview-down,f1:execute(less -f {}),Y:execute-silent(printf %\"s\" {+} | pbcopy)+abort,C:execute-silent(printf %\"s\" $PWD/ {+} | pbcopy | echo)+abort,L:execute(less {})" --color "hl:4,hl+:12" --preview-window "right:50%:hidden" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
+\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
 \ 'down':    '40%' })
 
 " preview enabled with "?" key
@@ -1515,21 +1557,15 @@ command! -bang -nargs=* Fr
 command! Ffp call fzf#run({
 \ 'source':     'fd . --color=never --hidden --type=file ~/projects/study/js/vrp/ex/cyclejs_vrp/ex15/src/10_05/ ~/projects/itr/vrp/vrp_psk01/db/src/ ~/projects/itr/vrp_yuml2data01/template_data_model/',
 \ 'sink':    'edit',
-\ 'options': '-m -x +s --bind "?:toggle-preview,ctrl-a:select-all,ctrl-d:deselect-all" --color "hl:4,hl+:12" --preview-window "right:50%" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
+\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
 \ 'down':    '40%' })
 
 command! Ffs call fzf#run({
 \ 'source':     'fd . --color=never --hidden --type=file ~/projects/study/ /Users/mertnuhoglu/gdrive/mynotes /Users/mertnuhoglu/projects/itr /Users/mertnuhoglu/gdrive/mynotes/content ~/.vim/bundle',
 \ 'sink':    'edit',
-\ 'options': '-m -x +s --bind "?:toggle-preview,ctrl-a:select-all,ctrl-d:deselect-all" --color "hl:4,hl+:12" --preview-window "right:50%" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
+\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
 \ 'down':    '40%' })
 
-" @todo: doesn't work 
-command! Fx2 call fzf#run({
-\ 'source':     'fx concatAll',
-\ 'sink':    'edit',
-\ 'options': '-m -x +s --bind "?:toggle-preview,ctrl-a:select-all,ctrl-d:deselect-all" --color "hl:4,hl+:12" --preview-window "right:50%" --preview "/Users/mertnuhoglu/.vim/bundle/fzf.vim/bin/preview.rb {}"',
-\ 'down':    '40%' })
 " @todo: doesn't work 
 command! -bang -nargs=* Frv
 	\ call fzf#vim#grep(
@@ -1943,3 +1979,19 @@ command! Eccontacts e $CONTACTS_CSV
 command! Ectweets e $TWEETS_CSV
 command! Ecmentions e $MENTIONS_CSV
 command! Ecpocket e $POCKET_CSV
+
+nmap ,l :exe ":Utl ol https://dict.leo.org/?search=" . expand("<cword>")
+
+function! CreateExFile()
+	" Create an example code file for the current md (documentation) file
+	let filename = expand("%:t:r")
+	let path = expand("%:p")
+	lcd %:h
+	exe '!mkdir -p ' . 'ex/' . filename . '/ex01'
+	split
+	ene
+	exe 'cd ex/' . filename . '/ex01'
+endfunction
+command! CreateExFile call CreateExFile()
+
+nnoremap <silent> sw :set wrap<cr>
