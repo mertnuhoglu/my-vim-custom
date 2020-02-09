@@ -1214,7 +1214,8 @@ command! FZFTest call fzf#run({
 command! FZFMru call fzf#run({
 \ 'source':  MRU_LoadList(),
 \ 'sink':    'edit',
-\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
+\ })
 command! FM FZFMru
 command! History FZFMru
 
@@ -1254,8 +1255,8 @@ endfunction
 
 " open buffers search
 command! Buffers call fzf#run(fzf#wrap({ 
-      \  'source': map(range(1, bufnr('$')), 'bufname(v:val)')
-			\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \ 'source': map(range(1, bufnr('$')), 'bufname(v:val)'),
+			\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
       \  }))
 nnoremap cb :Buffers<CR>
 
@@ -1982,16 +1983,16 @@ command! Ecpocket e $POCKET_CSV
 
 nmap ,l :exe ":Utl ol https://dict.leo.org/?search=" . expand("<cword>")
 
-function! CreateExFile()
+function! CreateExFile(name)
 	" Create an example code file for the current md (documentation) file
 	let filename = expand("%:t:r")
 	let path = expand("%:p")
 	lcd %:h
-	exe '!mkdir -p ' . 'ex/' . filename . '/ex01'
+	exe '!mkdir -p ' . 'ex/' . filename . '/' . a:name
 	split
 	ene
-	exe 'cd ex/' . filename . '/ex01'
+	exe 'cd ex/' . filename . '/' . a:name
 endfunction
-command! CreateExFile call CreateExFile()
+command! -nargs=1 CreateExFile call CreateExFile(<f-args>)
 
 nnoremap <silent> sw :set wrap<cr>
