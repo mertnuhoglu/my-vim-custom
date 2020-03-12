@@ -162,8 +162,6 @@ nnoremap <silent> <leader>ll :call ToggleList("Location List", 'l')<CR>
 "inoremap <C-i> <Tab>
 
 
-" activate command line by t
-nnoremap t :
 " mnemonics c = command
 " mnemonics: c command, m mand
 nnoremap cm :Commands<cr>
@@ -1952,25 +1950,6 @@ function! SurroundTagsWithBracketsAndQuotes()
 	g/^categories:/ s/\(^categories: \)\@<=\(.*\)/[\2]/
 endfunction
 command! SurroundTagsWithBracketsAndQuotes call SurroundTagsWithBracketsAndQuotes()
-function! MigrateRmdToHugo()
-	" remove curly braces like {bash}
-	%s/{\<\(bash\|js\|css\|html\|r\)\>}/\1/
-	:SurroundTagsWithBracketsAndQuotes
-	%s#github.com/mertnuhoglu/study/js#github.com/mertnuhoglu/study/tree/master/js#
-	" delete <style> tags upto </style>
-	g/^<style>/ .,/^<\/style>$/ d
-	g/^path:/ s/Rmd$/md/
-	g/r set-options/ .,+3 d
-	" replace img/x.png with /image/x.png
-	%s#(img/\([^)]\+.png\)#(/images/\1#
-	%s#(data/\([^)]\+.png\)#(/images/\1#
-	%s#(data/img/\([^)]\+.png\)#(/images/\1#
-	%s#(/assets/img/\([^)]\+.png\)#(/images/\1#
-	" indent comment lines
-	%s/^#>/  #>/
-	%s/## \[\(\d\+\)/  ## \[\1/
-endfunction
-command! MigrateRmdToHugo call MigrateRmdToHugo()
 
 command! -nargs=* -complete=dir F2 call fff#Run(<q-args>)
 
@@ -1996,3 +1975,678 @@ endfunction
 command! -nargs=1 CreateExFile call CreateExFile(<f-args>)
 
 nnoremap <silent> sw :set wrap<cr>
+
+function! ClearAllButMatches()
+    let old = @c
+    let @c=""
+    %s//\=setreg('C', submatch(0), 'l')/g
+    %d _
+    put c
+    0d _
+    let @c = old
+endfunction
+
+set diffexpr=MyDiff()
+function! MyDiff()
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  let eq = ''
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      let cmd = '""' . $VIMRUNTIME . '\diff"'
+      let eq = '"'
+    else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+endfunction
+
+" Copy matches of the last search to a register (default is the clipboard).
+" Accepts a range (default is whole file).
+" 'CopyMatches'   copy matches to clipboard (each match has \n added).
+" 'CopyMatches x' copy matches to register x (clears register first).
+" 'CopyMatches X' append matches to register x.
+" We skip empty hits to ensure patterns using '\ze' don't loop forever.
+command! -range=% -register CopyMatches call s:CopyMatches(<line1>, <line2>, '<reg>')
+function! s:CopyMatches(line1, line2, reg)
+  let hits = []
+  for line in range(a:line1, a:line2)
+    let txt = getline(line)
+    let idx = match(txt, @/)
+    while idx >= 0
+      let end = matchend(txt, @/, idx)
+      if end > idx
+	call add(hits, strpart(txt, idx, end-idx))
+      else
+	let end += 1
+      endif
+      if @/[0] == '^'
+        break  " to avoid false hits
+      endif
+      let idx = match(txt, @/, end)
+    endwhile
+  endfor
+  if len(hits) > 0
+    let reg = empty(a:reg) ? '+' : a:reg
+    execute 'let @'.reg.' = join(hits, "\n") . "\n"'
+  else
+    echo 'No hits'
+  endif
+endfunction
+
+" match html tags with %
+ru macros/matchit.vim
+
+" Create a scratch buffer with a list of files (full path names).
+" Argument is a specification like '*.c' to list *.c files (default is '*').
+" Can use '*.[ch]' to find *.c and *.h (see :help wildcard).
+" If command uses !, list includes matching files in all subdirectories.
+" If filespec contains a slash or backslash, the path in filespec is used;
+" otherwise, start searching in directory of current file.
+function! s:Listfiles(bang, filespec)
+  if a:filespec =~ '[/\\]'  " if contains path separator (slash or backslash)
+    let dir = fnamemodify(a:filespec, ':p:h')
+    let fnm = fnamemodify(a:filespec, ':p:t')
+  else
+    let dir = expand('%:p:h')  " directory of current file
+    let fnm = a:filespec
+  endif
+  if empty(fnm)
+    let fnm = '*'
+  endif
+  if !empty(a:bang)
+    let fnm = '**/' . fnm
+  endif
+  let files = filter(split(globpath(dir, fnm), '\n'), '!isdirectory(v:val)')
+  echo 'dir=' dir ' fnm=' fnm ' len(files)=' len(files)
+  if empty(files)
+    echo 'No matching files'
+    return
+  endif
+  new
+  setlocal buftype=nofile bufhidden=hide noswapfile
+  call append(line('$'), files)
+  1d  " delete initial empty line
+  " sort i  " sort, ignoring case
+endfunction
+command! -bang -nargs=? Listfiles call s:Listfiles('<bang>', '<args>')
+
+function! DoPrettyXML()
+  " save the filetype so we can restore it later
+  let l:origft = &ft
+  set ft=
+  " delete the xml header if it exists. This will
+  " permit us to surround the document with fake tags
+  " without creating invalid xml.
+  1s/<?xml .*?>//e
+  " insert fake tags around the entire document.
+  " This will permit us to pretty-format excerpts of
+  " XML that may contain multiple top-level elements.
+  0put ='<PrettyXML>'
+  $put ='</PrettyXML>'
+  silent %!xmllint --encode UTF-8 --format -
+  " xmllint will insert an <?xml?> header. it's easy enough to delete
+  " if you don't want it.
+  " delete the fake tags
+  2d
+  $d
+  " restore the 'normal' indentation, which is one extra level
+  " too deep due to the extra tags we wrapped around the document.
+  silent %<
+  " back to home
+  1
+  " restore the filetype
+  exe "set ft=" . l:origft
+endfunction
+command! PrettyXML call DoPrettyXML()
+
+fun! MyFeed(feed)
+split
+enew
+set buftype=nofile
+python b = vim.current.buffer
+python import re
+python import feedparser;f = feedparser.parse(vim.eval('a:feed'))
+python for i in f['items']: b.append('%s {{{1 %s' % (str(i.title), str(i.link)));
+            \b.append(str(re.sub(r'<[^>]*?>', '',i.summary_detail.value)).split("\n"))
+setlocal  textwidth=120
+norm gggqGgg
+set foldmethod=marker
+
+endfun
+
+com! VimRssFeed call MyFeed("http://stackoverflow.com/feeds/question/566656")
+com! Slashdot call MyFeed("http://rss.slashdot.org/Slashdot/slashdot")
+com! MyStack call MyFeed("http://stackoverflow.com/feeds/user/59592")
+
+" python movement mappings chapa:
+let g:chapa_default_mappings = 1
+
+" remove everything except matches
+command! MatchesOnly let @a=""|%s//\\=setreg('A', submatch(0), 'l')/g|%d _|pu a|0d _
+
+" matches words starting with underscore such as: _animation _ebook
+command! MatchTags normal /\\<_\\w\\+\\><CR>
+
+function! ConcatenateFilesFunc()
+    let @a=""
+    bufdo normal gg"AyG
+    enew
+    put a
+endfunction
+command! ConcatenateFiles call ConcatenateFilesFunc()
+
+function! FilterLines()
+    v/entry-title/d
+    "v/shortnews-header/d
+endfunction
+function! FilterLinesJoin()
+    bufdo call FilterLines()
+    call ConcatenateFilesFunc()
+endfunction
+command! FilterLinesJoin call FilterLinesJoin()
+
+command! FindRapidLinks norm /http[^< ]*\\(rapidgator\\|ul.to\\|uploaded\\|netload\\|extabit\\|turbobit\\)[^<" ]*\\.rar<CR>
+function! GetRapidLinksFunc()
+    "FindRapidLinks
+    "let @/ = 'http[^< ]*[^<" ]*\.ogv'
+    let @/ = 'http[^< ]*\(rapidgator\|ul.to\|uploaded\|netload\|extabit\|turbobit\)[^<" ]'
+    MatchesOnly
+endfunction
+command! GetRapidLinks call GetRapidLinksFunc()|bn
+function! GetRapidLinksJoin()
+    bufdo call GetRapidLinksFunc()
+    call ConcatenateFilesFunc()
+endfunction
+command! -count=1 GetRapidLinksJoin call GetRapidLinksJoin()
+"command! -count=1 GetRapidLinksJoin call GetRapidLinksJoin()|bn
+
+function! GetLinksFunc()
+    let @/ = 'http[^< ]*'
+    MatchesOnly
+endfunction
+command! GetLinks call GetLinksFunc()
+function! GetLinksJoin()
+    bufdo call GetLinksFunc()
+    call ConcatenateFilesFunc()
+endfunction
+command! -count=1 GetLinksJoin call GetLinksJoin()
+
+function! GetTagsFunc()
+    MatchTags
+    MatchesOnly
+    sort u
+    %j
+endfunction
+
+" metin isleme: siniflandirma 
+command! GetTags call GetTagsFunc()
+
+" text içine konulan scripti çalıştırır
+function! RunDynamicScript(...)
+    if (exists('a:1'))
+        let text = a:1
+    else
+        let text = "exe 'norm Go
+                    \ >>>> _tmm
+                    \ ' | exe 'norm Go'"
+    endif
+    echo text
+    exe ''.text
+endfunction
+
+function! ReadFile(...)
+    if (exists('a:1'))
+        let filename = a:1
+    else
+        let filename = 'input'
+    endif
+    exe 'e ' . filename
+    %y d
+    let text = @d
+    bd
+    return text
+endfunction
+
+function! RunExternalScript(filepath)
+    silent! let myscript = ReadFile(a:filepath)
+    silent! call RunDynamicScript(myscript)
+endfunction
+command! -nargs=1 RunExternalScriptC call RunExternalScript(<f-args>)
+
+function! TestFunc(...)
+    "let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    exe "lcd " . script_path
+    let script_file = script_path . "links.out"
+    exe "e " . script_file
+    "exe "norm ggdG"
+    "v/file:/d
+    "w!
+    "bd
+endfunction
+command! Test call TestFunc()
+command! Test2 call RunExternalScript("c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/script.txt")
+
+command! GtdSPolishDollar %s/will_be/\\$\\/mo\\$/
+command! GtdSRemoveEmptySections g/^>>>>.*$\\n\\_s*>/.d3
+
+" obsolete replaced by: GtdSiniflandirmaVim
+function! GtdSiniflandirmaFunc()
+    if !has("python")
+      echo "vim has to be compiled with +python to run this"
+      finish
+    endif
+python << endpython
+from vim import *
+from csv_unicode import read_file
+text = current.buffer[:]
+vim.command("GetTags")
+endpython
+    let current_path = getcwd()
+    "let script_path = "c:\\projects\\cinar-agaci-01\\ari-kovani-01\\python-01\\text-01\\keynote_gtd_siniflandirma\\"
+    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    exe "lcd " . script_path
+    ! run.bat
+    let myscriptfile = script_path . "script.txt"
+    exe "e " . myscriptfile
+    GtdSPolishDollar
+    w!
+    bd
+python << endpython
+myscriptfile = vim.eval("myscriptfile")
+myscript = read_file(myscriptfile)
+current.buffer[:] = text
+vim.command(myscript)
+endpython
+    GtdSRemoveEmptySections
+endfunction
+    
+command! GtdSiniflandirma call GtdSiniflandirmaFunc()
+
+function! ProduceScriptGtdSiniflandirma(script_file)
+    "silent! let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    silent! exe "lcd " . script_path
+    "silent! ! run.bat
+    " tags.out, links.out > tags_with_links.csv
+    " tags_with_links.csv, template.txt > script.txt
+    silent! ! ./run1_produce_links.sh
+    silent! exe "e " . a:script_file
+    silent! GtdSPolishDollar
+    " remove empty sections
+    "silent! $put =\"exe 'g/^>>>>.*$\\n\_s*>/.d3' \| \"
+    " Find unmatched tags
+    silent! $put = \"exe 'norm Go@@ Unmatched Tags' \| \"
+    silent! $put = \"exe '0,/^>>>>/ g/^_[^ ]*/t$' \"
+    " remove existing tags off the tasks
+    "silent! $put ='%s/^_\w* //g \| '
+    w!
+    bd
+endfunction
+command! ProduceScriptGtdSiniflandirma call ProduceScriptGtdSiniflandirma('script.txt') 
+function! GtdSiniflandirmaVim()
+    " links.in > links.out
+    silent! GtdSiniflandirmaVimUpdateLinks
+    " tags.in > tags.out
+    silent! GtdSiniflandirmaVimUpdateTags
+    "silent! let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    silent! exe "lcd " . script_path
+    " tags.out, links.out > tags_with_links.csv
+    " tags_with_links.csv, template.txt > script.txt
+    silent! call ProduceScriptGtdSiniflandirma("script.txt")
+    silent! call RunExternalScript("script.txt")
+    silent! GtdSRemoveEmptySections
+    " inbox.in > inbox.out
+    exe "w! inbox.out"
+    bd!
+    exe "e inbox.out"
+    "%y b
+    "bd!
+    "exe "e inbox.out"
+    "exe 'norm ggdG"bP'
+    "w!
+    "bd
+endfunction
+
+function! GtdSiniflandirmaSubExtractNewTags()
+    "silent! let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    silent! exe "lcd " . script_path
+    silent! exe "e tags"
+    silent! $put = \"exe 'norm Go --- Unmatched Tags' \| \"
+    silent! $put = \"exe '0,/^>>>>/ g/^_[^ ]*/t$' \"
+endfunction
+
+
+function! GtdSiniflandirmaFuncVim()
+    if !has("python")
+      echo "vim has to be compiled with +python to run this"
+      finish
+    endif
+    %y a
+    let text = @a
+    GetTags
+    let current_path = getcwd()
+endfunction
+    
+command! GtdSiniflandirmaVim call GtdSiniflandirmaVim()
+command! GtdSiniflandirmaVim2 call GtdSiniflandirmaVim() | g/^>>\\+ \\+_\\([^ ]*\\) \\+.*/ s//\\1/ | +1d | -1pu='---'
+command! Test6 exe 'g/^>>\\+ \\+_\\([^ ]*\\) \\+.*/ s//\\1/' | exe "pu='---'"
+command! Test7 g/^>>\\+ \\+_\\([^ ]*\\) \\+.*/ s//\\1/ | +1d | -1pu='---'
+
+function! GtdSiniflandirmaVimUpdateTags()
+    "let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    exe "lcd " . script_path
+    exe "e tags.in"
+    %s/[: ,]/\r/g
+    v/^_/d
+    %s/[_,]//g
+    %y b
+    bd!
+    exe "e tags.out"
+    exe 'norm ggdG"bP'
+    sort u
+    w!
+    bd
+endfunction
+command! GtdSiniflandirmaVimUpdateTags call GtdSiniflandirmaVimUpdateTags()
+
+function! GtdSiniflandirmaVimUpdateLinks()
+    "let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    exe "lcd " . script_path
+    exe "e links.in"
+    v/file:/d
+    %y b
+    bd!
+    exe "e links.out"
+    exe 'norm ggdG"bP'
+    sort u
+    w!
+    bd
+endfunction
+command! GtdSiniflandirmaVimUpdateLinks call GtdSiniflandirmaVimUpdateLinks()
+
+" returns all open buffers
+function! BuffersList()
+  let all = range(0, bufnr('$'))
+  let res = []
+  for b in all
+    if buflisted(b)
+      call add(res, bufname(b))
+    endif
+  endfor
+  return res
+endfunction
+
+" Filter text with last search or arg
+command! -nargs=? Filter let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nofile | put! a
+
+command! SortClasses $pu _ | exe 'g/_1$/m$' | $pu _ | exe 'g/_2$/m$' | $pu _ | exe 'g/_3$/m$' | $pu _ | exe 'g/_4$/m$' | $pu _ | exe 'g/_5$/m$' | $pu _ | exe 'g/_6$/m$' | $pu _ | exe 'g/_7$/m$'   
+
+command! Test4 :0,-1 d
+command! Test3 norm gg | norm /\_tmm<CR>
+command! FilterTmm exe 'g/^_tmm\\>/,/^$/mo$' | norm /_tmm<CR> | :0,-1 d
+"command! FilterTmm exe 'g/^_tmm\\>/,/^$/mo$' | norm gg | norm /_tmm<CR>
+"command! Test2 norm /_tmm<CR>
+"/_tmm<CR> 
+" | exe '0,-1 d'
+
+fun! MyFeed(feed)
+	split
+	enew
+	set buftype=nofile
+	python b = vim.current.buffer
+	python import re
+	python import feedparser;f = feedparser.parse(vim.eval('a:feed'))
+	python for i in f['items']: b.append('%s {{{1 %s' % (str(i.title), str(i.link)));
+					\b.append(str(re.sub(r'<[^>]*?>', '',i.summary_detail.value)).split("\n"))
+	setlocal  textwidth=120
+	norm gggqGgg
+	set foldmethod=marker
+
+endfun
+com! VimRssFeed call MyFeed("http://stackoverflow.com/feeds/question/566656")
+com! Slashdot call MyFeed("http://rss.slashdot.org/Slashdot/slashdot")
+com! MyStack call MyFeed("http://stackoverflow.com/feeds/user/59592")
+
+" set MRU history file size
+let g:ctrlp_max_history = 200
+
+function! MindMupToText()
+    silent! v/title/d
+    silent! %s/"title": "//
+    silent! %s/".*//
+    silent! %s/^  //
+    silent! %s/    /\t/g
+endfunction
+command! MindMupToText call MindMupToText()
+
+" macros for keynote 2 wordpress
+let @t = 'I[A](Jd$Kpa)J0JddK'
+
+" macros for python
+" convert __init__ parameters into self.initializations
+"let @a='d3wO P0wiself.wyw2wdw"0Pj0dw'
+" convert __init__ parameters into =None default values
+"let @b='wi=Noneww'
+"
+
+" macros for vimrepress
+" convert image link to markdown syntax
+let @l='I![](A)0'
+let @i='/http:..i.imgur.com.\w\+.\(png\|jpg\)I![](A)j0'
+" convert dropbox image
+let @d='/^\w\+\.\(png\|jpg\)$Ihttp://dl.dropbox.com/u/103580364/temp/I![](A)0'
+" make http urls to automatic links:
+let @m='/httpi</\s\|$i>/rklh'
+" add .jpg extension to imgur image links:
+let @j = '/imgurA.jpg'
+
+" copy column of csv and put it into the buffer window below
+let @x =':Column,mpuGoPG,lL'
+
+" Remove line numbers at the beginning of lines
+command! RemoveLineNumbersAtBeginning %s/^ *\\d\\+ *//g
+
+" shortcut for DeleteColumn
+command! DC DeleteColumn<CR>
+
+function! Test4()
+	let words=['DTR002', 'DTR003']
+	call FindWordsInText(words)
+endfunction
+command! Test4 call Test4()
+
+command! SplitLinesFromDotsLike s/\\(\\.\\|;\\|!\\) \\+/\\0\\r/g
+
+" vim-r plugin folding setting
+let r_syntax_folding = 1 
+
+" problem http://superuser.com/questions/179164/vim-complains-about-a-temporary-file-when-opening-syntax-highlighted-files-on-ma
+"set shell /bin/bash
+
+" custom fold heading text
+" uses EightHeaderFolds plugin
+" put number of lines at the end of line
+"let &foldtext = "EightHeaderFolds( '\\=s:fullwidth-3', 'left', [ repeat( '   ', v:foldlevel - 1 ), '.', '' ], '\\= s:foldlines . \" lines\"', '' )"
+
+
+" find replace inside quickfix file list
+" http://stackoverflow.com/questions/4792561/how-to-do-search-replace-with-ack-in-vim
+command! -nargs=+ QFDo call QFDo(<q-args>)
+function! QFDo(command)
+    " Create a dictionary so that we can
+    " get the list of buffers rather than the
+    " list of lines in buffers (easy way
+    " to get unique entries)
+    let buffer_numbers = {}
+    " For each entry, use the buffer number as 
+    " a dictionary key (won't get repeats)
+    for fixlist_entry in getqflist()
+        let buffer_numbers[fixlist_entry['bufnr']] = 1
+    endfor
+    " Make it into a list as it seems cleaner
+    let buffer_number_list = keys(buffer_numbers)
+
+    " For each buffer
+    for num in buffer_number_list
+        " Select the buffer
+        exe 'buffer' num
+        " Run the command that's passed as an argument
+        exe a:command
+        " Save if necessary
+        update
+    endfor
+endfunction
+
+command! SetTab4 set tabstop=4 | set shiftwidth=4 | set softtabstop=4
+
+function! WpCliDeleteInactivePlugins()
+    v/inactive/d
+    %s/^| //
+    %s/ .*//g
+    %s/^/wp plugin delete /g
+endfunction
+command! WpCliDeleteInactivePlugins call WpCliDeleteInactivePlugins()
+
+" toggle to open close quickfix window
+function! GetBufferList()
+  redir =>buflist
+  silent! ls
+  redir END
+  return buflist
+endfunction
+
+function! ToggleList(bufname, pfx)
+  let buflist = GetBufferList()
+  for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
+    if bufwinnr(bufnum) != -1
+      exec(a:pfx.'close')
+      return
+    endif
+  endfor
+  if a:pfx == 'l' && len(getloclist(0)) == 0
+      echohl ErrorMsg
+      echo "Location List is Empty."
+      return
+  endif
+  let winnr = winnr()
+  exec(a:pfx.'open')
+  if winnr() != winnr
+    wincmd p
+  endif
+endfunction
+
+" fasd integration
+" Z - cd to recent / frequent directories
+command! -nargs=* Z :call Z(<f-args>)
+function! Z(...)
+  let cmd = 'fasd -d -e printf'
+  for arg in a:000
+    let cmd = cmd . ' ' . arg
+  endfor
+  let path = system(cmd)
+  if isdirectory(path)
+    echo path
+    exec 'cd ' . path
+  endif
+endfunction
+
+
+" file names with spaces
+" :W and :Save will escape a file name and write it
+command! -bang -nargs=* E :call E(<q-bang>, <q-args>) 
+command! -bang -nargs=* W :call W(<q-bang>, <q-args>) 
+command! -bang -nargs=* Save :call Save(<q-bang>, <q-args>) 
+command! -bang -nargs=* Cd :call Cd(<q-bang>, <q-args>) 
+
+function! E(bang, filename) 
+    :exe "e".a:bang." ". fnameescape(a:filename) 
+endfu 
+
+function! W(bang, filename) 
+    :exe "w".a:bang." ". fnameescape(a:filename) 
+endfu 
+
+function! Save(bang, filename) 
+    :exe "save".a:bang." ". fnameescape(a:filename) 
+endfu 
+
+function! Cd(bang, filename) 
+    :exe "cd".a:bang." ". fnameescape(a:filename) 
+endfu 
+
+function! OpenPlehn()
+	CdPlehnCodes
+	args *.R
+endfunction
+command! OpenPlehn call OpenPlehn()
+
+autocmd User GnuPG let b:GPGOptions += ["sign"]
+
+" http://andrewradev.com/2011/06/08/vim-and-ctags/
+command! -nargs=1 Function call s:Function(<f-args>)
+function! s:Function(name)
+  " Retrieve tags of the 'f' kind
+  let tags = taglist('^'.a:name)
+  let tags = filter(tags, 'v:val["kind"] == "f"')
+
+  " Prepare them for inserting in the quickfix window
+  let qf_taglist = []
+  for entry in tags
+    call add(qf_taglist, {
+          \ 'pattern':  entry['cmd'],
+          \ 'filename': entry['filename'],
+          \ })
+  endfor
+
+  " Place the tags in the quickfix window, if possible
+  if len(qf_taglist) > 0
+    call setqflist(qf_taglist)
+    copen
+  else
+    echo "No tags found for ".a:name
+  endif
+endfunction
+
+" skim commands
+command! -bang -nargs=* Ag2 call fzf#vim#ag_interactive(<q-args>, fzf#vim#with_preview('right:50%:hidden', 'alt-h'))
+command! -bang -nargs=* Rg2 call fzf#vim#rg_interactive(<q-args>, fzf#vim#with_preview('right:50%:hidden', 'alt-h'))
+
+
+function! MigrateRmdToHugo()
+	" remove curly braces like {bash}
+	%s/{\<\(bash\|js\|css\|html\|r\)\>}/\1/
+	:SurroundTagsWithBracketsAndQuotes
+	%s#github.com/mertnuhoglu/study/js#github.com/mertnuhoglu/study/tree/master/js#
+	" delete <style> tags upto </style>
+	g/^<style>/ .,/^<\/style>$/ d
+	g/^path:/ s/Rmd$/md/
+	g/r set-options/ .,+3 d
+	" replace img/x.png with /image/x.png
+	%s#(img/\([^)]\+.png\)#(/images/\1#
+	%s#(data/\([^)]\+.png\)#(/images/\1#
+	%s#(data/img/\([^)]\+.png\)#(/images/\1#
+	%s#(/assets/img/\([^)]\+.png\)#(/images/\1#
+	" indent comment lines
+	%s/^#>/  #>/
+	%s/## \[\(\d\+\)/  ## \[\1/
+endfunction
+
+command! MigrateRmdToHugo call MigrateRmdToHugo()
+
+
