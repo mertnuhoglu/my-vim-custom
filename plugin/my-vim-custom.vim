@@ -82,8 +82,12 @@ nnoremap ş :ta
 nnoremap <Leader>a <C-w>=<cr>
 
 noremap <S-F3> :VoomToggle markdown<CR>
+noremap <F15> :VoomToggle markdown<CR>
 " copy current line from start to line end
 nnoremap <Leader>üç ^y$
+" delete word with alt backspace
+inoremap <M-BS>	<ESC>ldbi
+"inoremap <M-BS>	<C-[>ldbi
 
 let NERDCreateDefaultMappings=0
 map <Leader>cc <plug>NERDCommenterComment
