@@ -1,3 +1,6 @@
+" vim:fileencoding=utf-8:ft=conf:foldmethod=marker
+
+": all {{{
 
 " naming conventions for custom commands:
 " Put
@@ -77,21 +80,21 @@ command! Ccd call ChangeCurrentDirectory()
 
 " make all windows same size
 nnoremap çç yy
-nnoremap <Leader>a <C-W>=<CR>
+nnoremap üa <C-W>=<CR>
 nnoremap ş :ta 
-nnoremap <Leader>a <C-w>=<cr>
+nnoremap üa <C-w>=<cr>
 
 noremap <S-F3> :VoomToggle markdown<CR>
 noremap <F15> :VoomToggle markdown<CR>
 " copy current line from start to line end
-nnoremap <Leader>üç ^y$
+nnoremap üüç ^y$
 " delete word with alt backspace
 inoremap <M-BS>	<ESC>ldbi
 "inoremap <M-BS>	<C-[>ldbi
 
 let NERDCreateDefaultMappings=0
-map <Leader>cc <plug>NERDCommenterComment
-map <Leader>cu <plug>NERDCommenterUncomment
+map ücc <plug>NERDCommenterComment
+map ücu <plug>NERDCommenterUncomment
 
 " Fast window resizing
 if bufwinnr(1)
@@ -102,7 +105,7 @@ if bufwinnr(1)
 endif
 
 " pretty format with ,ff
-map <Leader>ff <Esc>:1,$!xmllint --format -<CR>
+map üff <Esc>:1,$!xmllint --format -<CR>
 
 
 " insert date automatically
@@ -123,11 +126,11 @@ nnoremap üüs :wa<CR>
 map mm <Plug>(easymotion-prefix)
 
 
-nnoremap <Leader>ch :set cursorline! nocursorcolumn<CR>
+nnoremap üch :set cursorline! nocursorcolumn<CR>
 
 " close current window
 " delete buffer without losing split
-nmap ğ :bp\|bd #<cr>
+"nmap ğ :bp\|bd #<cr>
 nmap Ğ :bd<cr>
 
 nnoremap <S-F4> <Plug>MakeDigraph
@@ -141,7 +144,7 @@ nnoremap ır :tabprevious<CR>
 "noremap <A-r> :tabp
 "noremap <C-r> :tabp<cr>
 
-nnoremap <silent> <leader>ll :call ToggleList("Location List", 'l')<CR>
+nnoremap <silent> üll :call ToggleList("Location List", 'l')<CR>
 
 " quick arrow movements in insert mode 
 "inoremap II <Esc>I
@@ -162,7 +165,7 @@ nnoremap <silent> <leader>ll :call ToggleList("Location List", 'l')<CR>
 "vnoremap <Tab> <Esc>gV
 "onoremap <Tab> <Esc>
 "inoremap <Tab> <Esc>`^
-"inoremap <Leader><Tab> <Tab>
+"inoremap ü<Tab> <Tab>
 "inoremap <C-i> <Tab>
 
 
@@ -261,10 +264,10 @@ endfunction
 " /*}}}*/ 
 
 if exists(":Tabularize")
-  nmap <Leader>a= :Tabularize /=<CR>   
-  vmap <Leader>a= :Tabularize /=<CR>
-  nmap <Leader>a: :Tabularize /:\zs<CR>   
-  vmap <Leader>a: :Tabularize /:\zs<CR>
+  nmap üa= :Tabularize /=<CR>   
+  vmap üa= :Tabularize /=<CR>
+  nmap üa: :Tabularize /:\zs<CR>   
+  vmap üa: :Tabularize /:\zs<CR>
 endif
 
 function! s:align()
@@ -296,11 +299,11 @@ nnoremap <Leader>u yyp<c-v>$r-
 " same as :tjump
 "nnoremap Ü g<C-]>
 " ,a to go to the last buffer
-:nnoremap <Leader>h :BufSurfBack<CR>
-:nnoremap <Leader>f :BufSurfForward<CR>
+:nnoremap üh :BufSurfBack<CR>
+:nnoremap üf :BufSurfForward<CR>
 
-:nnoremap <Leader>n :cnext<CR>
-:nnoremap <Leader>p :cprevious<CR>
+:nnoremap ün :cnext<CR>
+:nnoremap üp :cprevious<CR>
 
 
 " plehn work
@@ -348,6 +351,11 @@ let $BzqWebapp = '$BIZQUALIFY/web_app'
 let $BzqDoc = '$BIZQUALIFY/bq_doc'
 let $KNS = '$KNS'
 let $NHV = '$NHV'
+let $CMMI = '$CMMI'
+let $CMMIC = '$CMMIC'
+let $CMMIMY = '$CMMIMY'
+command! Cdcmmi cd $CMMIMY | :pwd
+command! Cdbtgcmmi :Cdcmmi
 command! Cdmn cd $MYNOTES | :pwd
 command! Cdstudy cd $STUDY | :pwd
 command! Cdbdoc cd $BzqDoc | :pwd
@@ -493,6 +501,7 @@ command! Ens ENotesSipa
 command! EDocSipa e ~/gdrive/mynotes/prj/sipa/doc_sipa.md
 command! Edsipa EDocSipa
 command! Eds EDocSipa
+command! Ecmmdict e $CMMIMY/logbook/dictionary_cmmi.md
 
 " vim scripts
 command! EMyVimCustom e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
@@ -960,8 +969,8 @@ endfunction
 command! UpdateFileTree call UpdateFileTree()
 
 " thesaurus mappings
-nnoremap <Leader>qr :ThesaurusQueryReplaceCurrentWord<CR>
-vnoremap <Leader>qk "ky:ThesaurusQueryReplace <C-r>k<CR>
+nnoremap üqr :ThesaurusQueryReplaceCurrentWord<CR>
+vnoremap üqk "ky:ThesaurusQueryReplace <C-r>k<CR>
 
 " ----- Arrow Keys -----
 
@@ -1027,7 +1036,7 @@ function! ElogbookItr()
   " opens logbook of today
   " goal:
   " Elb -> 
-  " e ~/projects/study/logbook/2017-11-27.md"
+  " e ~/projects/itr/vrp_doc/log/2017-11-27.md"
   let cmd = 'e ' . $ITR_DOC . '/log/log_itr_' . strftime("%Y%m%d") . '.md'
   echo cmd
   execute cmd
@@ -1089,6 +1098,17 @@ function! ElogbookNhv()
 endfunction
 command! Elbnhv call ElogbookNhv()
 
+function! ElogbookCmmi()
+  " opens logbook of today
+  " goal:
+  " Elb -> 
+  " e ~/projects/study/logbook/2017-11-27.md"
+  let cmd = 'e ' . $CMMIMY . '/log_cmmi_' . strftime("%Y%m%d") . '.md'
+  echo cmd
+  execute cmd
+endfunction
+command! Elbcmmi call ElogbookCmmi()
+
 command! Rmarkdown :!R -e 'rmarkdown::render("%")'
 command! OpenHtml :execute '!open ' . expand("%:r") . '.html'
 command! Ohtml OpenHtml 
@@ -1105,24 +1125,24 @@ command! -nargs=* -range=% SurroundMdImage <line1>,<line2>call SurroundMdImage()
 " convert word -> `word`
 command! SurroundWithDoubleQuotes normal viwS"e
 command! Swdq SurroundWithDoubleQuotes
-nnoremap <Leader>sq :Swdq<CR>
+nnoremap üsq :Swdq<CR>
 command! SurroundWithBackQuotes normal viwS`e
 command! Swq SurroundWithBackQuotes 
-nnoremap <Leader>st :Swq<CR>
+nnoremap üst :Swq<CR>
+nnoremap ss :Swq<CR>
 " surround with back quotes visual selected area: üst
-vnoremap <Leader>st <Esc>`>a`<Esc>`<i`<Esc>
+vnoremap üst <Esc>`>a`<Esc>`<i`<Esc>
+vnoremap ss <Esc>`>a`<Esc>`<i`<Esc>
 vnoremap qq <Esc>`>a'<Esc>`<i'<Esc>
 command! SurroundWithBrackets normal viwS]e
 command! Swb SurroundWithBrackets 
-nnoremap <Leader>sb :Swb<CR>
+nnoremap üsb :Swb<CR>
 command! SurroundWithBackQuotesUntilSpace normal v/\s\|$\<cr\>S`e
-nnoremap <Leader>ss :SurroundWithBackQuotesUntilSpace<CR>
+nnoremap üss :SurroundWithBackQuotesUntilSpace<CR>
 command! ReplaceWithCloze normal viwc[...]
-nnoremap <Leader>rc :ReplaceWithCloze<CR>
+nnoremap ürc :ReplaceWithCloze<CR>
 command! ReplaceWithCloze2 normal vt c[...]
-nnoremap <Leader>rt :ReplaceWithCloze2<CR>
-" create new tab
-nnoremap <Leader>te :tabe<CR>
+nnoremap ürt :ReplaceWithCloze2<CR>
 "nnoremap w e
 "nnoremap e w
 "onoremap ie iw
@@ -1155,122 +1175,6 @@ function! OutputSplitWindow(...)
 endfunction
 command! -nargs=+ -complete=command Output call OutputSplitWindow(<f-args>)
 
-" # fzf functions
-" https://github.com/junegunn/fzf/wiki/Examples-(vim)
-
-" BLines override
-" taken from: <url:/Users/mertnuhoglu/.vim/bundle/fzf.vim/autoload/fzf/vim.vim#tn=function! s:buffer_lines()>
-function! s:buffer_lines()
-  let linefmt = s:yellow(" %4d ", "LineNr")."\t%s"
-	echo linefmt
-  return map(getline(1, "$"), 'printf(linefmt, v:key + 1, v:val)')
-endfunction
-command! BLines2 call fzf#run({
-\ 'source':  s:buffer_lines(),
-\ 'sink':    'edit',
-\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\ 'down':    '40%' })
-command! BLines3 call fzf#vim#md_headers()
-
-command! FDigraph call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/digraph_table_ref.tsv"),
-\ 'down':    '40%' })
-
-command! FIpaPhoneticSymbols call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/ipa_phonetic_symbols.tsv"),
-\ 'down':    '40%' })
-
-command! FEmoji call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/emoji_ref.md"),
-\ 'down':    '40%' })
-
-command! FUnicode call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/unicode_table_ref.tsv"),
-\ 'down':    '40%' })
-
-" Select Buffer
-function! s:buflist()
-  redir => ls
-  silent ls
-  redir END
-  return split(ls, '\n')
-endfunction
-function! s:bufopen(e)
-  execute 'buffer' matchstr(a:e, '^[ 0-9]*')
-endfunction
-nnoremap <silent> <Leader><Enter> :call fzf#run({
-\   'source':  reverse(<sid>buflist()),
-\   'sink':    function('<sid>bufopen'),
-\ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\   'down':    '40%'
-\ })<CR>
-"\   'down':    len(<sid>buflist()) + 2
-
-function! MRU_LoadList()
-	return readfile(g:MRU_File)
-endfun
-command! Ehistoryvim exec 'e ' . g:MRU_File
-command! FZFTest call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/projects/study/js/vrp/cyclejs_vrp.Rmd"),
-\ 'down':    '40%' })
-command! FZFMru call fzf#run({
-\ 'source':  MRU_LoadList(),
-\ 'sink':    'edit',
-\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
-\ })
-command! FM FZFMru
-command! History FZFMru
-
-command! FZFRefVrp call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/projects/study/js/vrp/cyclejs_vrp.Rmd"),
-\ 'down':    '40%' })
-command! Frv FZFRefVrp
-function! s:all_files()
-  return extend(
-  \ filter(copy(v:oldfiles),
-  \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
-  \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
-endfunction
-nnoremap ıı :FZFMru<CR>
-"nnoremap ııt :tabe<CR>:FZFMru<CR>
-"nnoremap ııs :wincmd s<CR>:FZFMru<CR>
-"nnoremap ııv :wincmd v<CR>:FZFMru<CR>
-"unmap ııt
-"unmap ııs
-"unmap ııv
-
-function! s:cdg(lines) 
-	exec 'cd ' . a:lines[0]
-endfunction
-command! FZFCdg call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/.cdg_paths"),
-\ 'sink*':   function('s:cdg'),
-\ 'down':    '40%' })
-command! Fcd FZFCdg
-command! Cdg FZFCdg
-function! s:all_files()
-  return extend(
-  \ filter(copy(v:oldfiles),
-  \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
-  \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
-endfunction
-
-" open buffers search
-command! Buffers call fzf#run(fzf#wrap({ 
-      \ 'source': map(range(1, bufnr('$')), 'bufname(v:val)'),
-			\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
-      \  }))
-nnoremap cb :Buffers<CR>
-
-" mdfind search
-command! -nargs=1 -bang Mdfind call fzf#run(fzf#wrap(
-      \ {'source': 'mdfind <q-args>', 'options': '-m'}, <bang>0))
-
-" Jump to tags
-"command! -bar Tags if !empty(tagfiles()) | call fzf#run({
-"\   'source': "sed '/^\\!/d;s/\t.*//' " . join(tagfiles()) . ' | uniq',
-"\   'sink':   'tag',
-"\ }) | else | echo 'Preparing tags' | call system('ctags -R') | FZFTag | endif
 
 " https://stackoverflow.com/questions/1642611/how-to-save-and-restore-multiple-different-sessions-in-vim
 " save and restore sessions in vim
@@ -1301,9 +1205,9 @@ function! AutomaticSessions()
 endfunction
 
 " wrap some text for anki cloze questions
-vnoremap <Leader>e s{{c1::<c-r>"}}<esc>
-vnoremap <Leader>kk s[...]<esc>
-"nnoremap <Leader>e de{{c1::}}
+vnoremap üe s{{c1::<c-r>"}}<esc>
+vnoremap ükk s[...]<esc>
+"nnoremap üe de{{c1::}}
 
 function! ConvertAnkiMd()
   set expandtab
@@ -1383,22 +1287,18 @@ function! BuildAndRunNodeScript()
   :!node % | tee >(pbcopy)
 endfunction
 "nmap <Leader>üb :!node %<cr>
-nmap <Leader>ün :call BuildAndRunNodeScript()<cr>
+nmap üün :call BuildAndRunNodeScript()<cr>
 function! BuildAndRunTypeScript()
   :wa
   :!ts-node % | tee >(pbcopy)
 endfunction
-nnoremap <Leader>üt :call BuildAndRunTypeScript()<cr>
+nnoremap üüt :call BuildAndRunTypeScript()<cr>
 function! BuildAndRunBabelNodeScript()
 	:wa
 	:!yarn babel-node --presets env % | tee >(pbcopy)
 endfunction
-nnoremap <Leader>üb :call BuildAndRunBabelNodeScript()<cr>
+nnoremap üüb :call BuildAndRunBabelNodeScript()<cr>
 
-" toggle full screen for window
-" https://stackoverflow.com/a/15584901/29246
-:noremap <Leader>t :tab split<CR>
-:noremap <Leader>to :tabonly<CR>
 " to close tab :wq
 
 let g:javascript_conceal_function             = "ƒ"
@@ -1412,7 +1312,7 @@ let g:javascript_conceal_static               = "•"
 let g:javascript_conceal_super                = "Ω"
 let g:javascript_conceal_arrow_function       = "⇒"
 set conceallevel=1
-map <leader>l :exec &conceallevel ? "set conceallevel=0" : "set conceallevel=1"<CR>
+map ül :exec &conceallevel ? "set conceallevel=0" : "set conceallevel=1"<CR>
 autocmd BufReadPre *.js let b:javascript_lib_use_ramda = 1
 autocmd BufReadPre *.js let b:javascript_lib_use_jquery = 1
 
@@ -1522,77 +1422,16 @@ endfunction
 command! ConvertHeadersTxt2HeadersFilteredWordsTxt call ConvertHeadersTxt2HeadersFilteredWordsTxt3()
 
 " swoop keymap
-nmap <Leader>l :call Swoop()<CR>
-vmap <Leader>l :call SwoopSelection()<CR>
-nmap <Leader>ml :call SwoopMulti()<CR>
-vmap <Leader>ml :call SwoopMultiSelection()<CR>
-
+nmap ül :call Swoop()<CR>
+vmap ül :call SwoopSelection()<CR>
+nmap üml :call SwoopMulti()<CR>
+vmap üml :call SwoopMultiSelection()<CR>
 
 " vimfiler file explorer
 let g:vimfiler_quick_look_command = 'qlmanage -p'
 " vimfiler
 "nnoremap <Leader>cd <Plug>(vimfiler_cd_file)
 "nnoremap gq <Plug>(vimfiler_quick_look)
-
-" preview enabled with "?" key
-" hidden by default due to 'right:50%:hidden'
-command! -bang -nargs=* Ag
-  \ call fzf#vim#ag(<q-args>,
-  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
-  \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \                 <bang>0)
-
-command! Files call fzf#run({
-\ 'source':     'fd . --color=never --hidden --type=file ' . getcwd(),
-\ 'sink':    'edit',
-\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\ 'down':    '40%' })
-
-" preview enabled with "?" key
-" hidden by default
-command! -bang -nargs=* Fr
-	\ call fzf#vim#grep(
-	\   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-	\   <bang>0 ? fzf#vim#with_preview('up:60%')
-	\           : fzf#vim#with_preview('right:50%:hidden', '?'),
-	\   <bang>0)
-
-command! Ffp call fzf#run({
-\ 'source':     'fd . --color=never --hidden --type=file ~/projects/study/js/vrp/ex/cyclejs_vrp/ex15/src/10_05/ ~/projects/itr/vrp/vrp_psk01/db/src/ ~/projects/itr/vrp_yuml2data01/template_data_model/',
-\ 'sink':    'edit',
-\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\ 'down':    '40%' })
-
-command! Ffs call fzf#run({
-\ 'source':     'fd . --color=never --hidden --type=file ~/projects/study/ /Users/mertnuhoglu/gdrive/mynotes /Users/mertnuhoglu/projects/itr /Users/mertnuhoglu/gdrive/mynotes/content ~/.vim/bundle',
-\ 'sink':    'edit',
-\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\ 'down':    '40%' })
-
-" @todo: doesn't work 
-command! -bang -nargs=* Frv
-	\ call fzf#vim#grep(
-	\   'frv '.shellescape(<q-args>), 1,
-	\   <bang>0 ? fzf#vim#with_preview('up:60%')
-	\           : fzf#vim#with_preview('right:50%:hidden', '?'),
-	\   <bang>0)
-
-" change theme
-" Override Colors command. You can safely do this in your .vimrc as fzf.vim
-" will not override existing commands.
-command! -bang Colors
-  \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
-
-" completion with fzf completion
-imap <c-x><c-k> <plug>(fzf-complete-word)
-imap <c-x><c-f> <plug>(fzf-complete-path)
-inoremap <expr> <plug>(fzf-complete-file-rg)     fzf#vim#complete#path('rg -l ""')
-imap <c-x><c-r> <plug>(fzf-complete-file-rg)
-"nmap <leader><tab> <plug>(fzf-maps-n)
-"imap <tab> <plug>(fzf-maps-i)
-
-" üd: jump to tag with fzf 
-nnoremap <leader>d :call fzf#vim#tags('^' . expand('<cword>'), {'options': '--exact --select-1 --exit-0 +i'})<CR>
 
 " netrw settings
 " https://shapeshed.com/vim-netrw/
@@ -1636,7 +1475,7 @@ function! Test5()
 endfun
 
 function! SwitchToNerdTree() 
-	" <url:/Users/mertnuhoglu/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#tn=function! SwitchToNerdTree()>
+	" <url:~/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#tn=function! SwitchToNerdTree()>
 	let bufid = bufwinnr("NERD_tree_*")
 	echo bufid
 	let current_bufid = bufwinnr("%")
@@ -1656,48 +1495,13 @@ function! SwitchToNerdTree()
 endfun
 command! SwitchToNerdTree call SwitchToNerdTree()
 
-" ~/.vim/bundle/fzf.vim/plugin/fzf.vim
-" taken from: ~/.vim/bundle/fzf.vim/autoload/fzf/vim.vim
-function! s:get_color(attr, ...)
-  let gui = has('termguicolors') && &termguicolors
-  let fam = gui ? 'gui' : 'cterm'
-  let pat = gui ? '^#[a-f0-9]\+' : '^[0-9]\+$'
-  for group in a:000
-    let code = synIDattr(synIDtrans(hlID(group)), a:attr, fam)
-    if code =~? pat
-      return code
-    endif
-  endfor
-  return ''
-endfunction
-let s:ansi = {'black': 30, 'red': 31, 'green': 32, 'yellow': 33, 'blue': 34, 'magenta': 35, 'cyan': 36}
-function! s:csi(color, fg)
-  let prefix = a:fg ? '38;' : '48;'
-  if a:color[0] == '#'
-    return prefix.'2;'.join(map([a:color[1:2], a:color[3:4], a:color[5:6]], 'str2nr(v:val, 16)'), ';')
-  endif
-  return prefix.'5;'.a:color
-endfunction
-function! s:ansi(str, group, default, ...)
-  let fg = s:get_color('fg', a:group)
-  let bg = s:get_color('bg', a:group)
-  let color = (empty(fg) ? s:ansi[a:default] : s:csi(fg, 1)) .
-        \ (empty(bg) ? '' : ';'.s:csi(bg, 0))
-  return printf("\x1b[%s%sm%s\x1b[m", color, a:0 ? ';1' : '', a:str)
-endfunction
-for s:color_name in keys(s:ansi)
-  execute "function! s:".s:color_name."(str, ...)\n"
-        \ "  return s:ansi(a:str, get(a:, 1, ''), '".s:color_name."')\n"
-        \ "endfunction"
-endfor
-
 function! CollectLineMarkTargetFile()
 	let g:target=win_getid(winnr())
 	normal mt
 endfunction
 command! CollectLineMarkTargetFile call CollectLineMarkTargetFile()
 function! CollectLine()
-	" <url:/Users/mertnuhoglu/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#tn=function! CollectLine()>
+	" <url:~/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#tn=function! CollectLine()>
 	" precondition: 
 	" call `CollectLineMarkTargetFile` in the target file
 	" mark `mt` the target location
@@ -1744,7 +1548,7 @@ function! Utl_AddressScheme_f(url, fragment, dispMode)
 	"   <url:f:$VRP_PSK_DIR/db/src/sample_data/reset.sql>
 	"   f:$VRP_PSK_DIR/db/src/sample_data/reset.sql
 	" opens: $VRP_PSK_DIR/db/src/sample_data/reset.sql
-	"let $VRP_PSK_DIR = '/Users/mertnuhoglu/codes/pg/vrp_psk'
+	"let $VRP_PSK_DIR = '~/codes/pg/vrp_psk'
 	"let path = '$VRP_PSK_DIR/db/src/sample_data/reset.sql'
 	let path = UtlUri_unescape( UtlUri_opaque(a:url) )
   echom path
@@ -1781,9 +1585,9 @@ function! CommentLines() range
   exe a:firstline.",".a:lastline."s/^/  ##> /"
 endfunction	
 command! -nargs=* -range CommentLines <line1>,<line2>call CommentLines()
-xnoremap <Leader>cl :call CommentLines()<CR>
-nnoremap <Leader>cl :call CommentLines()<CR>
-"nnoremap <Leader>cl :<c-u>call CommentLines()<CR>
+xnoremap ücl :call CommentLines()<CR>
+nnoremap ücl :call CommentLines()<CR>
+"nnoremap ücl :<c-u>call CommentLines()<CR>
 
 function! s:ConvertROutputToLines() range
   exe a:firstline.",".a:lastline."s/^ *\\[\\d\\+\\] //"
@@ -1942,7 +1746,6 @@ endfunction
 command! ConvertMarksTxt2MarksTsv call ConvertMarksTxt2MarksTsv()
 
 command! Convert2Unicode set bomb | set fileencoding=utf-8 <CR>
-command! P :pwd
 
 function! SurroundTagsWithBracketsAndQuotes()
 	" surround tags: with []
@@ -2230,7 +2033,7 @@ command! -nargs=1 RunExternalScriptC call RunExternalScript(<f-args>)
 
 function! TestFunc(...)
     "let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
-    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "~/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
     exe "lcd " . script_path
     let script_file = script_path . "links.out"
     exe "e " . script_file
@@ -2259,7 +2062,7 @@ vim.command("GetTags")
 endpython
     let current_path = getcwd()
     "let script_path = "c:\\projects\\cinar-agaci-01\\ari-kovani-01\\python-01\\text-01\\keynote_gtd_siniflandirma\\"
-    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "~/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
     exe "lcd " . script_path
     ! run.bat
     let myscriptfile = script_path . "script.txt"
@@ -2280,7 +2083,7 @@ command! GtdSiniflandirma call GtdSiniflandirmaFunc()
 
 function! ProduceScriptGtdSiniflandirma(script_file)
     "silent! let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
-    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "~/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
     silent! exe "lcd " . script_path
     "silent! ! run.bat
     " tags.out, links.out > tags_with_links.csv
@@ -2305,7 +2108,7 @@ function! GtdSiniflandirmaVim()
     " tags.in > tags.out
     silent! GtdSiniflandirmaVimUpdateTags
     "silent! let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
-    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "~/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
     silent! exe "lcd " . script_path
     " tags.out, links.out > tags_with_links.csv
     " tags_with_links.csv, template.txt > script.txt
@@ -2326,7 +2129,7 @@ endfunction
 
 function! GtdSiniflandirmaSubExtractNewTags()
     "silent! let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
-    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "~/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
     silent! exe "lcd " . script_path
     silent! exe "e tags"
     silent! $put = \"exe 'norm Go --- Unmatched Tags' \| \"
@@ -2352,7 +2155,7 @@ command! Test7 g/^>>\\+ \\+_\\([^ ]*\\) \\+.*/ s//\\1/ | +1d | -1pu='---'
 
 function! GtdSiniflandirmaVimUpdateTags()
     "let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
-    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "~/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
     exe "lcd " . script_path
     exe "e tags.in"
     %s/[: ,]/\r/g
@@ -2370,7 +2173,7 @@ command! GtdSiniflandirmaVimUpdateTags call GtdSiniflandirmaVimUpdateTags()
 
 function! GtdSiniflandirmaVimUpdateLinks()
     "let script_path = "c:/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
-    let script_path = "/Users/mertnuhoglu/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
+    let script_path = "~/Dropbox/projects/cinar/ari/python-01/text-01/keynote_gtd_siniflandirma/"
     exe "lcd " . script_path
     exe "e links.in"
     v/file:/d
@@ -2627,10 +2430,6 @@ function! s:Function(name)
   endif
 endfunction
 
-" skim commands
-command! -bang -nargs=* Ag2 call fzf#vim#ag_interactive(<q-args>, fzf#vim#with_preview('right:50%:hidden', 'alt-h'))
-command! -bang -nargs=* Rg2 call fzf#vim#rg_interactive(<q-args>, fzf#vim#with_preview('right:50%:hidden', 'alt-h'))
-
 
 function! MigrateRmdToHugo()
 	" remove curly braces like {bash}
@@ -2653,4 +2452,280 @@ endfunction
 
 command! MigrateRmdToHugo call MigrateRmdToHugo()
 
+" ergonomy: reaching key `w` is too hard in Turkish F keyboard
+nnoremap ö w
+nnoremap w yy
+
+": }}}
+
+": fzf {{{
+
+" # fzf functions
+" https://github.com/junegunn/fzf/wiki/Examples-(vim)
+
+" BLines override
+" taken from: <url:~/.vim/bundle/fzf.vim/autoload/fzf/vim.vim#tn=function! s:buffer_lines()>
+function! s:buffer_lines()
+  let linefmt = s:yellow(" %4d ", "LineNr")."\t%s"
+	echo linefmt
+  return map(getline(1, "$"), 'printf(linefmt, v:key + 1, v:val)')
+endfunction
+command! BLines2 call fzf#run({
+\ 'source':  s:buffer_lines(),
+\ 'sink':    'edit',
+\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\ 'down':    '40%' })
+command! BLines3 call fzf#vim#md_headers()
+
+command! FDigraph call fzf#run({
+\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/digraph_table_ref.tsv"),
+\ 'down':    '40%' })
+
+command! FIpaPhoneticSymbols call fzf#run({
+\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/ipa_phonetic_symbols.tsv"),
+\ 'down':    '40%' })
+
+command! FEmoji call fzf#run({
+\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/emoji_ref.md"),
+\ 'down':    '40%' })
+
+command! FUnicode call fzf#run({
+\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/unicode_table_ref.tsv"),
+\ 'down':    '40%' })
+
+" Select Buffer
+function! s:buflist()
+  redir => ls
+  silent ls
+  redir END
+  return split(ls, '\n')
+endfunction
+function! s:bufopen(e)
+  execute 'buffer' matchstr(a:e, '^[ 0-9]*')
+endfunction
+nnoremap <silent> <Leader><Enter> :call fzf#run({
+\   'source':  reverse(<sid>buflist()),
+\   'sink':    function('<sid>bufopen'),
+\ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\   'down':    '40%'
+\ })<CR>
+"\   'down':    len(<sid>buflist()) + 2
+
+function! MRU_LoadList()
+	return readfile(g:MRU_File)
+endfun
+command! Ehistoryvim exec 'e ' . g:MRU_File
+command! FZFTest call fzf#run({
+\ 'source':  readfile("/Users/mertnuhoglu/projects/study/js/vrp/cyclejs_vrp.Rmd"),
+\ 'down':    '40%' })
+command! FZFMru call fzf#run({
+\ 'source':  MRU_LoadList(),
+\ 'sink':    'edit',
+\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
+\ })
+command! FM FZFMru
+command! History FZFMru
+
+command! FZFRefVrp call fzf#run({
+\ 'source':  readfile("/Users/mertnuhoglu/projects/study/js/vrp/cyclejs_vrp.md"),
+\ 'down':    '40%' })
+command! Frv FZFRefVrp
+function! s:all_files()
+  return extend(
+  \ filter(copy(v:oldfiles),
+  \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
+  \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
+endfunction
+nnoremap ıı :FZFMru<CR>
+"nnoremap ııt :tabe<CR>:FZFMru<CR>
+"nnoremap ııs :wincmd s<CR>:FZFMru<CR>
+"nnoremap ııv :wincmd v<CR>:FZFMru<CR>
+"unmap ııt
+"unmap ııs
+"unmap ııv
+
+function! s:cdg(lines) 
+	exec 'cd ' . a:lines[0]
+endfunction
+command! FZFCdg call fzf#run({
+\ 'source':  readfile("/Users/mertnuhoglu/.cdg_paths"),
+\ 'sink*':   function('s:cdg'),
+\ 'down':    '40%' })
+command! Fcd FZFCdg
+command! Cdg FZFCdg
+function! s:all_files()
+  return extend(
+  \ filter(copy(v:oldfiles),
+  \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
+  \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
+endfunction
+
+" open buffers search
+command! Buffers call fzf#run(fzf#wrap({ 
+      \ 'source': map(range(1, bufnr('$')), 'bufname(v:val)'),
+			\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
+      \  }))
+nnoremap cb :Buffers<CR>
+
+" mdfind search
+command! -nargs=1 -bang Mdfind call fzf#run(fzf#wrap(
+      \ {'source': 'mdfind <q-args>', 'options': '-m'}, <bang>0))
+
+" Jump to tags
+"command! -bar Tags if !empty(tagfiles()) | call fzf#run({
+"\   'source': "sed '/^\\!/d;s/\t.*//' " . join(tagfiles()) . ' | uniq',
+"\   'sink':   'tag',
+"\ }) | else | echo 'Preparing tags' | call system('ctags -R') | FZFTag | endif
+
+" ~/.vim/bundle/fzf.vim/plugin/fzf.vim
+" taken from: /Users/mertnuhoglu/.vim/bundle/fzf.vim/autoload/fzf/vim.vim
+function! s:get_color(attr, ...)
+  let gui = has('termguicolors') && &termguicolors
+  let fam = gui ? 'gui' : 'cterm'
+  let pat = gui ? '^#[a-f0-9]\+' : '^[0-9]\+$'
+  for group in a:000
+    let code = synIDattr(synIDtrans(hlID(group)), a:attr, fam)
+    if code =~? pat
+      return code
+    endif
+  endfor
+  return ''
+endfunction
+let s:ansi = {'black': 30, 'red': 31, 'green': 32, 'yellow': 33, 'blue': 34, 'magenta': 35, 'cyan': 36}
+function! s:csi(color, fg)
+  let prefix = a:fg ? '38;' : '48;'
+  if a:color[0] == '#'
+    return prefix.'2;'.join(map([a:color[1:2], a:color[3:4], a:color[5:6]], 'str2nr(v:val, 16)'), ';')
+  endif
+  return prefix.'5;'.a:color
+endfunction
+function! s:ansi(str, group, default, ...)
+  let fg = s:get_color('fg', a:group)
+  let bg = s:get_color('bg', a:group)
+  let color = (empty(fg) ? s:ansi[a:default] : s:csi(fg, 1)) .
+        \ (empty(bg) ? '' : ';'.s:csi(bg, 0))
+  return printf("\x1b[%s%sm%s\x1b[m", color, a:0 ? ';1' : '', a:str)
+endfunction
+for s:color_name in keys(s:ansi)
+  execute "function! s:".s:color_name."(str, ...)\n"
+        \ "  return s:ansi(a:str, get(a:, 1, ''), '".s:color_name."')\n"
+        \ "endfunction"
+endfor
+
+" preview enabled with "?" key
+" hidden by default due to 'right:50%:hidden'
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>,
+  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+  \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \                 <bang>0)
+
+command! Files call fzf#run({
+\ 'source':     'fd . --color=never --hidden --type=file ' . getcwd(),
+\ 'sink':    'edit',
+\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\ 'down':    '40%' })
+
+" preview enabled with "?" key
+" hidden by default
+command! -bang -nargs=* Fr
+	\ call fzf#vim#grep(
+	\   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+	\   <bang>0 ? fzf#vim#with_preview('up:60%')
+	\           : fzf#vim#with_preview('right:50%:hidden', '?'),
+	\   <bang>0)
+
+command! Ffp call fzf#run({
+\ 'source':     'fd . --color=never --hidden --type=file ~/projects/study',
+\ 'sink':    'edit',
+\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\ 'down':    '40%' })
+
+command! Ffs call fzf#run({
+\ 'source':     'fd . --color=never --hidden --type=file ~/projects ~/gdrive/mynotes ~/gdrive/mynotes/content ~/.vim/bundle',
+\ 'sink':    'edit',
+\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\ 'down':    '40%' })
+
+" @todo: doesn't work 
+command! -bang -nargs=* Frv
+	\ call fzf#vim#grep(
+	\   'frv '.shellescape(<q-args>), 1,
+	\   <bang>0 ? fzf#vim#with_preview('up:60%')
+	\           : fzf#vim#with_preview('right:50%:hidden', '?'),
+	\   <bang>0)
+
+" change theme
+" Override Colors command. You can safely do this in your .vimrc as fzf.vim
+" will not override existing commands.
+command! -bang Colors
+  \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
+
+" completion with fzf completion
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+inoremap <expr> <plug>(fzf-complete-file-rg)     fzf#vim#complete#path('rg -l ""')
+imap <c-x><c-r> <plug>(fzf-complete-file-rg)
+"nmap <leader><tab> <plug>(fzf-maps-n)
+"imap <tab> <plug>(fzf-maps-i)
+
+" üd: jump to tag with fzf 
+nnoremap üd :call fzf#vim#tags('^' . expand('<cword>'), {'options': '--exact --select-1 --exit-0 +i'})<CR>
+
+": }}}
+
+": spacemacs vim-which-key {{{
+nnoremap <leader>cp :Cpp<cr>
+command! P :pwd
+nnoremap <leader>pp :pwd<cr>
+nnoremap <leader>cd :lcd %:h<CR>:pwd<CR>
+
+" split window
+nnoremap <silent> <leader>ıv :wincmd v<cr>:wincmd l<cr>
+nnoremap <silent> <leader>ıs :wincmd s<cr>:wincmd j<cr>
+
+" Close others
+nnoremap <silent> <leader>ıo :wincmd o<cr>
+
+" Move the cursor to the window left of the current one
+" kmly
+nnoremap <silent> <leader>ık :wincmd h<cr>
+nnoremap <silent> <leader>ım :wincmd j<cr>
+nnoremap <silent> <leader>ıl :wincmd k<cr>
+nnoremap <silent> <leader>ıy :wincmd l<cr>
+nnoremap <silent> <leader>ıt :tabedit<cr>
+
+nnoremap <silent> <leader>üa :wincmd =<cr>
+
+" fzf
+nnoremap <leader>cb :Buffers<cr>
+nnoremap <leader>cl :Files<cr>
+nnoremap <leader>cm :Commands<cr>
+nnoremap <leader>cw :Windows<cr>
+
+nnoremap <leader>czm :FZFMru<CR>
+nnoremap <leader>czd :FDigraph<cr>
+nnoremap <leader>czi :FIpaPhoneticSymbols<cr>
+nnoremap <leader>cze :FEmoji<cr>
+nnoremap <leader>czu :FUnicode<cr>
+nnoremap <leader>czd :FDigraph<cr>
+
+" toggle full screen for window
+" https://stackoverflow.com/a/15584901/29246
+nnoremap ütt :tab split<CR>
+nnoremap üto :tabonly<CR>
+nnoremap <leader>ütt :tab split<CR>
+nnoremap <leader>üto :tabonly<CR>
+nnoremap üte :tabe<CR>
+nnoremap <leader>üte :tabe<CR>
+
+" surround
+nnoremap <leader>üsq :Swdq<CR>
+nnoremap <leader>üst :Swq<CR>
+nnoremap <leader>üsb :Swb<CR>
+nnoremap <leader>üss :SurroundWithBackQuotesUntilSpace<CR>
+nnoremap <leader>ürc :ReplaceWithCloze<CR>
+nnoremap <leader>ürc :ReplaceWithCloze2<CR>
+
+": }}}
 
