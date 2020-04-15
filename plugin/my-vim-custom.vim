@@ -69,9 +69,11 @@ nnoremap <silent> ıgk <C-W>H
 nnoremap <silent> ıgm <C-W>J
 
 " cd to the directory containing the file in the buffer
-nmap  ,cd :lcd %:h<CR>:pwd<CR>
-command! Cdd :lcd %:h
 function! ChangeCurrentDirectory()
+	let path = expand("%:p:h")
+	let path = substitute(path, "/Users/mertnuhoglu", "\\~", "")
+	let path = substitute(path, "Dropbox (Personal)", "Dropbox", "")
+	let @* = path
 	lcd %:h
 	pwd
 endfunction
@@ -2675,10 +2677,9 @@ nnoremap üd :call fzf#vim#tags('^' . expand('<cword>'), {'options': '--exact --
 ": }}}
 
 ": spacemacs vim-which-key {{{
-nnoremap <leader>cp :Cpp<cr>
 command! P :pwd
 nnoremap <leader>pp :pwd<cr>
-nnoremap <leader>cd :lcd %:h<CR>:pwd<CR>
+nnoremap <leader>cd :ChangeCurrentDirectory<CR>
 
 " split window
 nnoremap <silent> <leader>ıv :wincmd v<cr>:wincmd l<cr>
