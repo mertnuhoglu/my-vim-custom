@@ -504,6 +504,8 @@ command! EDocSipa e ~/gdrive/mynotes/prj/sipa/doc_sipa.md
 command! Edsipa EDocSipa
 command! Eds EDocSipa
 command! Ecmmdict e $CMMIMY/logbook/dictionary_cmmi.md
+command! Ecmmpascal e $CMMIMY/logbook/agenda_pascal.md
+command! Ecmmstudy e $CMMIMY/logbook/study_cmmi_summary_20200415.otl
 
 " vim scripts
 command! EMyVimCustom e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
@@ -1023,6 +1025,17 @@ EOF
 return result
 endfunction
 
+function! Elvlbook()
+  " opens lvlbook of today
+  " goal:
+  " Evb -> 
+  " e ~/projects/study/lvlbook/2017-11-27.md"
+  let cmd = 'e ~/projects/study/lvlbook/lvl_' . strftime("%Y%m%d") . '.md'
+  echo cmd
+  execute cmd
+endfunction
+command! Evb call Elvlbook()
+
 function! Elogbook()
   " opens logbook of today
   " goal:
@@ -1105,7 +1118,7 @@ function! ElogbookCmmi()
   " goal:
   " Elb -> 
   " e ~/projects/study/logbook/2017-11-27.md"
-  let cmd = 'e ' . $CMMIMY . '/log_cmmi_' . strftime("%Y%m%d") . '.md'
+  let cmd = 'e ' . $CMMIMY . '/logbook/log_cmmi_' . strftime("%Y%m%d") . '.md'
   echo cmd
   execute cmd
 endfunction
@@ -1134,6 +1147,7 @@ nnoremap üst :Swq<CR>
 nnoremap ss :Swq<CR>
 " surround with back quotes visual selected area: üst
 vnoremap üst <Esc>`>a`<Esc>`<i`<Esc>
+vnoremap üsq <Esc>`>a"<Esc>`<i"<Esc>
 vnoremap ss <Esc>`>a`<Esc>`<i`<Esc>
 vnoremap qq <Esc>`>a'<Esc>`<i'<Esc>
 command! SurroundWithBrackets normal viwS]e
@@ -1366,8 +1380,10 @@ command! Snw set nowrap
 command! Syw set wrap
 
 " tab navigation
-nnoremap H gT
-nnoremap L gt
+"nnoremap H gT
+"nnoremap L gt
+nnoremap E gT
+nnoremap R gt
 
 function! ConvertIsoCharsInUtf8()
 	silent! %s/Ä±/ı/g 
@@ -1406,6 +1422,16 @@ function! ConvertIsoCharsInUtf8()
 	silent! %s/Â\%x97//g
 	silent! %s/Ã¢/a/g
 	silent! %s/Ã®/i/g
+	silent! %s/ü/ü/g
+	silent! %s/ü/ü/g
+	silent! %s/ş/ş/g
+	silent! %s/ğ/ğ/g
+	silent! %s/ö/ö/g
+	silent! %s/ç/ç/g
+	silent! %s/Ç/Ç/g
+	silent! %s/Ü/Ü/g
+	silent! %s/Ş/Ş/g
+	silent! %s/Ö/Ö/g
 endfun
 command! ConvertIsoCharsInUtf8 call ConvertIsoCharsInUtf8()
 
@@ -2722,11 +2748,13 @@ nnoremap <leader>üte :tabe<CR>
 
 " surround
 nnoremap <leader>üsq :Swdq<CR>
+vnoremap <leader>üsq :Swdq<CR>
 nnoremap <leader>üst :Swq<CR>
 nnoremap <leader>üsb :Swb<CR>
 nnoremap <leader>üss :SurroundWithBackQuotesUntilSpace<CR>
 nnoremap <leader>ürc :ReplaceWithCloze<CR>
 nnoremap <leader>ürc :ReplaceWithCloze2<CR>
 
+nnoremap <leader>tn :ColorSchemeBrowse<CR>
 ": }}}
 
