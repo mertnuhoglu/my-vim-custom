@@ -263,7 +263,6 @@ function! Resize(dir)
     return ""
   endif
 endfunction
-" /*}}}*/ 
 
 if exists(":Tabularize")
   nmap üa= :Tabularize /=<CR>   
@@ -506,6 +505,7 @@ command! Eds EDocSipa
 command! Ecmmdict e $CMMIMY/logbook/dictionary_cmmi.md
 command! Ecmmpascal e $CMMIMY/logbook/agenda_pascal.md
 command! Ecmmstudy e $CMMIMY/logbook/study_cmmi_summary_20200415.otl
+command! Ecmmideas e $CMMIMY/logbook/ideas_cmmi.md
 
 " vim scripts
 command! EMyVimCustom e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
@@ -1118,7 +1118,7 @@ function! ElogbookCmmi()
   " goal:
   " Elb -> 
   " e ~/projects/study/logbook/2017-11-27.md"
-  let cmd = 'e ' . $CMMIMY . '/logbook/log_cmmi_' . strftime("%Y%m%d") . '.md'
+  let cmd = 'e ' . $CMMIMY . '/logbook/' . strftime("%Y%m%d") . '_log_cmmi.md'
   echo cmd
   execute cmd
 endfunction
@@ -1159,6 +1159,10 @@ command! ReplaceWithCloze normal viwc[...]
 nnoremap ürc :ReplaceWithCloze<CR>
 command! ReplaceWithCloze2 normal vt c[...]
 nnoremap ürt :ReplaceWithCloze2<CR>
+
+" surround with * for markdown
+nnoremap üse viws**<c-r>***
+vnoremap üse s**<c-r>***<esc>
 "nnoremap w e
 "nnoremap e w
 "onoremap ie iw
@@ -1432,6 +1436,8 @@ function! ConvertIsoCharsInUtf8()
 	silent! %s/Ü/Ü/g
 	silent! %s/Ş/Ş/g
 	silent! %s/Ö/Ö/g
+	silent! %s/İ/İ/g
+	silent! %s//\r/g
 endfun
 command! ConvertIsoCharsInUtf8 call ConvertIsoCharsInUtf8()
 
@@ -1944,6 +1950,35 @@ function! DoPrettyXML()
   exe "set ft=" . l:origft
 endfunction
 command! PrettyXML call DoPrettyXML()
+
+function! MdBold()
+  " save the filetype so we can restore it later
+  let l:origft = &ft
+  set ft=
+  " delete the xml header if it exists. This will
+  " permit us to surround the document with fake tags
+  " without creating invalid xml.
+  1s/<?xml .*?>//e
+  " insert fake tags around the entire document.
+  " This will permit us to pretty-format excerpts of
+  " XML that may contain multiple top-level elements.
+  0put ='<PrettyXML>'
+  $put ='</PrettyXML>'
+  silent %!xmllint --encode UTF-8 --format -
+  " xmllint will insert an <?xml?> header. it's easy enough to delete
+  " if you don't want it.
+  " delete the fake tags
+  2d
+  $d
+  " restore the 'normal' indentation, which is one extra level
+  " too deep due to the extra tags we wrapped around the document.
+  silent %<
+  " back to home
+  1
+  " restore the filetype
+  exe "set ft=" . l:origft
+endfunction
+command! MdBold call MdBold()
 
 fun! MyFeed(feed)
 split
@@ -2702,7 +2737,7 @@ nnoremap üd :call fzf#vim#tags('^' . expand('<cword>'), {'options': '--exact --
 
 ": }}}
 
-": spacemacs vim-which-key {{{
+": compatible keybindings: vim vs spacemacs vim-which-key {{{
 command! P :pwd
 nnoremap <leader>pp :pwd<cr>
 nnoremap <leader>cd :ChangeCurrentDirectory<CR>
@@ -2756,5 +2791,8 @@ nnoremap <leader>ürc :ReplaceWithCloze<CR>
 nnoremap <leader>ürc :ReplaceWithCloze2<CR>
 
 nnoremap <leader>tn :ColorSchemeBrowse<CR>
+
+nnoremap <leader>üha :QuickhlManualAdd 
+
 ": }}}
 
