@@ -173,10 +173,10 @@ nnoremap <silent> üll :call ToggleList("Location List", 'l')<CR>
 
 " mnemonics c = command
 " mnemonics: c command, m mand
-nnoremap cm :Commands<cr>
+"nnoremap cm :Commands<cr>
 " mnemonics: cl = ls = Files
-nnoremap cl :Files<cr>
-nnoremap cw :Windows<cr>
+"nnoremap cl :Files<cr>
+"nnoremap cw :Windows<cr>
 nnoremap cnt :SwitchToNerdTree<cr>
 " mnemonics: c command, nt nerdtree
 nnoremap cnf :NERDTreeFind<cr>
@@ -335,6 +335,7 @@ command! CdVim cd $HOME/.vim | :pwd
 command! CdScripts cd '$HOME/projects/scripts' | :pwd
 command! CdKeynote cd $KEYNOTE | :pwd
 command! CdProjects cd $PROJECTS | :pwd
+command! Cdp CdProjects
 " copy file name to system clipboard
 "command! CdNotationalData cd $NOTATIONALDATA
 "let $STUDY = '$HOME/projects/study'
@@ -391,8 +392,12 @@ command! EIndexNotes e $HOME/gdrive/mynotes/index_notes.otl
 command! EActivities e $MYNOTES/activities.otl
 
 " mynotes/content/ files
-command! ERefMd e $MYNOTES/content/ref.md
-command! Erm ERefMd 
+command! Erefcard e $STUDY/other/refcard.otl
+command! Erc Erefcard 
+command! Erefcardarchive e $STUDY/other/refcard_archive.otl
+command! Ercar Erefcardarchive
+command! Erclojure e $STUDY/clj/refcard_clojure.otl
+command! Ercl Erclojure
 command! EArticlesR e ~/gdrive/mynotes/content/articles/articles_r.md
 command! Ear EArticlesR 
 command! EArticlesJs e ~/gdrive/mynotes/content/articles/articles_js.md
@@ -452,7 +457,7 @@ command! Eeb EExamplesBash
 command! EStudyR e ~/projects/study/r/study_r.Rmd
 command! Esr EStudyR 
 command! EStudyShiny e ~/projects/study/r/shiny/study_shiny.Rmd
-command! Ess EStudyShiny
+command! Essh EStudyShiny
 command! EExamplesR e ~/projects/study/r/examples_r.Rmd
 command! Eer EExamplesR 
 command! EStudyJs e ~/projects/study/js/study_js.Rmd
@@ -475,6 +480,10 @@ command! EStudyVrp e ~/projects/itr/vrp/vrp_doc/study/study_vrp.Rmd
 command! Esvrp EStudyVrp
 command! Erefbookmarks e ~/projects/study/code/refbookmarks.md
 command! Erb Erefbookmarks
+command! EStudySpacemacs e ~/projects/study/emacs/study_spacemacs.md
+command! Ess EStudySpacemacs
+command! EStudyIntellij e ~/projects/study/code/study_intellij.md
+command! Esij EStudyIntellij
 
 " prj/ files  
 command! ENotesNhv e ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/notes_nhv.md
@@ -504,8 +513,11 @@ command! Edsipa EDocSipa
 command! Eds EDocSipa
 command! Ecmmdict e $CMMIMY/logbook/dictionary_cmmi.md
 command! Ecmmpascal e $CMMIMY/logbook/agenda_pascal.md
+command! Ecmp Ecmmpascal
 command! Ecmmstudy e $CMMIMY/logbook/study_cmmi_summary_20200415.otl
+command! Ecms Ecmmstudy
 command! Ecmmideas e $CMMIMY/logbook/ideas_cmmi.md
+command! Ecmid Ecmmideas
 
 " vim scripts
 command! EMyVimCustom e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
@@ -837,7 +849,7 @@ endfunction
 command! OpenMinimal call OpenMinimal()
 
 function! OpenRef()
-  ERefMd
+  Erefcard
   tabnew
   Epstuff
   tabnew
@@ -1069,17 +1081,6 @@ function! ElogbookVrpr()
 endfunction
 command! Elbvrpr call ElogbookVrpr()
 
-function! ElogbookBzq()
-  " opens logbook of today
-  " goal:
-  " Elb -> 
-  " e ~/projects/study/logbook/2017-11-27.md"
-  let cmd = 'e ' . $BQdatarun . '/datarun/log_bzq_' . strftime("%Y%m%d") . '.md'
-  echo cmd
-  execute cmd
-endfunction
-command! Elbbzq call ElogbookBzq()
-
 function! ElogbookMyr()
   " opens logbook of today
   " goal:
@@ -1161,7 +1162,10 @@ command! ReplaceWithCloze2 normal vt c[...]
 nnoremap ürt :ReplaceWithCloze2<CR>
 
 " surround with * for markdown
+command! SurroundWithMdBold normal viwS*wviwS*
 nnoremap üse viws**<c-r>***
+" @todo
+nnoremap üsf :SurroundWithMdBold 
 vnoremap üse s**<c-r>***<esc>
 "nnoremap w e
 "nnoremap e w
@@ -2599,7 +2603,7 @@ function! s:all_files()
   \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
   \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
 endfunction
-nnoremap ıı :FZFMru<CR>
+"nnoremap ıı :FZFMru<CR>
 "nnoremap ııt :tabe<CR>:FZFMru<CR>
 "nnoremap ııs :wincmd s<CR>:FZFMru<CR>
 "nnoremap ııv :wincmd v<CR>:FZFMru<CR>
@@ -2628,7 +2632,7 @@ command! Buffers call fzf#run(fzf#wrap({
       \ 'source': map(range(1, bufnr('$')), 'bufname(v:val)'),
 			\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
       \  }))
-nnoremap cb :Buffers<CR>
+"nnoremap cb :Buffers<CR>
 
 " mdfind search
 command! -nargs=1 -bang Mdfind call fzf#run(fzf#wrap(
@@ -2737,10 +2741,11 @@ nnoremap üd :call fzf#vim#tags('^' . expand('<cword>'), {'options': '--exact --
 
 ": }}}
 
-": compatible keybindings: vim vs spacemacs vim-which-key {{{
+": compatible keybindings: vim vs spacemacs vim-which-key id=g_11007 {{{ 
+nnoremap <leader>cds :Cdstudy<CR>
 command! P :pwd
 nnoremap <leader>pp :pwd<cr>
-nnoremap <leader>cd :ChangeCurrentDirectory<CR>
+nnoremap <leader>cd. :ChangeCurrentDirectory<CR>
 
 " split window
 nnoremap <silent> <leader>ıv :wincmd v<cr>:wincmd l<cr>
@@ -2759,11 +2764,13 @@ nnoremap <silent> <leader>ıt :tabedit<cr>
 
 nnoremap <silent> <leader>üa :wincmd =<cr>
 
-" fzf
-nnoremap <leader>cb :Buffers<cr>
-nnoremap <leader>cl :Files<cr>
-nnoremap <leader>cm :Commands<cr>
-nnoremap <leader>cw :Windows<cr>
+" fzf spacemacs
+nnoremap <leader>fb :Buffers<cr>
+nnoremap <leader>ff :Files<cr>
+nnoremap <leader>fc :Commands<cr>
+nnoremap <leader>fw :Windows<cr>
+nnoremap <leader>fm :Marks<cr>
+nnoremap <leader>fl :BLines<cr>
 
 nnoremap <leader>czm :FZFMru<CR>
 nnoremap <leader>czd :FDigraph<cr>
@@ -2793,6 +2800,7 @@ nnoremap <leader>ürc :ReplaceWithCloze2<CR>
 nnoremap <leader>tn :ColorSchemeBrowse<CR>
 
 nnoremap <leader>üha :QuickhlManualAdd 
+
 
 ": }}}
 
