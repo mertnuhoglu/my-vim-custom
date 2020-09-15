@@ -2,6 +2,13 @@
 
 ": all {{{
 
+" spell check
+autocmd BufRead,BufNewFile *.md setlocal spell
+autocmd BufRead,BufNewFile *.otl setlocal spell
+autocmd BufRead,BufNewFile *.txt setlocal spell
+" word completion with ^N ^P
+set complete+=kspell
+
 " naming conventions for custom commands:
 " Put
 " Convert
@@ -16,6 +23,7 @@
 
 let $MYNOTES = '~/gdrive/mynotes/'
 let $MYREPO = '~/projects/myrepo'
+let $LAYERMARK = '~/projects/myrepo/prj/lym'
 
 command! Ezshrc e ~/.zshrc
 
@@ -356,6 +364,7 @@ let $NHV = '$NHV'
 let $CMMI = '$CMMI'
 let $CMMIC = '$CMMIC'
 let $CMMIMY = '$CMMIMY'
+command! Cdfulcro cd /Users/mertnuhoglu/codes/clojure/fulcro/tutorial_tags | :pwd
 command! Cdcmmi cd $CMMIMY | :pwd
 command! Cdbtgcmmi :Cdcmmi
 command! Cdmn cd $MYNOTES | :pwd
@@ -379,7 +388,7 @@ command! Cdbzq cd $BIZQUALIFY | :pwd
 command! Cdbdr cd $BQdatarun | :pwd
 command! Cdbq cd $BigQuery | :pwd
 command! Cdbw Cdbzqwebapp | :pwd
-command! Cdbyr cd $MYREPO | :pwd
+command! Cdmyr cd $MYREPO | :pwd
 command! EDersHaftalik :e "$HOME/gdrive/Apps/Notational Data/ders_ozne_ben_nesne/haftalik_ders.otl"
 
 " E commands
@@ -387,6 +396,7 @@ command! EDersHaftalik :e "$HOME/gdrive/Apps/Notational Data/ders_ozne_ben_nesne
 " mynotes/ files
 command! EStuff e $MYREPO/stuff.otl
 command! Est EStuff
+command! Eknwl e $MYREPO/knwl.otl
 command! TStuff tabnew | b stuff.otl
 command! EIndexNotes e $HOME/gdrive/mynotes/index_notes.otl
 command! EActivities e $MYNOTES/activities.otl
@@ -511,13 +521,14 @@ command! Ens ENotesSipa
 command! EDocSipa e ~/gdrive/mynotes/prj/sipa/doc_sipa.md
 command! Edsipa EDocSipa
 command! Eds EDocSipa
-command! Ecmmdict e $CMMIMY/logbook/dictionary_cmmi.md
-command! Ecmmpascal e $CMMIMY/logbook/agenda_pascal.md
-command! Ecmp Ecmmpascal
-command! Ecmmstudy e $CMMIMY/logbook/study_cmmi_summary_20200415.otl
-command! Ecms Ecmmstudy
-command! Ecmmideas e $CMMIMY/logbook/ideas_cmmi.md
-command! Ecmid Ecmmideas
+command! Ecmdict e $CMMIMY/logbook/dictionary_cmmi.tsv
+command! Ecmpascal e $CMMIMY/logbook/agenda_pascal.md
+command! Ecmp Ecmpascal
+command! Ecmstudy e $CMMIMY/logbook/study_cmmi_summary_20200415.otl
+command! Ecms Ecmstudy
+command! Ecmideas e $CMMIMY/logbook/ideas_cmmi.md
+command! Ecmid Ecmideas
+command! Ecmmpm e $CMMIMY/logbook/study_mpm.otl
 
 " vim scripts
 command! EMyVimCustom e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
@@ -620,7 +631,8 @@ endfunction
 
 ia tst testing
 
-" join symbol digraph2
+" mathematical symbols digraph id=g_11564
+" join 
 " ⨝ 
 digraphs Jn 10781
 " ⨯ cross
@@ -1091,6 +1103,17 @@ function! ElogbookMyr()
   execute cmd
 endfunction
 command! Elbmyr call ElogbookMyr()
+
+function! ElogbookLym()
+  " opens logbook of today
+  " goal:
+  " Elb -> 
+  " e ~/projects/study/logbook/2017-11-27.md"
+  let cmd = 'e ' . $LAYERMARK . '/logbook/log_lym_' . strftime("%Y%m%d") . '.md'
+  echo cmd
+  execute cmd
+endfunction
+command! Elblym call ElogbookLym()
 
 function! ElogbookKns()
   " opens logbook of today
@@ -1618,6 +1641,11 @@ command! -bar DuplicateTabpane
       \   let &sessionoptions = s:sessionoptions |
       \   unlet! s:file s:sessionoptions |
       \ endtry
+
+function! InsertBullets() range
+  exe a:firstline.",".a:lastline."s/^/- /"
+endfunction
+command! -nargs=* -range InsertBullets <line1>,<line2>call InsertBullets()
 
 function! CommentLines() range
   exe a:firstline.",".a:lastline."s/^/  ##> /"
@@ -2544,22 +2572,6 @@ command! BLines2 call fzf#run({
 \ 'down':    '40%' })
 command! BLines3 call fzf#vim#md_headers()
 
-command! FDigraph call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/digraph_table_ref.tsv"),
-\ 'down':    '40%' })
-
-command! FIpaPhoneticSymbols call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/ipa_phonetic_symbols.tsv"),
-\ 'down':    '40%' })
-
-command! FEmoji call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/emoji_ref.md"),
-\ 'down':    '40%' })
-
-command! FUnicode call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/unicode_table_ref.tsv"),
-\ 'down':    '40%' })
-
 " Select Buffer
 function! s:buflist()
   redir => ls
@@ -2568,7 +2580,8 @@ function! s:buflist()
   return split(ls, '\n')
 endfunction
 function! s:bufopen(e)
-  execute 'buffer' matchstr(a:e, '^[ 0-9]*')
+	execute 'buffer' matchstr(a:e, '^[ 0-9]*')
+	"echo a:e
 endfunction
 nnoremap <silent> <Leader><Enter> :call fzf#run({
 \   'source':  reverse(<sid>buflist()),
@@ -2576,7 +2589,54 @@ nnoremap <silent> <Leader><Enter> :call fzf#run({
 \ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
 \   'down':    '40%'
 \ })<CR>
-"\   'down':    len(<sid>buflist()) + 2
+
+function! s:ExtractUnicode(s)
+	" call ExtractUnicode("22   ϊ       j*      03CA    0970    GREEK SMALL LETTER IOTA WITH DIALYTIKA")
+	" ->
+	" ϊ
+	let t = substitute(a:s, "^[ 0-9]*", "", "")
+	let result = substitute(t, "\\s\\+.*", "", "")
+	echo result
+	exe "normal! a" . result . "\<Esc>"
+	return result
+endfunction
+command! FDigraph call fzf#run({
+\   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/digraph_table_ref.tsv"),
+\   'sink':    function('<sid>ExtractUnicode'),
+\ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\   'down':    '40%'
+\ })
+command! FUnicode call fzf#run({
+\   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/unicode_table_ref.tsv"),
+\   'sink':    function('<sid>ExtractUnicode'),
+\ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\   'down':    '40%'
+\ })
+
+command! FMarks :Marks
+command! FHelptags :Helptags
+command! FCommits :Commits
+
+function! s:ExtractEmoji(s)
+	" call ExtractEmoji("💴		(yen)  ")
+	" ->
+	" 💴
+	let t = substitute(a:s, "^\\s*", "", "")
+	let result = substitute(t, "\\s\\+.*", "", "")
+	echo result
+	exe "normal! a" . result . "\<Esc>"
+	return result
+endfunction
+command! FEmoji call fzf#run({
+\   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/emoji_ref.md"),
+\   'sink':    function('<sid>ExtractEmoji'),
+\   'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\   'down':    '40%' })
+command! FIpaPhoneticSymbols call fzf#run({
+\   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/ipa_phonetic_symbols.tsv"),
+\   'sink':    function('<sid>ExtractEmoji'),
+\   'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\   'down':    '40%' })
 
 function! MRU_LoadList()
 	return readfile(g:MRU_File)
@@ -2742,6 +2802,14 @@ nnoremap üd :call fzf#vim#tags('^' . expand('<cword>'), {'options': '--exact --
 ": }}}
 
 ": compatible keybindings: vim vs spacemacs vim-which-key id=g_11007 {{{ 
+
+" next/prev tab (buffer)
+nnoremap <leader>bn gt
+nnoremap <leader>bp gT
+
+" toggle spell check
+nnoremap <leader>tS :setlocal spell! spelllang=en_us<CR>
+
 nnoremap <leader>cds :Cdstudy<CR>
 command! P :pwd
 nnoremap <leader>pp :pwd<cr>
@@ -2765,15 +2833,16 @@ nnoremap <silent> <leader>ıt :tabedit<cr>
 nnoremap <silent> <leader>üa :wincmd =<cr>
 
 " fzf spacemacs
-nnoremap <leader>fb :Buffers<cr>
+nnoremap <leader>bb :Buffers<cr>
 nnoremap <leader>ff :Files<cr>
 nnoremap <leader>fc :Commands<cr>
 nnoremap <leader>fw :Windows<cr>
 nnoremap <leader>fm :Marks<cr>
 nnoremap <leader>fl :BLines<cr>
+nnoremap <leader>fr :FZFMru<CR>
 
-nnoremap <leader>czm :FZFMru<CR>
 nnoremap <leader>czd :FDigraph<cr>
+inoremap :czd <C-o>:FDigraph<cr>
 nnoremap <leader>czi :FIpaPhoneticSymbols<cr>
 nnoremap <leader>cze :FEmoji<cr>
 nnoremap <leader>czu :FUnicode<cr>
@@ -2803,4 +2872,78 @@ nnoremap <leader>üha :QuickhlManualAdd
 
 
 ": }}}
+
+function! ConvertPIID2Normalize()
+	g/^\d\+\t\+$/d
+	g/^\t\+/d
+	g/^SG\|PF\|GG/d
+	g/^SP\|GP/norm >>>>
+endfunction
+
+function! ConvertPIID_PA() " id=g_11462
+	" input:
+	" 		SP1.1	Establish and maintain measurement objectives derived from identified information needs and objectives.
+	" 1	MADIOS_Ölçüm Planı
+	" 2	YBS/YPTS_Ölçüm Planı
+	" 		SP1.2	Specify measures to address measurement objectives.
+	" output:
+	" 		SP1.1	Establish and maintain measurement objectives derived from identified information needs and objectives.
+	" SP1.1	1	MADIOS_Ölçüm Planı
+	" SP1.1	2	YBS/YPTS_Ölçüm Planı
+	" 		SP1.2	Specify measures to address measurement objectives.
+	/\<\(SP\|GP\)
+	?\<\(SP\|GP\)
+	norm! "uy3e
+	norm! j
+	norm! ma
+	/\<\(SP\|GP\)
+	norm! k
+	norm! mb
+	execute ":'a,'b s/^/" . @u . "\t/"
+	norm! j0
+endfunction
+
+function! ConvertFillDown() " id=g_11596
+	" fill down empty rows like excel
+	"
+  " input:
+  " 
+  " ```tsv
+  " ORG
+  " 
+  " P1
+  " P2
+  " 
+  " 
+  " P1
+  " ```
+  " 
+  " output:
+  " 
+  " ```tsv
+  " ORG
+  " ORG
+  " P1
+  " P2
+  " P2
+  " P2
+  " P1
+  " ```
+	/^.
+	?^.
+	norm! "uy$
+	norm! ma
+	/^.
+	norm! mb
+	execute ":'a,'b v/^./ s/^/" . @u
+endfunction
+command! ConvertFillDown :call ConvertFillDown()
+
+function! Test()
+	g/mertnuhoglu/d
+	g/Public/d
+	g/hrs ago/d
+	g/theodore/norm d4j
+	g/^\s*$/,/./-j
+endfunction
 
