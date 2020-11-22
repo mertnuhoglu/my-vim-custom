@@ -3,9 +3,10 @@
 ": all {{{
 
 " spell check
-autocmd BufRead,BufNewFile *.md setlocal spell
-autocmd BufRead,BufNewFile *.otl setlocal spell
-autocmd BufRead,BufNewFile *.txt setlocal spell
+autocmd BufRead,BufNewFile *.md setlocal nospell
+autocmd BufRead,BufNewFile *.otl setlocal nospell
+autocmd BufRead,BufNewFile *.txt setlocal nospell
+set nospell
 " word completion with ^N ^P
 set complete+=kspell
 
@@ -23,7 +24,7 @@ set complete+=kspell
 
 let $MYNOTES = '~/gdrive/mynotes/'
 let $MYREPO = '~/projects/myrepo'
-let $LAYERMARK = '~/projects/myrepo/prj/lym'
+let $LAYERMARK = '/Users/mertnuhoglu/projects/lym/lym'
 
 command! Ezshrc e ~/.zshrc
 
@@ -45,6 +46,7 @@ nnoremap <silent> ım :wincmd j<cr>
 nnoremap <silent> ıl :wincmd k<cr>
 nnoremap <silent> ıy :wincmd l<cr>
 nnoremap <silent> ıt :tabedit<cr>
+"nnoremap  BB :wincmd w<cr>
 map <silent> <A-k> :wincmd h<cr>
 map <silent> <A-m> :wincmd j<cr>
 map <silent> <A-l> :wincmd k<cr>
@@ -272,26 +274,6 @@ function! Resize(dir)
   endif
 endfunction
 
-if exists(":Tabularize")
-  nmap üa= :Tabularize /=<CR>   
-  vmap üa= :Tabularize /=<CR>
-  nmap üa: :Tabularize /:\zs<CR>   
-  vmap üa: :Tabularize /:\zs<CR>
-endif
-
-function! s:align()
-  let p = '^\s*|\s.*\s|\s*$'
-  if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
-    let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
-    let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
-    Tabularize/|/l1
-    normal! 0
-    call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
-  endif
-endfunction
-
-" Table alignment. aligns = | etc.
-inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
 " underline using dashes automatically
 " Underline the current line with dashes in normal mode
 nnoremap <Leader>u yyp<c-v>$r-
@@ -389,62 +371,68 @@ command! Cdbdr cd $BQdatarun | :pwd
 command! Cdbq cd $BigQuery | :pwd
 command! Cdbw Cdbzqwebapp | :pwd
 command! Cdmyr cd $MYREPO | :pwd
-command! EDersHaftalik :e "$HOME/gdrive/Apps/Notational Data/ders_ozne_ben_nesne/haftalik_ders.otl"
+command! Edershaftalik :e "$HOME/gdrive/Apps/Notational Data/ders_ozne_ben_nesne/haftalik_ders.otl"
 
 " E commands
 
 " mynotes/ files
-command! EStuff e $MYREPO/stuff.otl
-command! Est EStuff
+command! Estuff e $MYREPO/stuff.otl
+command! Est Estuff
 command! Eknwl e $MYREPO/knwl.otl
 command! TStuff tabnew | b stuff.otl
-command! EIndexNotes e $HOME/gdrive/mynotes/index_notes.otl
-command! EActivities e $MYNOTES/activities.otl
+command! Eindexnotes e $HOME/gdrive/mynotes/index_notes.otl
+command! Eactivities e $MYNOTES/activities.otl
 
 " mynotes/content/ files
+command! Erefmine e $STUDY/other/refmine.otl
+command! Erm Erefmine 
+command! EquickstartKms :Utl openLink ~/projects/study/other/refmine.otl#r=g_11660
+command! EquickstartQuickstarts :Utl openLink ~/projects/study/other/refmine.otl#r=11708
+command! EquickstartCmmi :Utl openLink ~/projects/btg/btg_cmmi/logbook/study_cmmi_summary_20200415.otl#r=g_11704
+command! EquickstartLym :Utl openLink ~/projects/lym/lym/study_lym.otl#r=g_11707
+command! EquickstartNhv :Utl openLink ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/study_nhv.otl#r=g_11709
 command! Erefcard e $STUDY/other/refcard.otl
 command! Erc Erefcard 
 command! Erefcardarchive e $STUDY/other/refcard_archive.otl
 command! Ercar Erefcardarchive
 command! Erclojure e $STUDY/clj/refcard_clojure.otl
 command! Ercl Erclojure
-command! EArticlesR e ~/gdrive/mynotes/content/articles/articles_r.md
-command! Ear EArticlesR 
-command! EArticlesJs e ~/gdrive/mynotes/content/articles/articles_js.md
-command! EArticlesDb e ~/gdrive/mynotes/content/articles/articles_db.md
-command! Eadb EArticlesDb 
-command! Eajs EArticlesJs 
-command! EArticlesJava e ~/gdrive/mynotes/content/articles/articles_java.md
-command! Eaj EArticlesJava 
-command! EArticlesDataScience e ~/gdrive/mynotes/content/articles/articles_datascience.md
-command! Eads EArticlesDataScience 
-command! EArticlesFp e ~/gdrive/mynotes/content/articles/articles_fp.md
-command! Eafp EArticlesFp 
-command! EArticlesAi e ~/gdrive/mynotes/content/articles/articles_ai.md
-command! Eaai EArticlesAi 
-command! EArticlesSwarm e ~/gdrive/mynotes/content/articles/articles_swarm.md
-command! Easw EArticlesSwarm 
+command! Earticlesr e ~/projects/study/r/articles_r.md
+command! Ear Earticlesr 
+command! Earticlesjs e ~/projects/study/js/articles_js.md
+command! Earticlesdb e ~/projects/study/db/articles_db.md
+command! Eadb Earticlesdb 
+command! Eajs Earticlesjs 
+command! Earticlesjava e ~/projects/study/java/articles_java.md
+command! Eaj Earticlesjava 
+command! Earticlesdatascience e ~/projects/study/ds/articles_datascience.md
+command! Eads Earticlesdatascience 
+command! Earticlesfp e ~/projects/study/fp/articles_fp.md
+command! Eafp Earticlesfp 
+command! Earticlesai e ~/projects/study/ai/articles_ai.md
+command! Eaai Earticlesai 
 
-" mynotes/content/code/ files
-command! ECCode e ~/gdrive/mynotes/content/code/ccode.md
-command! Ecc ECCode 
-command! ECodeAi  e ~/gdrive/mynotes/content/code/cai/cai.md
-command! Ecai ECodeAi
-command! ECodeR e ~/gdrive/mynotes/content/code/cr/cr.md
-command! Ecr ECodeR
-command! ECodeJava e ~/gdrive/mynotes/content/code/cjava/cjava.md
-command! Ecj ECodeJava
-command! ECodeDb e ~/gdrive/mynotes/content/code/cdb.md
-command! Ecdb ECodeDb
-command! ECodeJs e ~/gdrive/mynotes/content/code/cjs/cjs.md
-command! Ecjs ECodeJs
-command! ECodeFp e ~/gdrive/mynotes/content/code/cfp/cfp.md
-command! Ecfp ECodeFp
-command! ECVim e ~/gdrive/mynotes/content/code/cvim/cvim.md
-command! Ecvim ECVim 
-command! ECStuff e ~/gdrive/mynotes/content/code/cstuff.md
-command! Ecs ECStuff
-command! Eceng e ~/gdrive/mynotes/content/code/cother/cenglish.md
+" study/otl/ files
+command! Ecstuff e /Users/mertnuhoglu/projects/myrepo/cstuff.otl
+command! Ecs Ecstuff
+command! Eccode e ~/projects/study/otl/ccode.otl
+command! Ecc Eccode 
+command! Ecodeai  e ~/projects/study/otl/cai.otl
+command! Ecai Ecodeai
+command! Ecoder e ~/projects/study/otl/cr.otl
+command! Ecr Ecoder
+command! Ecodejava e ~/projects/study/otl/cjava.otl
+command! Ecj Ecodejava
+command! Ecodedb e ~/projects/study/otl/cdb.otl
+command! Ecdb Ecodedb
+command! Ecodejs e ~/projects/study/otl/cjs.otl
+command! Ecjs Ecodejs
+command! Ecodefp e ~/projects/study/otl/cfp.otl
+command! Ecfp Ecodefp
+command! Ecvim e ~/projects/study/otl/cvim.otl
+command! Eceng e ~/projects/study/otl/cenglish.otl
+command! Ecnames e ~/projects/study/otl/names.otl
+command! Ecn Ecnames
 
 " study/ files
 command! Esclojurescript e ~/projects/study/clj/study_clojurescript.md
@@ -452,122 +440,134 @@ command! Escj Esclojurescript
 command! Esclojure e ~/projects/study/clj/study_clojure.md
 command! Escl Esclojure
 command! Eseng e ~/projects/study/other/study_english.Rmd
-command! EStudyBash e ~/projects/study/bash/study_bash.Rmd
-command! Esbash EStudyBash 
+command! Estudybash e ~/projects/study/bash/study_bash.Rmd
+command! Esbash Estudybash 
 command! Escode e ~/projects/study/code/study_code.Rmd
 command! Esc Escode
-command! EStudyDb e ~/projects/study/db/study_db.Rmd
-command! Esdb EStudyDb 
-command! EExamplesDb e ~/projects/study/db/examples_db.Rmd
-command! Eedb EExamplesDb 
-command! EExamplesVim e ~/projects/study/vim/examples_vim.Rmd
-command! Eevim EExamplesVim 
-command! EExamplesBash e ~/projects/study/bash/examples_bash.Rmd
-command! Eeb EExamplesBash 
-command! EStudyR e ~/projects/study/r/study_r.Rmd
-command! Esr EStudyR 
-command! EStudyShiny e ~/projects/study/r/shiny/study_shiny.Rmd
-command! Essh EStudyShiny
-command! EExamplesR e ~/projects/study/r/examples_r.Rmd
-command! Eer EExamplesR 
-command! EStudyJs e ~/projects/study/js/study_js.Rmd
-command! Esjs EStudyJs 
-command! EStudyTs e ~/projects/study/js/study_ts.Rmd
-command! Ests EStudyTs 
-command! EStudyCyclejs e ~/projects/study/js/study_notes_cyclejs.Rmd
-command! Escjs EStudyCyclejs
-command! EStudyCyclejsExamples e ~/projects/study/js/study_cyclejs_examples.Rmd
-command! Escex EStudyCyclejsExamples 
-command! EStudyDbVrp e ~/projects/study/db/db_vrp.Rmd
-command! Edvrp EStudyDbVrp
-command! EStudyVrpCyclejs e ~/projects/study/js/vrp/cyclejs_vrp.Rmd
-command! EStudyPostgrestStarterKit e ~/projects/study/db/study_postgrest_starter_kit.Rmd
-command! Espsk EStudyPostgrestStarterKit 
-command! Esvrpc EStudyVrpCyclejs
+command! Estudydb e ~/projects/study/db/study_db.Rmd
+command! Esdb Estudydb 
+command! Eexamplesdb e ~/projects/study/db/examples_db.Rmd
+command! Eedb Eexamplesdb 
+command! Eexamplesvim e ~/projects/study/vim/examples_vim.Rmd
+command! Eevim Eexamplesvim 
+command! Eexamplesbash e ~/projects/study/bash/examples_bash.Rmd
+command! Eeb Eexamplesbash 
+command! Eexamplesr e ~/projects/study/r/examples_r.Rmd
+command! Eer Eexamplesr 
+command! Estudyr e ~/projects/study/r/study_r.Rmd
+command! Esr Estudyr 
+command! Estudyshiny e ~/projects/study/r/shiny/study_shiny.Rmd
+command! Essh Estudyshiny
+command! Estudyjs e ~/projects/study/js/study_js.Rmd
+command! Esjs Estudyjs 
+command! Estudyts e ~/projects/study/js/study_ts.Rmd
+command! Ests Estudyts 
+command! Estudycyclejs e ~/projects/study/js/study_notes_cyclejs.Rmd
+command! Escjs Estudycyclejs
+command! Estudycyclejsexamples e ~/projects/study/js/study_cyclejs_examples.Rmd
+command! Escex Estudycyclejsexamples 
+command! Estudydbvrp e ~/projects/study/db/db_vrp.Rmd
+command! Edvrp Estudydbvrp
+command! Estudyvrpcyclejs e ~/projects/study/js/vrp/cyclejs_vrp.Rmd
+command! Estudypostgreststarterkit e ~/projects/study/db/study_postgrest_starter_kit.Rmd
+command! Espsk Estudypostgreststarterkit 
+command! Esvrpc Estudyvrpcyclejs
 "command! Elb e $HOME/projects/study/logbook
 command! Esvim e ~/projects/study/vim/study_vim.Rmd
-command! EStudyVrp e ~/projects/itr/vrp/vrp_doc/study/study_vrp.Rmd
-command! Esvrp EStudyVrp
-command! Erefbookmarks e ~/projects/study/code/refbookmarks.md
+command! Esv Esvim 
+"command! Estudyvrp e ~/projects/itr/vrp/vrp_doc/study/study_vrp.Rmd
+"command! Esvrp Estudyvrp
+command! Erefbookmarks e ~/projects/study/code/refbookmarks.otl
 command! Erb Erefbookmarks
-command! EStudySpacemacs e ~/projects/study/emacs/study_spacemacs.md
-command! Ess EStudySpacemacs
-command! EStudyIntellij e ~/projects/study/code/study_intellij.md
-command! Esij EStudyIntellij
+command! Estudyspacemacs e ~/projects/study/emacs/study_spacemacs.md
+command! Ess Estudyspacemacs
+command! Estudyintellij e ~/projects/study/code/study_intellij.md
+command! Esij Estudyintellij
 
 " prj/ files  
-command! ENotesNhv e ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/notes_nhv.md
-command! ENotesDscp e ~/gdrive/mynotes/prj/dscp/notes_dscp.otl
-command! Ends ENotesDscp 
-command! EDocItr e ~/projects/itr/vrp/vrp_doc/doc_itr.md
-command! Edi EDocItr
-command! ENotesItr e ~/gdrive/mynotes/prj/itr/notes_itr.md
-command! ENotesPvrp e ~/gdrive/mynotes/prj/itr/notes_pvrp.md
-command! Eni ENotesItr 
+command! Enotesnhv e ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/notes_nhv.otl
+command! Enotesdscp e ~/gdrive/mynotes/prj/dscp/notes_dscp.otl
+command! Ends Enotesdscp 
+command! Edocitr e ~/projects/itr/vrp/vrp_doc/doc_itr.md
+command! Edi Edocitr
+command! Enotesitr e ~/gdrive/mynotes/prj/itr/notes_itr.md
+command! Enotespvrp e ~/gdrive/mynotes/prj/itr/notes_pvrp.md
+command! Eni Enotesitr 
 command! Enkinesin e ~/gdrive/mynotes/prj/biz/startup_projects/kinesin/notes_kinesin.md
-command! Enp ENotesPvrp 
-command! Enit ENotesItr 
-command! ENotesKns e $KNS/notes_kinesin.md
-command! Enkns ENotesKns
-command! ENotesBzq e ~/gdrive/mynotes/prj/bzq/notes_bzq.md
-command! Enbzq ENotesBzq
-command! Enb ENotesBzq
-command! EDocBzq e ~/gdrive/mynotes/prj/bzq/doc_bzq.md
-command! Edbzq EDocBzq
-command! Edb EDocBzq
-command! ENotesSipa e ~/gdrive/mynotes/prj/sipa/notes_sipa.md
-command! Ensipa ENotesSipa
-command! Ens ENotesSipa
-command! EDocSipa e ~/gdrive/mynotes/prj/sipa/doc_sipa.md
-command! Edsipa EDocSipa
-command! Eds EDocSipa
-command! Ecmdict e $CMMIMY/logbook/dictionary_cmmi.tsv
-command! Ecmpascal e $CMMIMY/logbook/agenda_pascal.md
+command! Enp Enotespvrp 
+command! Enit Enotesitr 
+command! Enoteskns e $KNS/notes_kinesin.md
+command! Enkns Enoteskns
+"command! Enotesbzq e ~/gdrive/mynotes/prj/bzq/notes_bzq.md
+"command! Enbzq Enotesbzq
+"command! Enb Enotesbzq
+"command! Edocbzq e ~/gdrive/mynotes/prj/bzq/doc_bzq.md
+"command! Edbzq Edocbzq
+"command! Edb Edocbzq
+"command! Enotessipa e ~/gdrive/mynotes/prj/sipa/notes_sipa.md
+"command! Ensipa Enotessipa
+"command! Ens Enotessipa
+"command! Edocsipa e ~/gdrive/mynotes/prj/sipa/doc_sipa.md
+"command! Edsipa Edocsipa
+"command! Eds Edocsipa
+command! Ecmdict e ~/projects/btg/btg_cmmi/logbook/dictionary_cmmi.tsv
+command! Ecmpascal e ~/projects/btg/btg_cmmi/logbook/agenda_pascal.md
 command! Ecmp Ecmpascal
-command! Ecmstudy e $CMMIMY/logbook/study_cmmi_summary_20200415.otl
+command! Ecmstudy e ~/projects/btg/btg_cmmi/logbook/study_cmmi_summary_20200415.otl
 command! Ecms Ecmstudy
-command! Ecmideas e $CMMIMY/logbook/ideas_cmmi.md
+command! Ecmchecklist e ~/projects/btg/btg_cmmi/process_asset_examples/gap_analysis/gap_analysis_checklist_questions.otl
+command! Ecmc Ecmchecklist
+command! Ecmartifacts e ~/projects/btg/btg_cmmi/process_asset_examples/gap_analysis/gap_analysis_artifacts_database.otl
+command! Ecma Ecmartifacts
+command! Ecmmodel e ~/projects/btg/btg_cmmi/logbook/cmmi_model_v20.txt
+command! Ecmm Ecmmodel
+command! Ecmideas e ~/projects/btg/btg_cmmi/logbook/ideas_cmmi.md
 command! Ecmid Ecmideas
-command! Ecmmpm e $CMMIMY/logbook/study_mpm.otl
+command! Ecmmpm e ~/projects/btg/btg_cmmi/logbook/study_mpm.otl
 
 " vim scripts
-command! EMyVimCustom e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
-command! Emvc EMyVimCustom 
-command! EInfoman e $HOME/.vim/bundle/vim-infoman/plugin/vim-infoman.vim
-command! EKeybindings e $HOME/.vim/bundle/my-custom-keybindings/plugin/my-custom-keybindings.vim
-command! EDataflow e $HOME/.vim/bundle/vim-dataflow-generator-r/plugin/vim-dataflow-generator-r.vim
-command! EMyMertProjects e $HOME/.vim/bundle/my-mert-projects/plugin/my-mert-projects.vim
+command! Emyvimcustom e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
+command! Emvc Emyvimcustom 
+command! Einfoman e $HOME/.vim/bundle/vim-infoman/plugin/vim-infoman.vim
+command! Ekeybindings e $HOME/.vim/bundle/my-custom-keybindings/plugin/my-custom-keybindings.vim
+command! Edataflow e $HOME/.vim/bundle/vim-dataflow-generator-r/plugin/vim-dataflow-generator-r.vim
+command! Emymertprojects e $HOME/.vim/bundle/my-mert-projects/plugin/my-mert-projects.vim
 
 " mynotes/nproduct files
-command! EIdea e ~/projects/myrepo/nx/nproduct/nidea/nidea.md
-command! Eid EIdea 
-command! Enid EIdea 
+command! Eninfop e ~/projects/myrepo/nx/nproduct/infop/infop.otl
+command! Enin Eninfop
+command! Enidea e ~/projects/myrepo/nx/nproduct/nidea/nidea.otl
+command! Eid Enidea 
+command! Enid Enidea 
 command! Enidc e $HOME/projects/myrepo/nx/nproduct/nidea/nidea_content.md
-command! ENotesAnki e ~/projects/myrepo/nx/nproduct/nanki/notes_anki.md
-command! Ena ENotesAnki
-command! ENSettings e ~/projects/myrepo/nx/nsettings.md
-command! Enstt ENSettings 
+command! Enotesanki e ~/projects/myrepo/nx/nproduct/nanki/notes_anki.otl
+command! Ena Enotesanki
+command! Ensettings e ~/projects/myrepo/nx/nsettings.md
+command! Enstt Ensettings 
 command! Egstt Enstt
-command! ENotes e ~/projects/myrepo/nx/nnote.md
-command! Enn ENotes
+command! Enotes e ~/projects/myrepo/nx/nnote.md
+command! Enn Enotes
 
 " mynotes/general files 
-command! EGConventions e ~/projects/myrepo/general/conventions.md
-command! Egc EGConventions 
-command! EGConventionsNaming e ~/projects/myrepo/general/conventions_naming.md
-command! Egcn EGConventionsNaming 
-command! EGProcesses e ~/projects/myrepo/general/processes.md
-command! Egprc EGProcesses
+command! Egconventions e ~/projects/myrepo/general/conventions.md
+command! Egc Egconventions 
+command! Egconventionsnaming e ~/projects/myrepo/general/conventions_naming.md
+command! Egcn Egconventionsnaming 
+command! Egprocesses e ~/projects/myrepo/general/processes.md
+command! Egprc Egprocesses
 command! Emetrics e ~/projects/myrepo/general/metrics.otl
 command! Emt Emetrics
-command! EGRules e ~/projects/myrepo/general/rules.md
-command! Egr EGRules
-command! EGQuality e ~/projects/myrepo/general/quality.md
-command! Egq EGQuality
-command! EGKms e ~/projects/myrepo/general/kms/kms_ideas.md
-command! Egkms EGKms
-command! EGKmsRef e ~/projects/myrepo/general/kms/refcard_kms.md
-command! Egkr EGKmsRef
+command! Egrules e ~/projects/myrepo/general/rules.otl
+command! Egr Egrules
+command! Egquality e ~/projects/myrepo/general/quality.md
+command! Egq Egquality
+command! Egkms e ~/projects/myrepo/general/kms/kms_ideas.md
+command! Egkms Egkms
+command! Egkmsref e ~/projects/myrepo/general/kms/refcard_kms.md
+command! Egkr Egkmsref
+
+" myrepo/gtd files
+command! Etb e ~/projects/myrepo/gtd/blgfkr.otl
 
 " mynotes/ other files
 command! Epstuff e $MYNOTES/personal/pstuff.md
@@ -582,259 +582,22 @@ command! Enmvpe e $HOME/gdrive/mynotes/mvpe/notes_mvpe.otl
 command! Ensfp e $HOME/gdrive/mynotes/sfp/notes_sfp.otl
 
 " dotfiles
-command! EBashProfile e $HOME/.bash_profile
+command! Ebashprofile e $HOME/.bash_profile
 command! Ezshrc e $HOME/.zshenv
 command! Ezs Ezshrc 
-command! EFzfRefbash e $HOME/projects/private_dotfiles/fzf/refbash.txt
-command! Efrb EFzfRefbash
-command! EFzfRefvrp e $HOME/projects/private_dotfiles/vim/refvrp.txt
-command! Efrvrp EFzfRefvrp
+command! Efzfrefbash e $HOME/projects/private_dotfiles/fzf/refbash.txt
+command! Efrb Efzfrefbash
+command! Efzfrefvrp e $HOME/projects/private_dotfiles/vim/refvrp.txt
+command! Efrvrp Efzfrefvrp
 
 " gdrive/ files
-command! ENotesMe e ~/gdrive/notes/koza/notesme.otl
-command! ENotesVbi e ~/gdrive/shared/veribilimi_istanbul/notes_vbi.otl
+command! Enotesme e ~/gdrive/notes/koza/notesme.otl
+command! Enotesvbi e ~/gdrive/shared/veribilimi_istanbul/notes_vbi.otl
 
 " other files
 command! Escim e ~/codes/sc-im/src/doc
 
 
-" using backslash prependen abbreviations
-" http://stackoverflow.com/questions/1677575/using-backslashes-in-vim-abbreviations
-function! s:Expr(default, repl)
-  if getline('.')[col('.')-2]=='\'
-    return "\<bs>".a:repl
-  else
-    return a:default
-  endif
-endfunction
-
-function! s:DefIab(nore, ...)
-  let opt = ''
-  let i = 0
-  while i != len(a:000)
-    let arg = a:000[i]
-    if arg !~? '<buffer>\|<silent>'
-      break
-    endif
-    let opt .= ' '.arg
-    let i += 1
-  endwhile
-
-  if i+2 != len(a:000)
-    throw "Invalid number of arguments"
-  endif
-  let lhs = a:000[i]
-  let rhs = a:000[i+1]
-
-  exe 'i'.a:nore.'ab'.opt.' '.lhs.' <c-r>=<sid>Expr('.string(lhs).', '.string(rhs).')<cr>'
-endfunction
-
-ia tst testing
-
-" mathematical symbols digraph id=g_11564
-" join 
-" ⨝ 
-digraphs Jn 10781
-" ⨯ cross
-digraphs Cr 10799
-" ∉
-digraphs (! 8713 
-" ⨂
-digraphs XX 10754
-
-command! -nargs=+ InoreabBSlash call s:DefIab('nore', <f-args>)
-
-" usage:
-" InoreabBSlash for alphabetical symbol shortcodes
-" use as \xx
-"InoreabBSlash bit foobar
-InoreabBSlash Jn ⨝
-InoreabBSlash ljn ⟕
-InoreabBSlash rjn ⟖
-InoreabBSlash fjn ⟗
-" for all
-InoreabBSlash FA ∀
-" there exists
-InoreabBSlash TE ∃
-" and
-InoreabBSlash AN ∧
-InoreabBSlash OR ∨
-" cross
-InoreabBSlash Cr ⨯
-" plus
-InoreabBSlash XO ⊕
-InoreabBSlash XX ⨂
-" superscript
-InoreabBSlash 1S ¹
-InoreabBSlash -S ⁻
-InoreabBSlash 00 ∞
-" block and box
-InoreabBSlash LB ▄
-" black circle
-InoreabBSlash 0M ●
-InoreabBSlash 0m ○
-" derivative partial del nabla
-InoreabBSlash NB ∇
-InoreabBSlash dP ∂
-
-" usage:
-" iab: for shortcodes that contain non-alphabetical symbols
-" use: %xx 
-" double-struck capital letters
-iab %/Z ℤ
-iab %/R ℝ
-iab %/N ℕ
-
-" arrows 
-iab %-> →
-iab %<- ←
-iab %=> ⇒
-iab %<= ⇐
-iab %>-> ↣
-
-" bracket
-iab %<+ 《
-iab %>+ 》
-
-iab %.M ·
-iab %s* σ
-iab %p* π
-iab %r* ρ
-
-iab %)U ∪
-iab %(U ∩
-" element
-iab %(- ∈
-iab %(! ∉
-iab %-) ∋
-" empty set
-iab %/0 ∅
-iab %(c ⊂
-iab %)c ⊃
-iab %!(c ⊄
-iab %!)c ⊅
-" subset
-iab %(_ ⊆
-iab %)_ ⊇
-
-iab %/> 〉
-iab %</ 〈
-" use Ctrl-K
-iab %-, ¬
-iab %l* λ
-iab %=> ⇒
-iab %<= ⇐
-iab %== ⇔
-" therefore
-iab %.: ∴
-
-iab %-2 −
-iab %+Z ∑
-" not equal approximate
-iab %!= ≠
-iab %?= ≅
-" greek alpha beta gamma sigma
-iab %a* α
-iab %b* β
-iab %g* γ
-iab %S* Σ
-iab %P* Π
-"iab %XO ⊕
-
-" less than
-iab %=< ≤
-iab %>= ≥
-iab #!=< ≰
-
-" triangle
-InoreabBSlash UT ▲
-InoreabBSlash uT △
-InoreabBSlash Tl ◁
-
-" dash
-InoreabBSlash vr ├
-
-" y-hat x-hat
-iab %y> ŷ
-
-"iab %te ∃
-"iab %jn ⨝
-"iab %fa ∀
-"iab %an ∧
-"iab %or ∨
-"iab %cr ⨯
-" backslash abbreviations
-
-"iab >> %>%
-"una >> 
-
-" short forms for iab
-"iab UT ▲
-"iab uT △
-"iab Jn ⨝ 
-"iab FA ∀
-"iab TE ∃
-"iab AN ∧ 
-"iab OR ∨
-"iab Cr ⨯ 
-"iab XO ⊕ 
-"iab XX ⨂
-"iab 1S ¹
-"iab -S ⁻
-"iab 00 ∞
-"iab LB ▄
-"iab 0M ●
-"iab 0m ○
-"iab -> →
-"iab <- ←
-"iab => ⇒ 
-"iab <= ⇐
-"iab >-> ↣
-"iab <+ 《
-"iab >+ 》
-"iab .M ·
-"iab s* σ
-"iab p* π
-"iab r* ρ
-"iab )U ∪
-"iab (U ∩
-"iab (- ∈
-"iab (! ∉
-"iab -) ∋
-"iab /0 ∅ 
-"iab (c ⊂
-"iab )c ⊃
-"iab !(c ⊄
-"iab !)c ⊅
-"iab (_ ⊆ 
-"iab )_ ⊇
-"iab /> 〉
-"iab </ 〈
-"iab -, ¬ 
-"iab l* λ
-"iab => ⇒ 
-"iab <= ⇐
-"iab == ⇔ 
-"iab -2 − 
-"iab +Z ∑
-"iab != ≠ 
-"iab ?= ≅
-"iab a* α
-"iab b* β
-"iab g* γ
-"iab S* Σ
-"iab P* Π
-"iab =< ≤
-"iab >= ≥
-"iab !=< ≰
-"iab .: ∴
-
-" IPA phonetic symbols
-"ī ū í ÉÀ5
-digraph a5 594
-"ɒ 
-"β ç ᵈ ḑ ┬ │å ık
-"Ā		mynotes altında listesi vardı galiba ā 
 
 " disable automatic bullets in markdown
 let g:vim_markdown_new_list_item_indent = 0
@@ -1070,28 +833,7 @@ function! Elogbook()
   execute cmd
 endfunction
 command! Elb call Elogbook()
-
-function! ElogbookItr()
-  " opens logbook of today
-  " goal:
-  " Elb -> 
-  " e ~/projects/itr/vrp_doc/log/2017-11-27.md"
-  let cmd = 'e ' . $ITR_DOC . '/log/log_itr_' . strftime("%Y%m%d") . '.md'
-  echo cmd
-  execute cmd
-endfunction
-command! Elbitr call ElogbookItr()
-
-function! ElogbookVrpr()
-  " opens logbook of today
-  " goal:
-  " Elb -> 
-  " e ~/projects/study/logbook/2017-11-27.md"
-  let cmd = 'e ' . $VRPRAPI . '/doc/log/log_vrprapi_' . strftime("%Y%m%d") . '.md'
-  echo cmd
-  execute cmd
-endfunction
-command! Elbvrpr call ElogbookVrpr()
+command! Elogbook call Elogbook()
 
 function! ElogbookMyr()
   " opens logbook of today
@@ -1103,6 +845,7 @@ function! ElogbookMyr()
   execute cmd
 endfunction
 command! Elbmyr call ElogbookMyr()
+command! ElogbookMyr call ElogbookMyr()
 
 function! ElogbookLym()
   " opens logbook of today
@@ -1114,6 +857,7 @@ function! ElogbookLym()
   execute cmd
 endfunction
 command! Elblym call ElogbookLym()
+command! ElogbookLym call ElogbookLym()
 
 function! ElogbookKns()
   " opens logbook of today
@@ -1147,9 +891,11 @@ function! ElogbookCmmi()
   execute cmd
 endfunction
 command! Elbcmmi call ElogbookCmmi()
+command! ElogbookCmmi call ElogbookCmmi()
 
 command! Rmarkdown :!R -e 'rmarkdown::render("%")'
 command! OpenHtml :execute '!open ' . expand("%:r") . '.html'
+command! OpenFile :!open %
 command! Ohtml OpenHtml 
 command! SyncRmdToBlogDir :!sync_rmd_to_blog_dirs
 command! Srmd :SyncRmdToBlogDir
@@ -1417,6 +1163,7 @@ nnoremap E gT
 nnoremap R gt
 
 function! ConvertIsoCharsInUtf8()
+	" pdf dosyalarından metin kopyaladıktan sonra bunu çalıştır
 	silent! %s/Ä±/ı/g 
 	silent! %s/Ã¶/ö/g 
 	silent! %s/Ã§/ç/g 
@@ -1846,6 +1593,18 @@ function! CreateExFile(name)
 	exe 'cd ex/' . filename . '/' . a:name
 endfunction
 command! -nargs=1 CreateExFile call CreateExFile(<f-args>)
+function! CreateExFile2()
+	" Create an example code file for the current md (documentation) file
+	let l:fileprompt = input('File name: ')
+	let filename = expand("%:t:r")
+	let path = expand("%:p")
+	lcd %:h
+	exe '!mkdir -p ' . 'ex/' . filename . '/' . l:fileprompt
+	split
+	ene
+	exe 'cd ex/' . filename . '/' . l:fileprompt
+endfunction
+command! CreateExFile2 call CreateExFile2()
 
 nnoremap <silent> sw :set wrap<cr>
 
@@ -2549,11 +2308,10 @@ command! MigrateRmdToHugo call MigrateRmdToHugo()
 
 " ergonomy: reaching key `w` is too hard in Turkish F keyboard
 nnoremap ö w
-nnoremap w yy
 
 ": }}}
 
-": fzf {{{
+": fzf id=g_11652 {{{ 
 
 " # fzf functions
 " https://github.com/junegunn/fzf/wiki/Examples-(vim)
@@ -2753,6 +2511,12 @@ command! Files call fzf#run({
 \ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
 \ 'down':    '40%' })
 
+command! Files2 call fzf#run({
+\ 'source':     'fd . --color=never --hidden --type=file --no-ignore ' . getcwd(),
+\ 'sink':    'edit',
+\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+\ 'down':    '40%' })
+
 " preview enabled with "?" key
 " hidden by default
 command! -bang -nargs=* Fr
@@ -2801,11 +2565,229 @@ nnoremap üd :call fzf#vim#tags('^' . expand('<cword>'), {'options': '--exact --
 
 ": }}}
 
-": compatible keybindings: vim vs spacemacs vim-which-key id=g_11007 {{{ 
+": tabular align text {{{  id=g_11680
+if exists(":Tabularize")
+  nmap üa= :Tabularize /=<CR>   
+  vmap üa= :Tabularize /=<CR>
+  nmap üa: :Tabularize /:\zs<CR>   
+  vmap üa: :Tabularize /:\zs<CR>
+endif
 
-" next/prev tab (buffer)
-nnoremap <leader>bn gt
-nnoremap <leader>bp gT
+function! s:align()
+" then it will call the :Tabularize command each time you insert a | character
+" http://vimcasts.org/episodes/aligning-text-with-tabular-vim/
+
+  let p = '^\s*|\s.*\s|\s*$'
+  if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+    let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
+    let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
+    Tabularize/|/l1
+    normal! 0
+    call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
+  endif
+endfunction
+
+" Table alignment. aligns = | etc.
+inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
+
+" tabular end
+": }}}
+
+": vim-which-key spacemacs emacs-which-key port {{{ id=g_11679
+
+": https://github.com/liuchengxu/vim-which-key
+"nnoremap <silent> <leader> :WhichKey 'ü'<CR>
+
+
+let surround_map = {
+		\ 'name' : '+Surround Menu'                         ,
+		\ 'q'    : ['SurroundWithDoubleQuotes'         , 'double quotes']          ,
+		\ 't'    : ['SurroundWithBackQuotes'           , 'back quotes']            ,
+		\ 'b'    : ['SurroundWithBrackets'             , 'brackets']               ,
+		\ 's'    : ['SurroundWithBackQuotesUntilSpace' , 'back quotes till space'] ,
+		\ } 
+
+let kustom_map = {
+		\ 'name': '+Kustom Menu' ,
+		\ 'e':    ['CreateExFile2'        , 'CreateExFile2']        ,
+		\ 'o':    ['OpenFile'        , 'OpenFile']        ,
+		\ } 
+
+let tab_map = {
+	\ 'name': '+Tab menu' ,
+	\ 'e':    ['tabe'        , 'tabenew']        ,
+	\ 'o':    ['tabonly'        , 'tabonly']        ,
+	\ } 
+
+let buffers_map = {
+	\ 'name': '+buffers menu' ,
+	\ 'b':    ['Buffers'        , 'Buffers']        ,
+	\ 'n':    [':norm gt'        , 'next tab']        ,
+	\ 'p':    [':norm gT'        , 'prev tab']        ,
+	\ } 
+
+let files_map = {
+	\ 'name': '+files',
+	\ 'c':    ['Commands',          'Commands'],
+	\ 'f':    ['Files',             'Files'],
+	\ 'g':    ['Files2',            'Files2'],
+	\ 'l':    ['BLines',            'BLines'],
+	\ 'm':    ['Marks',             'Marks'],
+	\ 'n':    ['CopyFilename',      'CopyFilename'],
+	\ 'p':    ['CopyDirectoryPath', 'CopyDirectoryPath'],
+	\ 'r':    ['FZFMru',            'FZFMru'],
+	\ 't':    ['F',            'FFF'],
+	\ 'u':    ['CopyPathUrl',       'CopyPathUrl'],
+	\ 'w':    ['Windows',           'Windows'],
+	\ 'y':    ['CopyFilePath',      'CopyFilePath'],
+	\ }
+
+let align_map = {
+	\ 'name': '+align menu' ,
+	\ '|':    [':norm ğt'        , 'align']        ,
+	\ 'r':    [':norm ğt'        , 'tabonly']        ,
+	\ } 
+
+let text_map = {
+	\ 'name': '+teXt menu' ,
+	\ 'a' : align_map,
+	\ } 
+
+let custom_map = {
+	\ 'name' : '+Custom Menu' ,
+	\ 'f' : files_map,
+	\ 'k' : kustom_map,
+  \ 's' : surround_map,
+  \ 't' : tab_map,
+	\ }
+
+let cmmi_map = {
+	\ 'name' : '+cmmi files',
+	\ 's'    : ['Ecmstudy',     'study_cmmi_summary_20200415.otl'],
+	\ 'a'    : ['Ecmartifacts', 'gap_analysis_artifacts_database.otl'],
+	\ 'c'    : ['Ecmchecklist', 'gap_analysis_checklist_questions.otl'],
+	\ 'p'    : ['Ecmpascal',    'agenda_pascal.otl'],
+	\ }
+
+let quickstart_map = {
+	\ 'name' : '+quickstart indexes' ,
+  \ 'c' : ['EquickstartCmmi', 'Quickstart cmmi'],
+  \ 'k' : ['EquickstartKms', 'Quickstart Kms'],
+  \ 'l' : ['EquickstartLym', 'Quickstart lym'],
+  \ 'n' : ['EquickstartNhv', 'Quickstart nhv'],
+  \ 'q' : ['EquickstartQuickstarts', 'Quickstart Quickstarts'],
+	\ }
+
+let code_map = {
+	\ 'name' : '+code files',
+	\ 'c' : ['Eccode',        'ccode.otl'],
+	\ 'r' : ['Ecoder',        'cr.otl'],
+	\ 'd' : ['Ecodedb',       'cdb.otl'],
+	\ 'k' : quickstart_map,
+	\ 'v' : ['Ecvim',         'cvim.otl'],
+	\ 'n' : ['Ecnames',       'names.otl'],
+	\ 'e' : ['Eceng',         'cenglish.otl'],
+	\ 's' : ['Ecstuff',       'cstuff.otl'],
+	\ 'm' : cmmi_map,
+	\ }
+
+let ref_files_map = {
+	\ 'name': '+ref files' ,
+	\ 'm':    ['Erefmine'        , 'refmine.otl']        ,
+	\ 'b':    ['Erefbookmarks'        , 'refbookmarks.otl']        ,
+	\ 'c':    ['Erefcard'        , 'refcard.otl']        ,
+	\ 'ca':   ['Erefcardarchive'        , 'refcard_archive.otl']        ,
+	\ 'cl':   ['Erclojure'        , 'refcard_clojure.otl']        ,
+	\ }
+
+let example_files_map = {
+	\ 'name': '+examples files' ,
+	\ 'b':    ['Eexamplesbash'        , 'examples_bash.otl']        ,
+	\ 'r':    ['Eexamplesr'        , 'examples_r.otl']        ,
+	\ }
+
+let logbook_files_map = {
+	\ 'name':   '+logbook files' ,
+	\ 'b':      {
+		\ 'name': '+logbook files' ,
+		\ 'b':    ['Elogbook'        , 'Elogbook']        ,
+		\ 'c':    ['ElogbookCmmi'        , 'ElogbookCmmi']        ,
+		\ 'l':    ['ElogbookLym'        , 'ElogbookLym']        ,
+		\ 'm':    ['ElogbookMyr'        , 'ElogbookMyr']        ,
+		\ } ,
+	\ }
+
+let notes_files_map = {
+	\ 'name': '+notes files' ,
+	\ 'id':   ['Enidea'        , 'nidea.otl']        ,
+	\ 'in':   ['Eninfop'        , 'infop.otl']        ,
+	\ 'a':    ['Enotesanki'        , 'notes_anki.otl']        ,
+	\ }
+
+let vim_files_map = {
+	\ 'name': '+vim files',
+	\ 'm':    ['Emyvimcustom', 'my-vim-custom.vim']        ,
+	\ 'i':    ['Einfoman',     'vim-infoman.vim']        ,
+	\ }
+
+let study_files_map = {
+	\ 'name': '+study files' ,
+	\ 'cl':   ['Esclojure'        , 'study_clojure.md']        ,
+	\ 'r':    ['Estudyr'        , 'study_r.md']        ,
+	\ 'c':    ['Escode'        , 'study_code.md']        ,
+	\ 'v':    ['Esvim'        , 'study_vim.md']        ,
+	\ 's':    ['Estudyspacemacs'        , 'study_spacemacs.md']        ,
+	\ 'ij':   ['Estudyintellij'        , 'study_intellij.md']        ,
+	\ }
+
+let edit_map = {
+	\ 'name':   '+edit',
+	\ 'c':      code_map,
+	\ 'e':      example_files_map,
+	\ 'g':      {
+		\ 'name': '+general files',
+		\ 'r':    ['Egrules',        'rules.otl']        ,
+		\ },
+	\ 'l':      logbook_files_map,
+	\ 'n':      notes_files_map,
+	\ 'r':      ref_files_map,
+	\ 's':      study_files_map,
+	\ 'v':      vim_files_map,
+ \ '?':       ['Buffers',        'fzf-buffer']      ,
+ \ }
+
+let applications_map = {
+	\ 'name': '+applications',
+	\ 'r':    ['RangerWorkingDirectory',            'RangerWorkingDirectory'],
+	\ }
+
+let project_map = {
+	\ 'name': '+project',
+	\ 't':    ['FffCurrentDir',            'FffCurrentDir'],
+	\ }
+
+let g:which_key_map =  {
+	\ 'a' : applications_map,
+	\ 'b' : buffers_map,
+	\ 'e' : edit_map,
+	\ 'f' : files_map,
+	\ 'p' : project_map,
+	\ 'ü' : custom_map,
+  \ 'x' : text_map,
+	\ }
+
+call which_key#register('<Space>', "g:which_key_map")
+
+nnoremap <silent> <leader> :<c-u>WhichKey '<Space>'<CR>
+vnoremap <silent> <leader> :<c-u>WhichKeyVisual '<Space>'<CR>
+
+nnoremap <Leader>w <C-w>
+
+
+": }}}
+
+
+": compatible keybindings: vim vs spacemacs vim-which-key id=g_11007 {{{ 
 
 " toggle spell check
 nnoremap <leader>tS :setlocal spell! spelllang=en_us<CR>
@@ -2829,17 +2811,8 @@ nnoremap <silent> <leader>ım :wincmd j<cr>
 nnoremap <silent> <leader>ıl :wincmd k<cr>
 nnoremap <silent> <leader>ıy :wincmd l<cr>
 nnoremap <silent> <leader>ıt :tabedit<cr>
+nnoremap <silent> <leader>ıa :wincmd =<cr>
 
-nnoremap <silent> <leader>üa :wincmd =<cr>
-
-" fzf spacemacs
-nnoremap <leader>bb :Buffers<cr>
-nnoremap <leader>ff :Files<cr>
-nnoremap <leader>fc :Commands<cr>
-nnoremap <leader>fw :Windows<cr>
-nnoremap <leader>fm :Marks<cr>
-nnoremap <leader>fl :BLines<cr>
-nnoremap <leader>fr :FZFMru<CR>
 
 nnoremap <leader>czd :FDigraph<cr>
 inoremap :czd <C-o>:FDigraph<cr>
@@ -2857,12 +2830,10 @@ nnoremap <leader>üto :tabonly<CR>
 nnoremap üte :tabe<CR>
 nnoremap <leader>üte :tabe<CR>
 
+" custom commands. mnemonics: Kustom
+nnoremap <leader>üko :OpenFile<cr>
+
 " surround
-nnoremap <leader>üsq :Swdq<CR>
-vnoremap <leader>üsq :Swdq<CR>
-nnoremap <leader>üst :Swq<CR>
-nnoremap <leader>üsb :Swb<CR>
-nnoremap <leader>üss :SurroundWithBackQuotesUntilSpace<CR>
 nnoremap <leader>ürc :ReplaceWithCloze<CR>
 nnoremap <leader>ürc :ReplaceWithCloze2<CR>
 
@@ -2871,6 +2842,7 @@ nnoremap <leader>tn :ColorSchemeBrowse<CR>
 nnoremap <leader>üha :QuickhlManualAdd 
 
 
+" spacemacs end
 ": }}}
 
 function! ConvertPIID2Normalize()
@@ -2905,6 +2877,8 @@ endfunction
 
 function! ConvertFillDown() " id=g_11596
 	" fill down empty rows like excel
+	"
+	" for complex cases use: Table Text Processing: Fill Down 20200927  <url:file:///~/projects/study/bash/table_fill_down.md#r=g_11617>
 	"
   " input:
   " 
@@ -2946,4 +2920,365 @@ function! Test()
 	g/theodore/norm d4j
 	g/^\s*$/,/./-j
 endfunction
+
+function! ConvertGapReportBulgular()
+	v/\tBulgular\t/d
+	v/:/d
+	v/\d\s*$/norm A	1	1	0	0
+	%s# !0!0\s*$#\t0\t0\t0\t0#
+	%s# !1!0\s*$#\t0\t0\t1\t0#
+	%s# !0!1\s*$#\t1\t1\t0\t1#
+	%s/!/\t/g
+	%s/\t\t\+/\t/
+endfunction
+function! ConvertGapReportNotlar()
+	v/\tNotlar\t/d
+	g/\tNotlar\s*$/d
+	g/\tNotlar\t\w*\s*$/d
+	v/\t\d$/d
+endfunction
+function! ConvertGapReportKanitlar()
+	v/\tKanıtlar\t/d
+	g/\tKanıtlar\s*$/d
+	g/\tKanıtlar\t\w*\s*$/d
+	g/\tKanıtlar\t\w*\t\w*\s*$/d
+endfunction
+
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap gl <Plug>(LiveEasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap gl <Plug>(LiveEasyAlign)
+
+command! -range=% EasyAlignTable :execute ":<line1>,<line2>EasyAlign *|"
+"xmap ğt :EasyAlignTable<cr>
+"xmap ğt gaip*\|
+
+map <leader>vga :call Vhdl_GA_All()<CR>
+
+" Alignment
+function! Vhdl_GA_All()
+   exe ":'<,'> EasyAlign *<space>"
+   exe ":'<,'> EasyAlign ("
+   exe ":'<,'> EasyAlign )"
+endfunction
+
+": mathematical symbols abbreviations digraphs unicode {{{  id=g_11712
+
+" using backslash prependen abbreviations
+" http://stackoverflow.com/questions/1677575/using-backslashes-in-vim-abbreviations
+function! s:Expr(default, repl)
+  if getline('.')[col('.')-2]=='\'
+    return "\<bs>".a:repl
+  else
+    return a:default
+  endif
+endfunction
+
+function! s:DefIab(nore, ...)
+  let opt = ''
+  let i = 0
+  while i != len(a:000)
+    let arg = a:000[i]
+    if arg !~? '<buffer>\|<silent>'
+      break
+    endif
+    let opt .= ' '.arg
+    let i += 1
+  endwhile
+
+  if i+2 != len(a:000)
+    throw "Invalid number of arguments"
+  endif
+  let lhs = a:000[i]
+  let rhs = a:000[i+1]
+
+  exe 'i'.a:nore.'ab'.opt.' '.lhs.' <c-r>=<sid>Expr('.string(lhs).', '.string(rhs).')<cr>'
+endfunction
+
+ia tst testing
+
+" mathematical symbols digraph id=g_11564
+" join 
+" ⨝ 
+digraphs Jn 10781
+" ⨯ cross
+digraphs Cr 10799
+" ∉
+digraphs (! 8713 
+" ⨂
+digraphs XX 10754
+
+command! -nargs=+ InoreabBSlash call s:DefIab('nore', <f-args>)
+
+" usage:
+" InoreabBSlash for alphabetical symbol shortcodes
+" use as \xx
+"InoreabBSlash bit foobar
+InoreabBSlash Jn ⨝
+InoreabBSlash ljn ⟕
+InoreabBSlash rjn ⟖
+InoreabBSlash fjn ⟗
+" for all
+InoreabBSlash FA ∀
+" there exists
+InoreabBSlash TE ∃
+" and
+InoreabBSlash AN ∧
+InoreabBSlash OR ∨
+" cross
+InoreabBSlash Cr ⨯
+" plus
+InoreabBSlash XO ⊕
+InoreabBSlash XX ⨂
+" superscript
+InoreabBSlash 1S ¹
+InoreabBSlash -S ⁻
+InoreabBSlash 00 ∞
+" block and box
+InoreabBSlash LB ▄
+" black circle
+InoreabBSlash 0M ●
+InoreabBSlash 0m ○
+" derivative partial del nabla
+InoreabBSlash NB ∇
+InoreabBSlash dP ∂
+
+" usage:
+" iab: for shortcodes that contain non-alphabetical symbols
+" use: %xx 
+" double-struck capital letters
+iab %/Z ℤ
+iab %/R ℝ
+iab %/N ℕ
+
+" arrows 
+iab %-> →
+iab %<- ←
+iab %=> ⇒
+iab %<= ⇐
+iab %>-> ↣
+
+" bracket
+iab %<+ 《
+iab %>+ 》
+
+iab %.M ·
+iab %s* σ
+iab %p* π
+iab %r* ρ
+
+iab %)U ∪
+iab %(U ∩
+" element
+iab %(- ∈
+iab %(! ∉
+iab %-) ∋
+" empty set
+iab %/0 ∅
+iab %(c ⊂
+iab %)c ⊃
+iab %!(c ⊄
+iab %!)c ⊅
+" subset
+iab %(_ ⊆
+iab %)_ ⊇
+
+iab %/> 〉
+iab %</ 〈
+" use Ctrl-K
+iab %-, ¬
+iab %l* λ
+iab %=> ⇒
+iab %<= ⇐
+iab %== ⇔
+" therefore
+iab %.: ∴
+
+iab %-2 −
+iab %+Z ∑
+" not equal approximate
+iab %!= ≠
+iab %?= ≅
+" greek alpha beta gamma sigma
+iab %a* α
+iab %b* β
+iab %g* γ
+iab %S* Σ
+iab %P* Π
+"iab %XO ⊕
+
+" less than
+iab %=< ≤
+iab %>= ≥
+iab #!=< ≰
+
+" triangle
+InoreabBSlash UT ▲
+InoreabBSlash uT △
+InoreabBSlash Tl ◁
+
+" dash
+InoreabBSlash vr ├
+
+" y-hat x-hat
+iab %y> ŷ
+
+"iab %te ∃
+"iab %jn ⨝
+"iab %fa ∀
+"iab %an ∧
+"iab %or ∨
+"iab %cr ⨯
+" backslash abbreviations
+
+"iab >> %>%
+"una >> 
+
+" short forms for iab
+"iab UT ▲
+"iab uT △
+"iab Jn ⨝ 
+"iab FA ∀
+"iab TE ∃
+"iab AN ∧ 
+"iab OR ∨
+"iab Cr ⨯ 
+"iab XO ⊕ 
+"iab XX ⨂
+"iab 1S ¹
+"iab -S ⁻
+"iab 00 ∞
+"iab LB ▄
+"iab 0M ●
+"iab 0m ○
+"iab -> →
+"iab <- ←
+"iab => ⇒ 
+"iab <= ⇐
+"iab >-> ↣
+"iab <+ 《
+"iab >+ 》
+"iab .M ·
+"iab s* σ
+"iab p* π
+"iab r* ρ
+"iab )U ∪
+"iab (U ∩
+"iab (- ∈
+"iab (! ∉
+"iab -) ∋
+"iab /0 ∅ 
+"iab (c ⊂
+"iab )c ⊃
+"iab !(c ⊄
+"iab !)c ⊅
+"iab (_ ⊆ 
+"iab )_ ⊇
+"iab /> 〉
+"iab </ 〈
+"iab -, ¬ 
+"iab l* λ
+"iab => ⇒ 
+"iab <= ⇐
+"iab == ⇔ 
+"iab -2 − 
+"iab +Z ∑
+"iab != ≠ 
+"iab ?= ≅
+"iab a* α
+"iab b* β
+"iab g* γ
+"iab S* Σ
+"iab P* Π
+"iab =< ≤
+"iab >= ≥
+"iab !=< ≰
+"iab .: ∴
+
+" IPA phonetic symbols
+"ī ū í ÉÀ5
+digraph a5 594
+"ɒ 
+"β ç ᵈ ḑ ┬ │å ık
+"Ā		mynotes altında listesi vardı galiba ā 
+
+" [Mathematical symbol macros for [idea]vim](https://gist.github.com/breandan/ed814aba2cee6d27a0efff655e231b09)
+"iab \alpha α
+"iab \beta β
+"iab \gamma γ
+"iab \delta δ
+"iab \epsilon ε
+"iab \zeta ζ
+"iab \eta η
+"iab \theta θ
+"iab \iota ι
+"iab \kappa κ
+"iab \lambda λ
+"iab \mu μ
+"iab \nu ν
+"iab \xi ξ
+"iab %pi π
+"iab \acx π
+"iab \rho ρ
+"iab \sigma σ
+"iab \tau τ
+"iab \upsilon υ
+"iab \phi φ
+"iab \chi χ
+"iab \psi ψ
+"iab \omega ω
+
+"iab \Gamma Γ
+"iab \Delta Δ
+"iab \Lambda Λ
+"iab \Xi Ξ
+"iab %Pi Π
+"iab \Sigma Σ
+"iab \Upsilon ϒ
+"iab \Phi Φ
+"iab \Psi Ψ
+"iab \Omega Ω
+
+"iab \nabla ∇
+"iab \partial ∂
+
+
+": }}}
+
+": fff file manager plugin settings {{{  
+
+" FFF file manager
+" [dylanaraps/fff.vim: A plugin for vim/neovim which allows you to use fff as a file opener.](https://github.com/dylanaraps/fff.vim)
+
+function! FindExecuteCommand()
+  let line = search('\S*!'.'!:.*')
+  if line > 0
+    let command = substitute(getline(line), "\S*!"."!:*", "", "")
+    execute "silent !". command
+    execute "normal gg0"
+    redraw
+  endif
+endfunction
+nmap <F3> :call FindExecuteCommand()<CR>
+"!!:open /Users/mertnuhoglu/Downloads/panda01.jpg
+": }}}
+
+" vertical split
+let g:fff#split = "30vnew"
+" left sidebar (nerdtree style)
+let g:fff#split_direction = "nosplitbelow nosplitright"
+
+function! FffCurrentDir()
+	let path = expand("%:p:h")
+	exe "F " . path
+endfunction
+command! FffCurrentDir call FffCurrentDir()
+
+" use fff instead of default vinegar
+nnoremap - :FffCurrentDir<cr>
+": }}}
 
