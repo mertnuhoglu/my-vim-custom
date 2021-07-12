@@ -8,7 +8,7 @@ let g:mapleader = "\<Space>"
 let g:maplocalleader =',' 
 
 syntax enable                           " Enables syntax highlighing
-set hidden                              " Required to keep multiple buffers open multiple buffers
+set nohidden                              " Required to keep multiple buffers open multiple buffers
 " set nowrap                              " Display long lines as just one line
 set wrap         " wrap long lines
 set shiftwidth=2   " Use indents of 2 spaces
@@ -80,13 +80,6 @@ set backspace=2
 " See :help 'cpoptions' for these ones.  'cpoptions' has a huge
 " set of possible options
 set cpoptions=ces$
-
-" Set the status line the way I like it
-set statusline=%f\ %m\ %r\ Line:\ %l/%L[%p%%]\ Col:\ %c\ Buf:\ #%n\ [%b][0x%B]
-" show encoding of the file on status bar
-if has("statusline")
- set statusline=%<%f\ %h%m%r%=%{\"[\".(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\").\"]\ \"}%k\ %-14.(%l,%c%V%)\ %P
-endif
 
 " tell Vim to always put a status line in, even if there is only one
 " window
@@ -187,9 +180,8 @@ set foldmethod=syntax
 set nocompatible
 
 " Get that filetype stuff happening
-filetype on
-filetype plugin on
-filetype indent on
+filetype plugin indent on
+filetype detect
 
 " Don't update the display while executing macros
 set lazyredraw
@@ -264,8 +256,6 @@ let g:javascript_conceal_prototype            = "¶"
 let g:javascript_conceal_static               = "•"
 let g:javascript_conceal_super                = "Ω"
 let g:javascript_conceal_arrow_function       = "⇒"
-" set conceallevel=1
-" map ül :exec &conceallevel ? "set conceallevel=0" : "set conceallevel=1"<CR>
 ": }}} conceal
 
 ": all {{{
@@ -293,11 +283,10 @@ set complete+=kspell
 let NERDCreateDefaultMappings=0
 
 function! Test()
-	g/mertnuhoglu/d
-	g/Public/d
-	g/hrs ago/d
-	g/theodore/norm d4j
-	g/^\s*$/,/./-j
+	norm o
+	norm "cP
+	norm gcc
+  norm ^
 endfunction
 
 ": fff file manager plugin settings {{{
@@ -368,6 +357,7 @@ command! Cdfulcro cd /Users/mertnuhoglu/codes/clojure/fulcro/tutorial_tags | :pw
 command! Cdcmmi cd $CMMIMY | :pwd
 command! Cdbtgcmmi :Cdcmmi
 command! Cdmn cd $MYNOTES | :pwd
+command! Cdprojects cd $PROJECTS | :pwd
 command! Cdstudy cd $STUDY | :pwd
 command! Cdbdoc cd $BzqDoc | :pwd
 command! Cdkns cd $KNS | :pwd
@@ -394,11 +384,10 @@ command! Edershaftalik :e "$HOME/gdrive/Apps/Notational Data/ders_ozne_ben_nesne
 " E commands
 
 " mynotes/ files
-command! Estuff e $MYREPO/stuff.otl
+command! Estuff e $MYREPO/work/work.otl
 command! Est Estuff
 command! Estuff2 e $MYREPO/stuff2.otl
 command! Eknwl e $MYREPO/knwl.otl
-command! TStuff tabnew | b stuff.otl
 command! Eindexnotes e $HOME/gdrive/mynotes/index_notes.otl
 command! Eactivities e $MYNOTES/activities.otl
 
@@ -407,7 +396,7 @@ command! Erefmine e ~/projects/myrepo/general/refmine.otl
 command! Erm Erefmine
 command! EquickstartKms :Utl openLink ~/projects/myrepo/general/refmine.otl#r=g_11660
 command! EquickstartQuickstarts :Utl openLink ~/projects/myrepo/general/refmine.otl#r=11708
-command! EquickstartCmmi :Utl openLink ~/projects/btg/btg_cmmi/logbook/study_cmmi_summary_20200415.otl#r=g_11704
+command! EquickstartCmmi :Utl openLink ~/projects/btg/btg_cmmi/logbook/study_cmmi.otl#r=g_11704
 command! EquickstartLym :Utl openLink ~/projects/lym/lym/study_lym.otl#r=g_11707
 command! EquickstartNhv :Utl openLink ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/study_nhv.otl#r=g_11709
 command! Erefcard e $STUDY/other/refcard.otl
@@ -416,6 +405,8 @@ command! Erefcardarchive e $STUDY/other/refcard_archive.otl
 command! Ercar Erefcardarchive
 command! Erclojure e $STUDY/clj/refcard_clojure.otl
 command! Ercl Erclojure
+command! Erconvertdata e $STUDY/r/rfc_convert_data.md
+command! Ercd Erconvertdata
 command! Earticlesr e ~/projects/study/r/articles_r.md
 command! Ear Earticlesr
 command! Earticlesjs e ~/projects/study/js/articles_js.md
@@ -530,22 +521,26 @@ command! Enkns Enoteskns
 "command! Edocsipa e ~/gdrive/mynotes/prj/sipa/doc_sipa.md
 "command! Edsipa Edocsipa
 "command! Eds Edocsipa
-command! Ecmdict e ~/projects/btg/btg_cmmi/logbook/dictionary_cmmi.tsv
-command! Ecmpascal e ~/projects/btg/btg_cmmi/logbook/agenda_pascal.md
+command! Ecmdict e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/dictionary_cmmi.tsv
+command! Ecmpascal e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/meeting_pascal/agenda_pascal.md
 command! Ecmp Ecmpascal
-command! Ecmstudy e ~/projects/btg/btg_cmmi/logbook/study_cmmi_summary_20200415.otl
+command! Ecmleadappraiser e ~/projects/myrepo/prj/cmmi/cmmi_trainings/lead_appraiser_training/lead_appraiser_training_20210704.otl
+command! Ecml Ecmleadappraiser
+command! Ecmstudy e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/study_cmmi.otl
 command! Ecms Ecmstudy
-command! Ecmchecklist e ~/projects/btg/btg_cmmi/process_asset_examples/gap_analysis/gap_analysis_checklist_questions.otl
+command! Ecmchecklist e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/gap_analysis_checklist_questions.otl
 command! Ecmc Ecmchecklist
-command! Ecmartifacts e ~/projects/btg/btg_cmmi/process_asset_examples/gap_analysis/gap_analysis_artifacts_database.otl
+command! Ecmartifacts e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/gap_analysis_artifacts_database.otl
 command! Ecma Ecmartifacts
-command! Ecmfindings e ~/projects/btg/btg_cmmi/process_asset_examples/gap_analysis/gap_analysis_findings_database.otl
+command! Ecmfindings e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/gap_analysis_findings_database.otl
 command! Ecmf Ecmfindings
 command! Ecmmodel e ~/projects/btg/btg_cmmi/logbook/cmmi_model_v20.txt
 command! Ecmm Ecmmodel
-command! Ecmideas e ~/projects/btg/btg_cmmi/logbook/ideas_cmmi.md
+command! Ecmideas e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/ideas_cmmi.md
 command! Ecmid Ecmideas
-command! Ecmmpm e ~/projects/btg/btg_cmmi/logbook/study_mpm.otl
+command! Ecmmpm e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/study_mpm.otl
+command! Ecmdictionary e ~/projects/btg/btg_cmmi/logbook/dictionary_cmmi_official.md
+command! Ecmd Ecmdictionary
 
 " vim scripts
 command! Emyvimcustom e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
@@ -569,6 +564,8 @@ command! Enstt Ensettings
 command! Egstt Enstt
 command! Enotes e ~/projects/myrepo/nx/nnote.md
 command! Enn Enotes
+command! Enregistry e ~/gdrive/notes/koza/registry.otl
+command! Enr Enregistry
 
 " mynotes/general files
 command! Egconventions e ~/projects/myrepo/general/conventions.md
@@ -779,10 +776,10 @@ nmap <silent> <Leader>üep <Plug>(coc-diagnostic-prev)
 nmap <silent> <Leader>üen <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+nmap <silent> ügd <Plug>(coc-definition)
+nmap <silent> ügy <Plug>(coc-type-definition)
+nmap <silent> ügi <Plug>(coc-implementation)
+nmap <silent> ügr <Plug>(coc-references)
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -863,7 +860,7 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 " Add (Neo)Vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline.
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Mappings for CoCList
 " Show all diagnostics.
@@ -1018,11 +1015,14 @@ endtry
 
 ": }}} unmap settings 
 
+": compatible keybindings: vim vs spacemacs vim-which-key id=g_11007 {{{
+
+let g:which_key_timeout = 300
+
 ": vim-which-key spacemacs emacs-which-key port {{{ id=g_11679
 
 ": https://github.com/liuchengxu/vim-which-key
 "nnoremap <silent> <leader> :WhichKey 'ü'<CR>
-
 
 let surround_map = {
 		\ 'name' : '+Surround Menu'                         ,
@@ -1043,15 +1043,20 @@ command! ColorschemeOceanicNext :colorscheme OceanicNext
 command! ColorschemePapayaWhip :colorscheme PapayaWhip
 command! ColorschemeAyu :colorscheme ayu
 command! ColorschemeRigel :colorscheme rigel
+command! ColorschemeNightfly :colorscheme nightfly
+command! ColorschemeVotlLight :colorscheme votl_light
+command! ColorschemeSoftlight :colorscheme softlight
 
 let colorscheme_map = {
 		\ 'name': '+Colorscheme Menu',
 		\ 'a':		['ColorschemeAyu',   'ayu'],
 		\ 'k':		['ColorschemeMonokai',   'Monokai'],
 		\ 'm':		['ColorschemeMountainDew',   'MountainDew'],
+		\ 'n':		['ColorschemeNightfly',   'Nightfly'],
 		\ 'o':		['ColorschemeOceanicNext',   'OceanicNext'],
 		\ 'p':		['ColorschemePapayaWhip',   'PapayaWhip'],
 		\ 'r':		['ColorschemeRigel',   'Rigel'],
+		\ 'v':		['ColorschemeVotlLight',   'VotlLight'],
 		\ }
 
 " ~/.vim/bundle/vim-www/plugin/www.vim
@@ -1067,6 +1072,7 @@ let kustom_map = {
 		\ ')':		['OpenCommandInParens',   'Open Path in parantheses'],
 		\ 'c':    colorscheme_map,
 		\ 'e':    ['CreateExFile2', 'CreateExFile2'],
+		\ 'h':    ['HighlightCustom',      'HighlightCustom'],
 		\ 'o':    ['OpenFile',      'OpenFile'],
 		\ 'l':		['OpenCommandInParens',   'Open Path in parantheses'],
 		\ 'p':		['OpenCommand',   'Open Path under cursor'],
@@ -1095,7 +1101,7 @@ let tab_map = {
 
 let buffers_map = {
 	\ 'name': '+buffers menu' ,
-	\ 'b':    ['Buffers'        , 'Buffers']        ,
+	\ 'b':    ['TelescopeBuffers'        , 'Buffers']        ,
 	\ 'n':    [':norm gt'        , 'next tab']        ,
 	\ 'p':    [':norm gT'        , 'prev tab']        ,
 	\ }
@@ -1114,14 +1120,15 @@ command! ClapFiletypes :Clap filetypes
 command! ClapMarks :Clap marks
 command! ClapBuffers :Clap buffers
 
-let files_map = {
-	\ 'name': '+files',
+let fzf_map = {
+	\ 'name': '+fzf',
+  \ 'b':    ['Buffers',        'fzf-buffer']      ,
 	\ 'c':    ['Commands',          'Commands'],
 	\ 'd':    ['Directories',             'Directories'],
 	\ 'F':    ['ClapFiles',             'ClapFiles'],
 	\ 'f':    ['Files',             'Files'],
 	"\ 'F':    ['FilesNoIgnore',            'FilesNoIgnore'],
-	\ 'g':    ['ClapGrep',             'ClapGrep'],
+	\ 'g':    ['Rg',             'Rg'],
 	\ 'G':    ['ClapGrepAll',             'ClapGrepAll'],
 	\ 'l':    ['BLines',            'BLines'],
 	\ 'm':    ['Marks',             'Marks'],
@@ -1131,6 +1138,42 @@ let files_map = {
 	\ 't':    ['ClapFiletypes',            'ClapFiletypes'],
 	\ 'u':    ['CopyPathUrl',       'CopyPathUrl'],
 	\ 'w':    ['Windows',           'Windows'],
+	\ 'y':    ['CopyFilePath',      'CopyFilePath'],
+	\ }
+
+let telescope_map = {
+	\ 'name': '+files',
+	\ '-':    ['TelescopeFileBrowser',          'file_browser'],
+	\ '/':    ['TelescopeSearchHistory',          'search_history'],
+	\ ':':    ['TelescopeCommandHistory',          'command_history'],
+	\ 'a':    ['TelescopeCurrentBuffer',          'current_buffer_fuzzy_find'],
+	\ 'b':    ['TelescopeBuffers',          'buffers'],
+	\ 'B':    ['TelescopeBuiltins',          'builtin'],
+	\ 'c':    ['TelescopeCommands',          'commands'],
+	\ 'C':    ['TelescopeColorscheme',          'colorscheme'],
+	\ 'f':    ['TelescopeFindFiles',             'find_files'],
+	\ 'F':    ['TelescopeGitFiles',             'git_files'],
+	\ 'g':    ['TelescopeGrep',             'live_grep'],
+	\ 'G':    ['TelescopeGrepString',             'grep_string'],
+	\ 'h':    ['TelescopeHelpTags',             'help_tags'],
+	\ 'H':    ['TelescopeHighlights',             'highlights'],
+	\ 'j':    ['TelescopeJumpList',             'jumplist'],
+	\ 'k':    ['TelescopeKeymaps',            'keymaps'],
+	\ 'l':    ['TelescopeLoclist',             'loclist'],
+	\ 'L':    ['TelescopeReloader',             'reloader'],
+	\ 'm':    ['TelescopeMarks',             'marks'],
+	\ 'M':    ['TelescopeManPages',             'man_pages'],
+	\ 'n':    ['CopyFilename',      'CopyFilename'],
+	\ 'p':    ['CopyDirectoryPath', 'CopyDirectoryPath'],
+	\ 'r':    ['TelescopeMru',            'mru'],
+	\ 'R':    ['TelescopeRegisters',            'registers'],
+	\ 'q':    ['TelescopeQuickfix',            'quickfix'],
+	\ 's':    ['TelescopeSpellSuggest',            'spell_suggest'],
+	\ 'S':    ['TelescopeSymbols',            'symbols'],
+	\ 't':    ['TelescopeTags',            'tags'],
+	\ 'T':    ['TelescopeFiletypes',            'filetypes'],
+	\ 'u':    ['CopyPathUrl',       'CopyPathUrl'],
+	\ 'v':    ['TelescopeVimOptions',            'vim_options'],
 	\ 'y':    ['CopyFilePath',      'CopyFilePath'],
 	\ }
 
@@ -1145,21 +1188,42 @@ let text_map = {
 	\ 'a' : align_map,
 	\ }
 
+function! OpenFileVsplit()
+	only
+	Utl3
+endfunction
+command! OpenFileVsplit call OpenFileVsplit()
+nnoremap <silent> <leader>ıv :OpenFileVsplit <CR>
+
+let utl_map = {
+	\ 'name' : '+Utl Menu' ,
+	\ 'i'    : ['Utl',     'Utl'],
+	\ 's'    : ['Utl2',     'Utl split'],
+	\ 't'    : ['UtlTab',     'Utl tabe'],
+	\ 'v'    : ['Utl3',     'Utl vsplit'],
+	\ }
+
 let custom_map = {
-	\ 'name' : '+Custom Menu' ,
+	\ 'name' : '+Custom Menu üt' ,
 	\ 'c' :		kustom_map2,
-	\ 'f' : files_map,
+	\ 'f' : telescope_map,
+	\ 't' : fzf_map,
+  \ 'i' : utl_map,
 	\ 'k' : kustom_map,
   \ 's' : surround_map,
+  \ 'ü' : ['OpenFileVsplit',     'OpenFileVsplit'],
 	\ }
 
 let cmmi_map = {
 	\ 'name' : '+cmmi files',
-	\ 's'    : ['Ecmstudy',     'study_cmmi_summary_20200415.otl'],
 	\ 'a'    : ['Ecmartifacts', 'gap_analysis_artifacts_database.otl'],
 	\ 'c'    : ['Ecmchecklist', 'gap_analysis_checklist_questions.otl'],
+	\ 'd'    : ['Ecmdictionary', 'dictionary_cmmi_official.md'],
 	\ 'f'    : ['Ecmfindings',  'gap_analysis_findings_database.otl'],
+	\ 'l'    : ['Ecmleadappraiser',    'lead_appraiser_training_20210704.otl'],
+	\ 'm'    : ['Ecmmodel',  'cmmi_model_v20.txt'],
 	\ 'p'    : ['Ecmpascal',    'agenda_pascal.otl'],
+	\ 's'    : ['Ecmstudy',     'study_cmmi.otl'],
 	\ }
 
 let quickstart_map = {
@@ -1193,6 +1257,7 @@ let ref_files_map = {
 	\ 'b':    ['Erefbookmarks',   'refbookmarks.otl'],
 	\ 'c':    ['Erefcard',        'refcard.otl'],
 	\ 'ca':   ['Erefcardarchive', 'refcard_archive.otl'],
+	\ 'cd':   ['Erconvertdata', 'rfc_convert_data.md'],
 	\ 'cl':   ['Erclojure',       'refcard_clojure.otl'],
 	\ }
 
@@ -1215,9 +1280,10 @@ let logbook_files_map = {
 
 let notes_files_map = {
 	\ 'name': '+notes files',
+	\ 'a':   ['Enotesanki',  'notes_anki.otl'],
 	\ 'd':   ['Enidea',       'nidea.otl'],
 	\ 'n':   ['Eninfop',      'infop.otl'],
-	\ 'a':   ['Enotesanki',  'notes_anki.otl'],
+	\ 'r':   ['Enregistry',      'registry.otl'],
 	\ }
 
 let vim_files_map = {
@@ -1253,8 +1319,11 @@ let edit_map = {
  \ '?':       ['Buffers',        'fzf-buffer']      ,
  \ }
 
+" nnoremap <Leader>amm  <Plug>(MarkToggle)
+
 let applications_map = {
 	\ 'name': '+applications',
+	\ 'c':    ['Lflcd',            'Lflcd'],
 	\ 'r':    ['Lf',            'Lf'],
 	\ 'R':    ['LfCurrentDirectory',            'LfCurrentDirectory'],
 	\ }
@@ -1266,10 +1335,17 @@ let project_map = {
 
 command! TabSplit :tab split
 
+function! OnlySplitWindow()
+	only
+	Utl3
+endfunction
+command! OnlySplitWindow call OnlySplitWindow()
+
 let window_map = {
 	\ 'name': '+window',
 	\ 'm':    ['TabSplit',            'tab split'],
 	\ 'o':    ['only',            'only'],
+	\ 'v':    ['OnlySplitWindow',            'OnlySplitWindow'],
 	\ }
 
 command! SessionMkSession :mksession! .quicksave.vim
@@ -1303,11 +1379,30 @@ let ref_map = {
 	\ 'w':    ['RefWord',            'RefWord'],
 	\ }
 
+function! MotionPageDown()
+  execute "norm! \<c-d>"
+endfunction
+" command! MotionPageDown :execute "norm! \<c-d>"
+command! MotionPageDown call MotionPageDown()
+
+let cd_map = {
+	\ 'name': '+global c',
+	\ 'p':    ['Cdprojects',            'Cdprojects'],
+	\ 's':    ['Cdstudy',            'Cdstudy'],
+	\ }
+
+let global_c_map = {
+	\ 'name': '+global c',
+	\ 'd' : cd_map,
+	\ }
+
 let g:which_key_map =  {
+  \ ' ' : ['MotionPageDown',            'MotionPageDown'],
 	\ 'a' : applications_map,
 	\ 'b' : buffers_map,
+	\ 'c' : global_c_map,
 	\ 'e' : edit_map,
-	\ 'f' : files_map,
+	\ 'f' : telescope_map,
 	\ 'm' : major_clojure_map,
 	\ 'p' : project_map,
 	\ 'r' : ref_map,
@@ -1315,7 +1410,7 @@ let g:which_key_map =  {
   \ 's' : session_map,
   \ 't' : tab_map,
   \ 'x' : text_map,
-  \ 'w' : window_map,
+  \ 'ı' : window_map,
 	\ }
 
 call which_key#register('<Space>', "g:which_key_map")
@@ -1325,19 +1420,29 @@ vnoremap <silent> <leader> :<c-u>WhichKeyVisual '<Space>'<CR>
 
 ": }}} which-key
 
-": compatible keybindings: vim vs spacemacs vim-which-key id=g_11007 {{{
+": spacemacs normal mode keybindings {{{
+
+" sexp smartparens cleverparens evilparens paredit
+nmap ,r  <Plug>(sexp_raise_list)
+nmap ,R  <Plug>(sexp_raise_element)
+nmap <buffer> <A-h>  <Plug>(sexp_flow_to_next_open)
+nmap <A-h>  <Plug>(sexp_flow_to_next_open)
+nnoremap <A-j>  <Plug>(sexp_flow_to_next_open)
+nnoremap <A-j> k
+
 
 " toggle spell check
 nnoremap <leader>tS :setlocal spell! spelllang=en_us<CR>
 
-nnoremap <leader>cds :Cdstudy<CR>
 command! P :pwd
 nnoremap <leader>pp :pwd<cr>
 nnoremap <leader>cd. :ChangeCurrentDirectory<CR>
+command! CdRoot exec 'cd' fnameescape(fnamemodify(finddir('.git', escape(expand('%:p:h'), ' ') . ';'), ':h'))
+nnoremap <leader>cdr :CdRoot<cr>
 
 " split window
-nnoremap <silent> <leader>ıv :wincmd v<cr>:wincmd l<cr>
-nnoremap <silent> <leader>ıs :wincmd s<cr>:wincmd j<cr>
+" nnoremap <silent> <leader>ıv :wincmd v<cr>:wincmd l<cr>
+" nnoremap <silent> <leader>ıs :wincmd s<cr>:wincmd j<cr>
 
 " Close others
 nnoremap <silent> <leader>ıo :wincmd o<cr>
@@ -1371,14 +1476,10 @@ nnoremap <leader>czd :FDigraph<cr>
 " custom commands. mnemonics: Kustom
 nnoremap <leader>üko :OpenFile<cr>
 
-" surround
-nnoremap <leader>ürc :ReplaceWithCloze<CR>
-nnoremap <leader>ürc :ReplaceWithCloze2<CR>
-
 nnoremap <leader>tn :ColorSchemeBrowse<CR>
 
 nnoremap <leader>üha :QuickhlManualAdd
-
+": }}} spacemacs normal mode keybindings 
 
 " spacemacs end
 ": }}}
@@ -1694,35 +1795,6 @@ function! OpenFilesRecursively()
 endfun
 command! OpenFilesRecursively call OpenFilesRecursively()
 
-function! OpenMinimal()
-	cd $MYNOTES
-	e stuff.otl
-  OpenItrNotes
-	b notes_itr.md
-  :call AutomaticSessions()
-endfunction
-command! OpenMinimal call OpenMinimal()
-
-function! OpenRef()
-  Erefcard
-  tabnew
-  Epstuff
-  tabnew
-  Enid
-endfunction
-command! OpenRef call OpenRef()
-
-function! OpenStuff()
-	Estuff
-endfunction
-command! OpenStuff call OpenStuff()
-
-function! OpenItrNotes()
-	Edi
-	Eni
-endfunction
-command! OpenItrNotes call OpenItrNotes()
-
 " text içine konulan scripti çalıştırır
 function! RunDynamicScript(...)
     if (exists('a:1'))
@@ -1948,30 +2020,6 @@ function! MindMupToText()
 endfunction
 command! MindMupToText call MindMupToText()
 
-" macros for keynote 2 wordpress
-" let @t = 'I[A](Jd$Kpa)J0JddK'
-
-" macros for python
-" convert __init__ parameters into self.initializations
-"let @a='d3wO P0wiself.wyw2wdw"0Pj0dw'
-" convert __init__ parameters into =None default values
-"let @b='wi=Noneww'
-"
-
-" macros for vimrepress
-" convert image link to markdown syntax
-" let @l='I![](A)0'
-" let @i='/http:..i.imgur.com.\w\+.\(png\|jpg\)I![](A)j0'
-" convert dropbox image
-" let @d='/^\w\+\.\(png\|jpg\)$Ihttp://dl.dropbox.com/u/103580364/temp/I![](A)0'
-" make http urls to automatic links:
-" let @m='/httpi</\s\|$i>/rklh'
-" add .jpg extension to imgur image links:
-" let @j = '/imgurA.jpg'
-
-" copy column of csv and put it into the buffer window below
-" let @x =':Column\,mpuGoPG,lL'
-
 " find replace inside quickfix file list
 " http://stackoverflow.com/questions/4792561/how-to-do-search-replace-with-ack-in-vim
 command! -nargs=+ QFDo call QFDo(<q-args>)
@@ -2004,6 +2052,8 @@ endfunction
 
 ": folding and navigation settings {{{ 
 
+" use spaces instead of tabs
+nmap zN :set expandtab \| :retab<cr>
 " in md + otl files use zn instead of zm
 nmap zn :set ft=votl \| :norm! mnzMzrzr'nzm \| :set expandtab \| :retab \| :norm! 'n<cr>
 nmap zV znzMzv
@@ -2121,11 +2171,15 @@ map üff <Esc>:1,$!xmllint --format -<CR>
 nnoremap üüh "=strftime("%Y-%m-%dT%H:%M:%S+03:00")<CR>P
 abbrev üüh <C-R>=strftime("%Y-%m-%dT%H:%M:%S+03:00")<CR>
 nnoremap üüi "=strftime("%Y-%m-%dT%H:%M:%S%z")<CR>P
-abbrev üüi <C-R>=strftime("%Y-%m-%dT%H:%M:%S%z")<CR>
+" abbrev üüi <C-R>=strftime("%Y-%m-%dT%H:%M:%S%z")<CR>
+iab <expr> üüi strftime("%Y-%m-%dT%H:%M:%S%z")
 nnoremap üüd "=strftime("%Y%m%d")<CR>P
-abbrev üüd <C-R>=strftime("%Y%m%d")<CR>
+iab <expr> üüd strftime("%Y%m%d")
+" abbrev üüd <C-R>=strftime("%Y%m%d")<CR>
 "nnoremap üüt "=strftime("%H%M")<CR>P
 abbrev üüt <C-R>=strftime("%H%M")<CR>
+" abbrev üüz <C-R>=test
+" iab <expr> dts strftime("%c")
 
 " source script again
 nnoremap ğğs :w \| so%<CR>
@@ -2147,7 +2201,7 @@ nnoremap <S-F1> :args<CR>
 
 ": }}} simple commands 
 
-": convert surround functions {{{
+": convert2 surround functions {{{
 
 ": surround settings {{{ 
 function! SurroundMdImage() range
@@ -2738,6 +2792,7 @@ InoreabBSlash 00 ∞
 InoreabBSlash LB ▄
 " black circle
 InoreabBSlash 0M ●
+" composition = bileşke
 InoreabBSlash 0m ○
 " derivative partial del nabla
 InoreabBSlash NB ∇
@@ -2982,6 +3037,8 @@ nnoremap üüb :call BuildAndRunBabelNodeScript()<cr>
 
 ": ctags tagbar settings {{{ 
 
+" autocmd BufWritePost *.vim,*.lua,*.clj,*.cljs,*.py silent! !ctags . &
+
 " rtags/gutentags
 let g:gutentags_ctags_executable='ctags'
 let g:gutentags_ctags_executable_r = 'rtags'
@@ -3016,11 +3073,84 @@ let g:tagbar_type_markdown = {
 
 ": }}} ctags tagbar settings 
 
-": plugin settings {{{ 
+": plugin2 settings {{{ 
+
+" emoji settings
+set completefunc=emoji#complete
+
+" vim-slash settings
+" place current match at center
+noremap <plug>(slash-after) zz
+" Blinking cursor after search using Vim 8 timer
+if has('timers')
+  " Blink 2 times with 50ms interval
+  noremap <expr> <plug>(slash-after) 'zz'.slash#blink(2, 50)
+endif
+
+
+" rainbow settings
+let g:rainbow_conf = {
+\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
+\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
+\	'guis': [''],
+\	'cterms': [''],
+\	'operators': '_,_',
+\	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
+\	'separately': {
+\		'*': {
+\			'ctermfgs': [3,5,8,12,214,142], 
+\   },
+\		'markdown': {
+\			'parentheses_options': 'containedin=markdownCode contained', 
+\		},
+\		'clojure': {
+\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'], 
+\			'ctermfgs': ['LightRed', 'LightGrey', 'Gray', 'DarkCyan', 'White'], 
+\		},
+\		'lisp': {
+\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'], 
+\		},
+\		'haskell': {
+\			'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/\v\{\ze[^-]/ end=/}/ fold'], 
+\		},
+\		'vim': {
+\			'parentheses_options': 'containedin=vimFuncBody', 
+\		},
+\		'perl': {
+\			'syn_name_prefix': 'perlBlockFoldRainbow', 
+\		},
+\		'stylus': {
+\			'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'], 
+\		},
+\		'css': 0, 
+\	}
+\}
+:RainbowToggle
+
+
+" cljfold foldwords settings
+let g:clojure_foldwords = "def,ns,identity"
+
+" vim-markdown settings
+let g:vim_markdown_fenced_languages = ['csharp=cs','clojure=clj']
+
+" which-key settings
+
+" rainbow parantheses settings
+" Activation based on file type
+augroup rainbow_lisp
+  autocmd!
+  " autocmd FileType lisp,clojure,scheme,markdown RainbowParentheses
+  autocmd FileType lisp,clojure,scheme,markdown RainbowToggleOn
+augroup END
+" let g:rainbow#max_level = 16
 
 ": file manager settings {{{ 
 " use lf instead of default vinegar
 nnoremap - :LfCurrentFile<cr>
+" Opening lf instead of netrw when you open a directory
+let g:NERDTreeHijackNetrw = 0 " Add this line if you use NERDTree
+let g:lf_replace_netrw = 1 " Open lf when vim opens a directory
 
 " vimfiler file explorer
 let g:vimfiler_quick_look_command = 'qlmanage -p'
@@ -3117,6 +3247,31 @@ endfunction
 
 ": lightline settings {{{ 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Here begins automated wordcount addition from [Vim Word Count and Useful Status Line](https://cromwell-intl.com/open-source/vim-word-count.html)
+" This combines several ideas from:
+" http://stackoverflow.com/questions/114431/fast-word-count-function-in-vim
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:word_count="<unknown>"
+function WordCount()
+	return g:word_count
+endfunction
+function UpdateWordCount()
+	let lnum = 1
+	let n = 0
+	while lnum <= line('$')
+		let n = n + len(split(getline(lnum)))
+		let lnum = lnum + 1
+	endwhile
+	let g:word_count = n
+endfunction
+" Update the count when cursor is idle in command or insert mode.
+" Update when idle for 1000 msec (default is 4000 msec).
+set updatetime=1000
+augroup WordCounter
+	au! CursorHold,CursorHoldI * call UpdateWordCount()
+augroup END
+
 " vim statusline configured by lightline
 function! RelativePath()
 	return expand("%:~:h")
@@ -3124,20 +3279,32 @@ endfunction
 function! CurrentDirNameOnly()
 	return expand("%:h:t")
 endfunction
+function CtagsRunning()
+	return gutentags#statusline()
+endfunction
+augroup MyGutentagsStatusLineRefresher
+    autocmd!
+    autocmd User GutentagsUpdating call lightline#update()
+    autocmd User GutentagsUpdated call lightline#update()
+augroup END
 " https://github.com/itchyny/lightline.vim/blob/master/README.md
 let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'relativepath', 'modified' ] ]
+      \             [ 'gitbranch', 'readonly', 'filename', 'relativepath', 'modified', 'wordcount', 'gutentags' ] ]
       \ },
       \ 'component_function': {
       \   'gitbranch': 'fugitive#head',
-      \    'relativepath': 'CurrentDirNameOnly'
+      \   'relativepath': 'CurrentDirNameOnly',
+			\   'wordcount': 'WordCount',
+			\   'gutentags': 'CtagsRunning'
       \ },
-      \ }
 			"\ 'enable': { 'tabline': 0 },
       "\ 'colorscheme': 'solarized',
+      \ }
+
+call lightline#init()
 
 ": }}} lightline settings 
 
@@ -3152,8 +3319,9 @@ xmap gl <Plug>(LiveEasyAlign)
 nmap gl <Plug>(LiveEasyAlign)
 
 command! -range=% EasyAlignTable :execute ":<line1>,<line2>EasyAlign *|"
-xmap ğt :EasyAlignTable<cr>
+" xmap ğt :EasyAlignTable<cr>
 "xmap ğt gaip*\|
+nnoremap ğt :execute "norm gaip*\|"<cr>
 
 map <leader>vga :call Vhdl_GA_All()<CR>
 
@@ -3559,6 +3727,13 @@ nnoremap ö w
 
 ": mappings keybindings {{{ 
 
+nmap ür <Plug>ReplaceWithRegisterOperator
+nmap ürr <Plug>ReplaceWithRegisterLine
+xmap ür <Plug>ReplaceWithRegisterVisual
+
+" surround
+nnoremap <leader>ücc :ReplaceWithCloze2<CR>
+
 nnoremap çç yy
 nnoremap üa <C-W>=<CR>
 nnoremap ş :ta
@@ -3785,7 +3960,7 @@ command! FilesNoIgnore call fzf#run({
 " hidden by default
 command! -bang -nargs=* Rg
 	\ call fzf#vim#grep(
-	\   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+	\   'rg --follow --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
 	\   <bang>0 ? fzf#vim#with_preview('up:60%')
 	\           : fzf#vim#with_preview('right:50%:hidden', '?'),
 	\   <bang>0)
@@ -3832,4 +4007,152 @@ command! Directories :call fzf#run(fzf#wrap({'source': 'fasd -d -R', 'sink': { l
 
 ": }}}
 
+": telescope {{{
+
+" Find files using Telescope command-line sugar.
+command! TelescopeFindFiles :Telescope find_files
+command! TelescopeGrep :Telescope live_grep
+command! TelescopeBuffers :Telescope buffers
+command! TelescopeHelpTags :Telescope help_tags
+command! TelescopeGrepString :lua require('telescope.builtin').grep_string()
+command! TelescopeFileBrowser :lua require('telescope.builtin').file_browser()
+command! TelescopeTreesitter :lua require('telescope.builtin').treesitter()
+command! TelescopeGitFiles :lua require('telescope.builtin').git_files()
+command! TelescopeGitCommits :lua require('telescope.builtin').git_commits()
+command! TelescopeBuiltins :lua require('telescope.builtin').builtin()
+command! TelescopeQuickfix :lua require('telescope.builtin').quickfix()
+command! TelescopeLoclist :lua require('telescope.builtin').loclist()
+command! TelescopeMru :lua require('telescope.builtin').oldfiles()
+command! TelescopeCommandHistory :lua require('telescope.builtin').command_history()
+command! TelescopeMarks :lua require('telescope.builtin').marks()
+command! TelescopeManPages :lua require('telescope.builtin').man_pages()
+command! TelescopeVimOptions :lua require('telescope.builtin').vim_options()
+command! TelescopeSearchHistory :lua require('telescope.builtin').search_history()
+command! TelescopeColorscheme :lua require('telescope.builtin').colorscheme()
+command! TelescopeRegisters :lua require('telescope.builtin').registers()
+command! TelescopeKeymaps :lua require('telescope.builtin').keymaps()
+command! TelescopeFiletypes :lua require('telescope.builtin').filetypes()
+command! TelescopeHighlights :lua require('telescope.builtin').highlights()
+command! TelescopeSpellSuggest :lua require('telescope.builtin').spell_suggest()
+command! TelescopeTags :lua require('telescope.builtin').tags()
+command! TelescopeCurrentBufferTags :lua require('telescope.builtin').current_buffer_tags()
+command! TelescopeSymbols :lua require('telescope.builtin').symbols()
+
+command! TelescopeTagstack :lua require('telescope.builtin').tagstack()
+command! TelescopeJumpList :lua require('telescope.builtin').jumplist()
+command! TelescopeLspReferences :lua require('telescope.builtin').lsp_references()
+command! TelescopeLspDefinitions :lua require('telescope.builtin').lsp_definitions()
+command! TelescopeLspImplementations :lua require('telescope.builtin').lsp_implementations()
+command! TelescopeLspCodeActions :lua require('telescope.builtin').lsp_code_actions()
+command! TelescopeReloader :lua require('telescope.builtin').reloader()
+
+command! TelescopeCurrentBuffer :lua require('telescope.builtin').current_buffer_fuzzy_find()
+command! TelescopeCustomFinder :Telescope find_files find_command=rg,--ignore,--hidden,--files prompt_prefix=🔍
+
+command! TelescopeVimOptions :lua require('telescope.builtin').vim_options()
+
+command! TelescopeSearchStudy :lua require('mytelescope').search_dotfiles()
+
+" highlights
+": }}}
+
+if executable('ugrep')
+    set grepprg=ugrep\ -RInk\ -j\ -u\ --tabs=1\ --ignore-files
+    set grepformat=%f:%l:%c:%m,%f+%l+%c+%m,%-G%f\\\|%l\\\|%c\\\|%m
+endif
+
+": conjure {{{
+
+command! CC :ConjureConnect
+let g:conjure#mapping#prefix = " m"
+
+function! ConjureEvalToComment()
+  norm! ,ee
+	norm! %
+  execute "norm! o\<c-r>c"
+  "norm! "cP
+  norm! I;;=> 
+  norm! ^
+endfunction
+command! ConjureEvalToComment call ConjureEvalToComment()
+nnoremap <leader>mec :call ConjureEvalToComment()<cr>
+
+": }}}
+
+": highlight specific words {{{ id=g_12098
+function! HighlightCustom()
+  syn match Todo /@\w\+/
+  syn match Todo /\<[A-Z][A-Z]\+\d\d\+\>/
+  syn keyword Title 001 002 003 004 005
+  syn keyword Title car cm dar est gov ii mc mpm ot pad pcm pi plan pqa pr rdm rsk sam ts vv
+  syn match Title /[A-Z][A-Z]\+\C/
+  syn match Title /0\d:/
+  syn match Title /\w\+\.jpg\>/
+  syn match Underlined /\<opt\d\+\>\|\<opt:/
+  syn match Underlined /^\s*[A-Z][A-Z]\+:/
+  syn match Underlined /\<ref:/
+  syn match Underlined /@\?\<q\d\+:/
+  syn match Underlined /\<q:/
+  syn match Underlined /\<ex:\|örn:/
+
+  hi MyGroupName guifg=Blue ctermfg=Blue term=bold
+endfunction
+command! HighlightCustom call HighlightCustom()
+": highlight specific words }}}
+
+command! TestCtags call HighlightCustom()
+command! TestCtags2 call HighlightCustom()
+command! TestCtags3 call HighlightCustom()
+command! TestCtags4 call HighlightCustom()
+command! TestCtags5 call HighlightCustom()
+command! TestCtags6 call HighlightCustom()
+
+": himalaya email client {{{ 
+
+" [himalaya/vim at master · soywod/himalaya](https://github.com/soywod/himalaya/tree/master/vim)
+
+let g:himalaya_mailbox_picker = 'telescope'
+let g:himalaya_telescope_preview_enabled = 0
+
+
+": highlight specific words }}}
+
+": lsp {{{ 
+
+" Do this in lua?? maybe...
+" vim.o is short for something teej thinks makes sense.
+set completeopt=menuone,noselect
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
+
+": highlight specific words }}}
+
+": scraping }}}
+function! GenerateNumberedLinks()
+	normal! $bhhh"nye
+	normal! ce01
+	normal! yy
+  $bbhh"nyece01yy:norm! npk$bbhh:execute "nomÄkbrmal! \<C-v>lnj":II:normal! ndd0
+
+	$bhhh"nye:normal! 19p
+	uyy:normal! 19p
+	k$bhhhce01
+endfunction
+function! GenerateNumberedLinksMacros()
+  $bbhh"nyece01yy:norm! npk$bbhh:execute "nomÄkbrmal! \<C-v>lnj":II:normal! ndd0
+
+	$bhhh"nye:normal! 19p
+	uyy:normal! 19p
+	k$bhhhce01
+endfunction
+command! HighlightCustom call HighlightCustom()
+": scraping }}}
+
+function! UseSpaces()
+  set tabstop=2     " Size of a hard tabstop (ts).
+  set shiftwidth=2  " Size of an indentation (sw).
+  set expandtab     " Always uses spaces instead of tab characters (et).
+  set softtabstop=0 " Number of spaces a <Tab> counts for. When 0, featuer is off (sts).
+  set autoindent    " Copy indent from current line when starting a new line.
+  set smarttab      " Inserts blanks on a <Tab> key (as per sw, ts and sts).
+endfunction
 
