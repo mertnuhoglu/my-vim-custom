@@ -1,34 +1,101 @@
-" vim:fileencoding=utf-8:ft=conf:foldmethod=marker
+" vim:fileencoding=utf-8:ft=vim:foldmethod=marker
 
 ": vim general settings {{{
+
+": indent settings {{{ id=g12607
+
+" ref: error: vim bazen 6 space ile indent ediyor bazen 2  <url:file:///~/projects/study/otl/cvim.otl#r=g12606>
+" ref: /usr/local/Cellar/neovim/0.6.0/share/nvim/runtime/indent/vim.vim
+
+set tabstop=2      " An indentation every two columns
+
+" [vim - Setting autoindentation to spaces in neovim? - Stack Overflow](https://stackoverflow.com/questions/51995128/setting-autoindentation-to-spaces-in-neovim/51995699)
+" length to use when editing text (eg. TAB and BS keys)
+" (0 for ‘tabstop’, -1 for ‘shiftwidth’):
+set softtabstop=0
+" length to use when shifting text (eg. <<, >> and == commands)
+" (0 for ‘tabstop’):
+set shiftwidth=0
+" round indentation to multiples of 'shiftwidth' when shifting text
+" (so that it behaves like Ctrl-D / Ctrl-T):
+set shiftround
+
+set smarttab                            " Makes tabbing smarter will realize you have 2 vs 4
+
+set expandtab                           " Converts tabs to spaces
+" try to be smart (increase the indenting level after ‘{’, decrease it after ‘}’, and so on):
+" smartindent is deprecated: [whitespace - Tab key == 4 spaces and auto-indent after curly braces in Vim - Stack Overflow](https://stackoverflow.com/questions/234564/tab-key-4-spaces-and-auto-indent-after-curly-braces-in-vim)
+set nosmartindent                         " Makes indenting smart
+" reproduce the indentation of the previous line:
+set autoindent                          " Good auto indent
+
+" indent folding with manual folds
+" http://vim.wikia.com/wiki/Folding
+augroup vimrc
+  au BufReadPre * setlocal foldmethod=indent
+  au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
+augroup END
+set foldmethod=syntax
+
+" Get that filetype stuff happening
+" use language‐specific plugins for indenting (better):
+filetype plugin indent on
+
+" do NOT expand tabulations in Makefiles:
+autocmd FileType make setlocal noexpandtab
+
+" for the C language, indent using 4‐column wide tabulation characters,
+" but make <Tab> insert half‐indentations as 2 spaces (useful for labels):
+autocmd FileType c setlocal noexpandtab shiftwidth=2
+
+" use shorter indentation for Bash scripts:
+autocmd FileType sh setlocal tabstop=2
+
+autocmd FileType vim setlocal expandtab nosmartindent
+
+": tab space convert {{{
+" convert spaces to tabs
+command! -range=% -nargs=0 Space2Tab execute '<line1>,<line2>s#^\\( \\{'.&ts.'\\}\\)\\+#\\=repeat("\\t", len(submatch(0))/' . &ts . ')'
+function! Tab2Space()
+  set expandtab
+  retab
+endfunction
+command! Tab2Space :call Tab2Space()
+" use spaces instead of tabs
+" zN
+nmap zI :set expandtab \| :retab<cr>
+function! UseSpaces()
+  set tabstop=2     " Size of a hard tabstop (ts).
+  set shiftwidth=2  " Size of an indentation (sw).
+  set expandtab     " Always uses spaces instead of tab characters (et).
+  set softtabstop=0 " Number of spaces a <Tab> counts for. When 0, featuer is off (sts).
+  set autoindent    " Copy indent from current line when starting a new line.
+  set smarttab      " Inserts blanks on a <Tab> key (as per sw, ts and sts).
+endfunction
+
+": tab space convert  }}}
+
+": indent settings }}}
 
 " [](https://www.chrisatmachine.com/Neovim/02-vim-general-settings/)
 
 let g:mapleader = "\<Space>"
 let g:maplocalleader =',' 
 
-syntax enable                           " Enables syntax highlighing
 set nohidden                              " Required to keep multiple buffers open multiple buffers
 " set nowrap                              " Display long lines as just one line
 set wrap         " wrap long lines
-set shiftwidth=2   " Use indents of 2 spaces
-set tabstop=2      " An indentation every four columns
-set softtabstop=2  " Let backspace delete indent
 set encoding=utf-8                      " The encoding displayed
 set pumheight=10                        " Makes popup menu smaller
 set fileencoding=utf-8                  " The encoding written to file
-set ruler              			            " Show the cursor position all the time
+set ruler                                                                                       " Show the cursor position all the time
 set cmdheight=2                         " More space for displaying messages
-set iskeyword+=-                      	" treat dash separated words as a word text object"
+set iskeyword+=-                        " treat dash separated words as a word text object"
 set mouse=a                             " Enable your mouse
 set splitbelow                          " Horizontal splits will automatically be below
 set splitright                          " Vertical splits will automatically be to the right
 set t_Co=256                            " Support 256 colors
 set conceallevel=0                      " So that I can see `` in markdown files
-set smarttab                            " Makes tabbing smarter will realize you have 2 vs 4
-set expandtab                           " Converts tabs to spaces
-set smartindent                         " Makes indenting smart
-set autoindent                          " Good auto indent
 set cursorline                          " Enable highlighting of the current line
 set background=dark                     " tell vim what the background color looks like
 set showtabline=2                       " Always show tabs
@@ -144,9 +211,6 @@ set synmaxcol=2048
 " ignore case in searches
 set ignorecase
 
-syntax enable
-syntax on
-
 " other settings
 
 set textwidth=0 wrapmargin=0
@@ -164,14 +228,6 @@ set path+=**
 " use system clipboard as register
 set clipboard=unnamedplus               " Copy paste between vim and everything else
 
-" indent folding with manual folds
-" http://vim.wikia.com/wiki/Folding
-augroup vimrc
-  au BufReadPre * setlocal foldmethod=indent
-  au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
-augroup END
-set foldmethod=syntax
-
 ": Derek Wyatt settings {{{
 
 " Taken from Derek Wyatt http://www.derekwyatt.org/vim/the-vimrc-file/
@@ -179,8 +235,6 @@ set foldmethod=syntax
 " Forget being compatible with good ol' vi
 set nocompatible
 
-" Get that filetype stuff happening
-filetype plugin indent on
 filetype detect
 
 " Don't update the display while executing macros
@@ -245,6 +299,62 @@ au! CursorHoldI,CursorHold,BufLeave <buffer> silent! :update
 
 ": }}} vim general settings 
 
+": startify settings {{{
+
+let g:startify_bookmarks = [ {'c': '~/.vimrc'}, '~/.zshrc' ]
+
+let g:startify_commands = [
+		\ ':colorscheme OceanicNext',
+		\ ':help reference',
+		\ ['Vim Reference', 'h ref'],
+		\ {'h': 'h ref'},
+		\ {'m': ['My magical function', 'call Magic()']},
+		\ ]
+
+let g:startify_change_to_dir = 1
+let g:startify_change_to_vcs_root = 1
+": startify settings }}}
+
+": netrw settings {{{
+
+" netrw vinegar options
+" https://shapeshed.com/vim-netrw/
+let g:netrw_browsex_viewer = "open"
+" make tree style default
+let g:netrw_liststyle = 3
+" remove the directory banner
+let g:netrw_banner = 0
+" open files in horizontal split by default (1)
+let g:netrw_browse_split = 0
+let g:netrw_winsize = 25
+" change from left split to right splitting
+let g:netrw_altv = 1
+
+": netrw settings }}}
+
+": clojure settings {{{
+
+" vim-clojure-static additional syntax keywords
+let g:clojure_syntax_keywords = {
+    \ 'clojureMacro': ["defproject", "defcustom"],
+    \ 'clojureFunc': ["string/join", "string/replace"]
+    \ }
+let g:clojure_maxlines = 100
+let g:clojure_align_multiline_strings = 1
+let g:clojure_special_indent_words = 'deftype,defrecord,reify,proxy,extend-type,extend-protocol,letfn,defn'
+
+": clojure settings }}}
+
+": highlighting several words {{{
+
+": https://github.com/t9md/vim-quickhl
+nmap <Space>hm <Plug>(quickhl-manual-this)
+xmap <Space>hm <Plug>(quickhl-manual-this)
+nmap <Space>hM <Plug>(quickhl-manual-reset)
+xmap <Space>hM <Plug>(quickhl-manual-reset)
+
+": }}}
+
 ": conceal {{{
 let g:javascript_conceal_function             = "ƒ"
 let g:javascript_conceal_null                 = "ø"
@@ -259,6 +369,9 @@ let g:javascript_conceal_arrow_function       = "⇒"
 ": }}} conceal
 
 ": all {{{
+
+" outline operation Move Left (<< ^Left ül) work always
+let g:voom_always_allow_move_left = 1
 
 " spell check
 autocmd BufRead,BufNewFile *.md setlocal nospell
@@ -283,9 +396,9 @@ set complete+=kspell
 let NERDCreateDefaultMappings=0
 
 function! Test()
-	norm o
-	norm "cP
-	norm gcc
+  norm o
+  norm "cP
+  norm gcc
   norm ^
 endfunction
 
@@ -317,6 +430,12 @@ let $PLEHNPROJECT = '$HOME/Dropbox2/projects/SEC_Filings/parser/'
 let $EVAMPROJECT = '$HOME/projects/study/study_evammoa'
 "command! ENotesEvamMoa e $EVAMPROJECT/notes_evam.otl
 "command! EPragmaNotes e $HOME/gdrive/IntelligentSearchAssistant/customer_development/meeting_notes_pragma.otl
+
+command! Elopal e ~/gdrive/btg/dcwater_mert/opal/opal_meeting_notes.md
+command! Eleems e ~/gdrive/btg/dcwater_mert/eems/eems_meeting_notes_otl.md
+command! Elvms e ~/gdrive/btg/dcwater_mert/vms/valve_meeting_notes.md
+command! Elamsmeeting e ~/gdrive/btg/dcwater_mert/ams/ams_meeting_notes_otl.md
+command! Elamsnotes e ~/gdrive/btg/dcwater_mert/ams/ams_notes.otl
 
 " Cd commands
 let $KEYNOTE = '$HOME/gdrive/Apps/MindMup/'
@@ -359,6 +478,8 @@ command! Cdbtgcmmi :Cdcmmi
 command! Cdmn cd $MYNOTES | :pwd
 command! Cdprojects cd $PROJECTS | :pwd
 command! Cdstudy cd $STUDY | :pwd
+command! CdMyrepo cd $MYREPO | :pwd
+command! Cdmyr cd $MYREPO | :pwd
 command! Cdbdoc cd $BzqDoc | :pwd
 command! Cdkns cd $KNS | :pwd
 command! Cditr cd $ITR | :pwd
@@ -378,24 +499,24 @@ command! Cdbzq cd $BIZQUALIFY | :pwd
 command! Cdbdr cd $BQdatarun | :pwd
 command! Cdbq cd $BigQuery | :pwd
 command! Cdbw Cdbzqwebapp | :pwd
-command! Cdmyr cd $MYREPO | :pwd
 command! Edershaftalik :e "$HOME/gdrive/Apps/Notational Data/ders_ozne_ben_nesne/haftalik_ders.otl"
 
 " E commands
 
 " mynotes/ files
-command! Estuff e $MYREPO/work/work.otl
-command! Est Estuff
-command! Estuff2 e $MYREPO/stuff2.otl
-command! Eknwl e $MYREPO/knwl.otl
-command! Eindexnotes e $HOME/gdrive/mynotes/index_notes.otl
-command! Eactivities e $MYNOTES/activities.otl
+command! Enwork e ~/projects/myrepo/work/work.otl
+command! Enw Enwork
+command! Enwork2 e ~/projects/myrepo/work/work2.otl
+command! Enknwl e ~/projects/myrepo/otl/knwl.otl
+command! Enindexnotes e /Users/mertnuhoglu/projects/myrepo/otl/index_notes.otl
+command! Enactivities e /Users/mertnuhoglu/projects/myrepo/otl/activities.otl
+command! Enarticles e /Users/mertnuhoglu/projects/myrepo/otl/articles.otl
 
 " mynotes/content/ files
-command! Erefmine e ~/projects/myrepo/general/refmine.otl
+command! Erefmine e ~/projects/myrepo/refmine.otl
 command! Erm Erefmine
-command! EquickstartKms :Utl openLink ~/projects/myrepo/general/refmine.otl#r=g_11660
-command! EquickstartQuickstarts :Utl openLink ~/projects/myrepo/general/refmine.otl#r=11708
+command! EquickstartKms :Utl openLink ~/projects/myrepo/refmine.otl#r=g_11660
+command! EquickstartQuickstarts :Utl openLink ~/projects/myrepo/refmine.otl#r=11708
 command! EquickstartCmmi :Utl openLink ~/projects/btg/btg_cmmi/logbook/study_cmmi.otl#r=g_11704
 command! EquickstartLym :Utl openLink ~/projects/lym/lym/study_lym.otl#r=g_11707
 command! EquickstartNhv :Utl openLink ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/study_nhv.otl#r=g_11709
@@ -423,13 +544,10 @@ command! Earticlesai e ~/projects/study/ai/articles_ai.md
 command! Eaai Earticlesai
 
 " study/otl/ files
-command! Ecstuff e /Users/mertnuhoglu/projects/myrepo/cstuff.otl
-command! Ecs Ecstuff
 command! Eccode e ~/projects/study/otl/ccode.otl
 command! Ecc Eccode
 command! Ecodeai  e ~/projects/study/otl/cai.otl
-command! Ecai Ecodeai
-command! Ecoder e ~/projects/study/otl/cr.otl
+command! Ecoder e ~/projects/study/otl/cr.yaml
 command! Ecr Ecoder
 command! Ecodejava e ~/projects/study/otl/cjava.otl
 command! Ecodeclojure e ~/projects/study/clj/clojure.otl
@@ -439,11 +557,14 @@ command! Ecdb Ecodedb
 command! Ecodejs e ~/projects/study/otl/cjs.otl
 command! Ecjs Ecodejs
 command! Ecodefp e ~/projects/study/otl/cfp.otl
-command! Ecfp Ecodefp
 command! Ecvim e ~/projects/study/otl/cvim.otl
+command! Ecemacs e ~/projects/study/otl/cemacs.otl
 command! Eceng e ~/projects/study/otl/cenglish.otl
-command! Ecnames e ~/projects/study/otl/names.otl
-command! Ecn Ecnames
+
+" clojure files
+command! Ecodefulcro e ~/projects/study/clj/fulcro.otl
+command! EArticlesFulcro e ~/projects/study/clj/articles_fulcro.otl
+command! EArticlesClojure e ~/projects/study/clj/articles_clojure.otl
 
 " study/ files
 command! Esclojurescript e ~/projects/study/clj/study_clojurescript.md
@@ -468,7 +589,6 @@ command! Eer Eexamplesr
 command! Estudyr e ~/projects/study/r/study_r.Rmd
 command! Esr Estudyr
 command! Estudyshiny e ~/projects/study/r/shiny/study_shiny.Rmd
-command! Essh Estudyshiny
 command! Estudyjs e ~/projects/study/js/study_js.Rmd
 command! Esjs Estudyjs
 command! Estudyts e ~/projects/study/js/study_ts.Rmd
@@ -476,9 +596,7 @@ command! Ests Estudyts
 command! Estudycyclejs e ~/projects/study/js/study_notes_cyclejs.Rmd
 command! Escjs Estudycyclejs
 command! Estudycyclejsexamples e ~/projects/study/js/study_cyclejs_examples.Rmd
-command! Escex Estudycyclejsexamples
 command! Estudydbvrp e ~/projects/study/db/db_vrp.Rmd
-command! Edvrp Estudydbvrp
 command! Estudyvrpcyclejs e ~/projects/study/js/vrp/cyclejs_vrp.Rmd
 command! Estudypostgreststarterkit e ~/projects/study/db/study_postgrest_starter_kit.Rmd
 command! Espsk Estudypostgreststarterkit
@@ -496,36 +614,24 @@ command! Estudyintellij e ~/projects/study/code/study_intellij.md
 command! Esij Estudyintellij
 
 " prj/ files
-command! Enotesnhv e ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/notes_nhv.otl
-command! Enotesdscp e ~/gdrive/mynotes/prj/dscp/notes_dscp.otl
-command! Ends Enotesdscp
-command! Edocitr e ~/projects/itr/vrp/vrp_doc/doc_itr.md
-command! Edi Edocitr
-command! Enotesitr e ~/gdrive/mynotes/prj/itr/notes_itr.md
-command! Enotespvrp e ~/gdrive/mynotes/prj/itr/notes_pvrp.md
-command! Eni Enotesitr
+command! Ennotesnhv e ~/gdrive/mynotes/prj/stk/nuhoglu_vakfi_personal/notes_nhv.otl
+command! Ennotesdscp e ~/gdrive/mynotes/prj/dscp/notes_dscp.otl
+command! Endocitr e ~/projects/itr/vrp/vrp_doc/doc_itr.md
+command! Ennotesitr e ~/gdrive/mynotes/prj/itr/notes_itr.md
+command! Ennotespvrp e ~/gdrive/mynotes/prj/itr/notes_pvrp.md
 command! Enkinesin e ~/gdrive/mynotes/prj/biz/startup_projects/kinesin/notes_kinesin.md
-command! Enp Enotespvrp
-command! Enit Enotesitr
-command! Enoteskns e $KNS/notes_kinesin.md
-command! Enkns Enoteskns
 "command! Enotesbzq e ~/gdrive/mynotes/prj/bzq/notes_bzq.md
-"command! Enbzq Enotesbzq
-"command! Enb Enotesbzq
 "command! Edocbzq e ~/gdrive/mynotes/prj/bzq/doc_bzq.md
-"command! Edbzq Edocbzq
-"command! Edb Edocbzq
 "command! Enotessipa e ~/gdrive/mynotes/prj/sipa/notes_sipa.md
-"command! Ensipa Enotessipa
-"command! Ens Enotessipa
 "command! Edocsipa e ~/gdrive/mynotes/prj/sipa/doc_sipa.md
-"command! Edsipa Edocsipa
-"command! Eds Edocsipa
+
+" cmmi files
 command! Ecmdict e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/dictionary_cmmi.tsv
 command! Ecmpascal e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/meeting_pascal/agenda_pascal.md
 command! Ecmp Ecmpascal
 command! Ecmleadappraiser e ~/projects/myrepo/prj/cmmi/cmmi_trainings/lead_appraiser_training/lead_appraiser_training_20210704.otl
 command! Ecml Ecmleadappraiser
+command! Ecmmdd e ~/projects/myrepo/prj/cmmi/cmmi_trainings/lead_appraiser_training/mdd_ref.otl
 command! Ecmstudy e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/study_cmmi.otl
 command! Ecms Ecmstudy
 command! Ecmchecklist e /Users/mertnuhoglu/projects/myrepo/prj/cmmi/gap_analysis_checklist_questions.otl
@@ -543,55 +649,39 @@ command! Ecmdictionary e ~/projects/btg/btg_cmmi/logbook/dictionary_cmmi_officia
 command! Ecmd Ecmdictionary
 
 " vim scripts
-command! Emyvimcustom e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
-command! Emvc Emyvimcustom
-command! Einfoman e $HOME/.vim/bundle/vim-infoman/plugin/vim-infoman.vim
-command! Ekeybindings e $HOME/.vim/bundle/my-custom-keybindings/plugin/my-custom-keybindings.vim
-command! Edataflow e $HOME/.vim/bundle/vim-dataflow-generator-r/plugin/vim-dataflow-generator-r.vim
-command! Emymertprojects e $HOME/.vim/bundle/my-mert-projects/plugin/my-mert-projects.vim
+command! Evmyvim e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
+command! Evinfoman e $HOME/.vim/bundle/vim-infoman/plugin/vim-infoman.vim
+command! Evkeybindings e $HOME/.vim/bundle/my-custom-keybindings/plugin/my-custom-keybindings.vim
+command! Evdataflow e $HOME/.vim/bundle/vim-dataflow-generator-r/plugin/vim-dataflow-generator-r.vim
+command! Evmymertprojects e $HOME/.vim/bundle/my-mert-projects/plugin/my-mert-projects.vim
 
-" mynotes/nproduct files
-command! Eninfop e ~/projects/myrepo/nx/nproduct/infop/infop.otl
-command! Enin Eninfop
-command! Enidea e ~/projects/myrepo/nx/nproduct/nidea/nidea.otl
-command! Eid Enidea
+" myrepo notes files
+command! Eninfop e /Users/mertnuhoglu/projects/myrepo/otl/infop.otl
+command! Enidea e /Users/mertnuhoglu/projects/myrepo/otl/nidea.otl
 command! Enid Enidea
-command! Enidc e $HOME/projects/myrepo/nx/nproduct/nidea/nidea_content.md
-command! Enotesanki e ~/projects/myrepo/nx/nproduct/nanki/notes_anki.otl
-command! Ena Enotesanki
-command! Ensettings e ~/projects/myrepo/nx/nsettings.md
-command! Enstt Ensettings
-command! Egstt Enstt
-command! Enotes e ~/projects/myrepo/nx/nnote.md
-command! Enn Enotes
-command! Enregistry e ~/gdrive/notes/koza/registry.otl
+command! Enidc e $HOME/projects/myrepo/notes/nproduct/nidea/nidea_content.md
+command! Ennotesanki e /Users/mertnuhoglu/projects/myrepo/otl/notes_anki.otl
+command! Ensettings e ~/projects/myrepo/otl/nsettings.otl
+command! Enregistry e ~/projects/myrepo/otl/registry.otl
 command! Enr Enregistry
 
 " mynotes/general files
-command! Egconventions e ~/projects/myrepo/general/conventions.md
-command! Egc Egconventions
-command! Egconventionsnaming e ~/projects/myrepo/general/conventions_naming.md
-command! Egcn Egconventionsnaming
-command! Egprocesses e ~/projects/myrepo/general/processes.md
-command! Egprc Egprocesses
-command! Emetrics e ~/projects/myrepo/general/metrics.otl
-command! Emt Emetrics
-command! Egrules e ~/projects/myrepo/general/rules.otl
-command! Egr Egrules
-command! Egquality e ~/projects/myrepo/general/quality.md
-command! Egq Egquality
-command! Egkms e ~/projects/myrepo/general/kms/kms_ideas.md
-command! Egkms Egkms
-command! Egkmsref e ~/projects/myrepo/general/kms/refcard_kms.md
-command! Egkr Egkmsref
-
-" myrepo/gtd files
-command! Etb e ~/projects/myrepo/gtd/blgfkr.otl
+command! Enconventions e ~/projects/myrepo/notes/general/conventions.md
+command! Enconventionsnaming e ~/projects/myrepo/otl/conventions_naming.otl
+command! Enprocesses e ~/projects/myrepo/otl/processes.otl
+command! Enrules e ~/projects/myrepo/otl/rules.otl
+command! Enquality e ~/projects/myrepo/notes/general/quality.md
+command! Enkms e ~/projects/myrepo/otl/kms_ideas.otl
+command! Enkmsref e ~/projects/myrepo/otl/refcard_kms.otl
+command! Ennames e ~/projects/myrepo/otl/names.otl
+command! Enotesme e ~/projects/myrepo/otl/notesme.otl
+command! Enstandards e ~/projects/myrepo/otl/standards.otl
+command! Enpstuff e ~/projects/myrepo/otl/pstuff.otl
+command! Enstuff e /Users/mertnuhoglu/projects/myrepo/otl/cstuff.otl
+command! Encs Enstuff
 
 " mynotes/ other files
-command! Epstuff e $MYNOTES/personal/pstuff.md
-command! Eps Epstuff
-command! Epaste e $PASTE
+command! Enps Enpstuff
 
 command! Enmsd e $HOME/gdrive/mynotes/msd/notes_msd.otl
 command! Enbiz e $HOME/gdrive/mynotes/biz/notes_biz.otl
@@ -601,20 +691,13 @@ command! Enmvpe e $HOME/gdrive/mynotes/mvpe/notes_mvpe.otl
 command! Ensfp e $HOME/gdrive/mynotes/sfp/notes_sfp.otl
 
 " dotfiles
-command! Ebashprofile e $HOME/.bash_profile
-command! Ezshrc e $HOME/.zshenv
-command! Ezs Ezshrc
-command! Efzfrefbash e $HOME/projects/private_dotfiles/fzf/refbash.txt
-command! Efrb Efzfrefbash
-command! Efzfrefvrp e $HOME/projects/private_dotfiles/vim/refvrp.txt
-command! Efrvrp Efzfrefvrp
-
-" gdrive/ files
-command! Enotesme e ~/gdrive/notes/koza/notesme.otl
-command! Enotesvbi e ~/gdrive/shared/veribilimi_istanbul/notes_vbi.otl
-
-" other files
-command! Escim e ~/codes/sc-im/src/doc
+command! Edbashprofile e $HOME/.bash_profile
+command! Edzshrc e $HOME/.zshenv
+command! Edzs Edzshrc
+command! Edfzfrefbash e $HOME/projects/private_dotfiles/fzf/refbash.txt
+command! Edfrb Edfzfrefbash
+command! Edfzfrefvrp e $HOME/projects/private_dotfiles/vim/refvrp.txt
+command! Edfrvrp Edfzfrefvrp
 
 function! Elvlbook()
   " opens lvlbook of today
@@ -705,259 +788,61 @@ command! Ecmentions e $MENTIONS_CSV
 command! Ecpocket e $POCKET_CSV
 
 function! CreateExFile(name)
-	" Create an example code file for the current md (documentation) file
-	let filename = expand("%:t:r")
-	let path = expand("%:p")
-	lcd %:h
-	exe '!mkdir -p ' . 'ex/' . filename . '/' . a:name
-	split
-	ene
-	exe 'cd ex/' . filename . '/' . a:name
+  " Create an example code file for the current md (documentation) file
+  let filename = expand("%:t:r")
+  let path = expand("%:p")
+  lcd %:h
+  exe '!mkdir -p ' . 'ex/' . filename . '/' . a:name
+  split
+  ene
+  exe 'cd ex/' . filename . '/' . a:name
 endfunction
 command! -nargs=1 CreateExFile call CreateExFile(<f-args>)
 function! CreateExFile2()
-	" Create an example code file for the current md (documentation) file
-	let l:fileprompt = input('File name: ')
-	let filename = expand("%:t:r")
-	let path = expand("%:p")
-	lcd %:h
-	exe '!mkdir -p ' . 'ex/' . filename . '/' . l:fileprompt
-	split
-	ene
-	exe 'cd ex/' . filename . '/' . l:fileprompt
+  " Create an example code file for the current md (documentation) file
+  let l:fileprompt = input('File name: ')
+  let filename = expand("%:t:r")
+  let path = expand("%:p")
+  lcd %:h
+  exe '!mkdir -p ' . 'ex/' . filename . '/' . l:fileprompt
+  split
+  ene
+  exe 'cd ex/' . filename . '/' . l:fileprompt
 endfunction
 command! CreateExFile2 call CreateExFile2()
 
 ": }}} path shortcuts
 
-": coc.vim {{{ id=g_11954
-
-" Don't pass messages to |ins-completion-menu|.
-set shortmess+=c
-
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-if has("patch-8.1.1564")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
-else
-  set signcolumn=yes
-endif
-
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-"inoremap <silent><expr> <TAB>
-      "\ pumvisible() ? "\<C-n>" :
-      "\ <SID>check_back_space() ? "\<TAB>" :
-      "\ coc#refresh()
-"inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
-" Make <CR> auto-select the first completion item and notify coc.nvim to
-" format on enter, <cr> could be remapped by other vim plugin
-"inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              "\: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> <Leader>üep <Plug>(coc-diagnostic-prev)
-nmap <silent> <Leader>üen <Plug>(coc-diagnostic-next)
-
-" GoTo code navigation.
-nmap <silent> ügd <Plug>(coc-definition)
-nmap <silent> ügy <Plug>(coc-type-definition)
-nmap <silent> ügi <Plug>(coc-implementation)
-nmap <silent> ügr <Plug>(coc-references)
-
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  elseif (coc#rpc#ready())
-    call CocActionAsync('doHover')
-  else
-    execute '!' . &keywordprg . " " . expand('<cword>')
-  endif
-endfunction
-
-" Highlight the symbol and its references when holding the cursor.
-"autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Symbol renaming.
-nmap <leader>ürn <Plug>(coc-rename)
-
-" Formatting selected code.
-xmap <leader>ücf  <Plug>(coc-format-selected)
-nmap <leader>ücf  <Plug>(coc-format-selected)
-
-augroup mygroup
-  autocmd!
-  " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  " Update signature help on jump placeholder.
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
-" Applying codeAction to the selected region.
-" Example: `<leader>aap` for current paragraph
-xmap <leader>üca  <Plug>(coc-codeaction-selected)
-nmap <leader>üca  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ücac  <Plug>(coc-codeaction)
-" Apply AutoFix to problem on the current line.
-nmap <leader>ücqf  <Plug>(coc-fix-current)
-
-" Map function and class text objects
-" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-xmap ic <Plug>(coc-classobj-i)
-omap ic <Plug>(coc-classobj-i)
-xmap ac <Plug>(coc-classobj-a)
-omap ac <Plug>(coc-classobj-a)
-
-" Remap <C-f> and <C-b> for scroll float windows/popups.
-if has('nvim-0.4.0') || has('patch-8.2.0750')
-  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
-  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
-  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-endif
-
-" Use CTRL-S for selections ranges.
-" Requires 'textDocument/selectionRange' support of language server.
-nmap <silent> <C-s> <Plug>(coc-range-select)
-xmap <silent> <C-s> <Plug>(coc-range-select)
-
-" Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('format')
-
-" Add `:Fold` command to fold current buffer.
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-" Add (Neo)Vim's native statusline support.
-" NOTE: Please see `:h coc-status` for integrations with external plugins that
-" provide custom statusline: lightline.vim, vim-airline.
-" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-
-" Mappings for CoCList
-" Show all diagnostics.
-nnoremap <silent><nowait> <space>üca  :<C-u>CocList diagnostics<cr>
-" Manage extensions.
-nnoremap <silent><nowait> <space>üce  :<C-u>CocList extensions<cr>
-" Show commands.
-nnoremap <silent><nowait> <space>ücc  :<C-u>CocList commands<cr>
-" Find symbol of current document.
-nnoremap <silent><nowait> <space>üco  :<C-u>CocList outline<cr>
-" Search workspace symbols.
-nnoremap <silent><nowait> <space>ücs  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent><nowait> <space>ücj  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent><nowait> <space>ück  :<C-u>CocPrev<CR>
-" Resume latest coc list.
-nnoremap <silent><nowait> <space>ücp  :<C-u>CocListResume<CR>
-
-" disable autocompletion in markdown
-autocmd FileType markdown let b:coc_suggest_disable = 1
-autocmd FileType txt let b:coc_suggest_disable = 1
-autocmd FileType votl let b:coc_suggest_disable = 1
-
-nnoremap <silent> crcc :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'cycle-coll', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> crth :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'thread-first', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> crtt :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'thread-last', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> crtf :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'thread-first-all', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> crtl :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'thread-last-all', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> cruw :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'unwind-thread', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> crua :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'unwind-all', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> crml :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'move-to-let', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1, input('Binding name: ')]})<CR>
-nnoremap <silent> cril :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'introduce-let', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1, input('Binding name: ')]})<CR>
-nnoremap <silent> crel :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'expand-let', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> cram :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'add-missing-libspec', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> crcn :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'clean-ns', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> crcp :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'cycle-privacy', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> cris :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'inline-symbol', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1]})<CR>
-nnoremap <silent> cref :call CocRequest('clojure-lsp', 'workspace/executeCommand', {'command': 'extract-function', 'arguments': [Expand('%:p'), line('.') - 1, col('.') - 1, input('Function name: ')]})<CR>
-
-autocmd BufReadCmd,FileReadCmd,SourceCmd jar:file://* call s:LoadClojureContent(expand("<amatch>"))
- function! s:LoadClojureContent(uri)
-  setfiletype clojure
-  let content = CocRequest('clojure-lsp', 'clojure/dependencyContents', {'uri': a:uri})
-  call setline(1, split(content, "\n"))
-  setl nomodified
-  setl readonly
-endfunction
-
-function! Expand(exp) abort
-    let l:result = expand(a:exp)
-    return l:result ==# '' ? '' : "file://" . l:result
-endfunction
-
-let g:LanguageClient_settingsPath="~/.config/.lsp/settings.json"
-
-" [(1) How do I show Documentation with coc with autocomplete? : vim](https://www.reddit.com/r/vim/comments/a4bn0w/how_do_i_show_documentation_with_coc_with/)
-"set keywordprg=:call\ <SID>show_documentation()
-
-" automatic linting clojure files id=g_11963
-" [Linting your code, the vanilla way](https://gist.github.com/romainl/ce55ce6fdc1659c5fbc0f4224fd6ad29)
-autocmd FileType clojure setlocal makeprg=clj-kondo
-autocmd BufWritePost *.clj silent make! <afile> | silent redraw!
-autocmd QuickFixCmdPost [^l]* cwindow
-
-": coc.vim }}}
-
 ": tmux settings {{{ 
 
 " arrow keys
 if &term =~ '^screen' && exists('$TMUX')
-    set mouse+=a
-    " tmux knows the extended mouse mode
-    set ttymouse=xterm2
-    " tmux will send xterm-style keys when xterm-keys is on
-    execute "set <xUp>=\e[1;*A"
-    execute "set <xDown>=\e[1;*B"
-    execute "set <xRight>=\e[1;*C"
-    execute "set <xLeft>=\e[1;*D"
-    execute "set <xHome>=\e[1;*H"
-    execute "set <xEnd>=\e[1;*F"
-    execute "set <Insert>=\e[2;*~"
-    execute "set <Delete>=\e[3;*~"
-    execute "set <PageUp>=\e[5;*~"
-    execute "set <PageDown>=\e[6;*~"
-    execute "set <xF1>=\e[1;*P"
-    execute "set <xF2>=\e[1;*Q"
-    execute "set <xF3>=\e[1;*R"
-    execute "set <xF4>=\e[1;*S"
-    execute "set <F5>=\e[15;*~"
-    execute "set <F6>=\e[17;*~"
-    execute "set <F7>=\e[18;*~"
-    execute "set <F8>=\e[19;*~"
-    execute "set <F9>=\e[20;*~"
-    execute "set <F10>=\e[21;*~"
-    execute "set <F11>=\e[23;*~"
-    execute "set <F12>=\e[24;*~"
+  set mouse+=a
+  " tmux knows the extended mouse mode
+  set ttymouse=xterm2
+  " tmux will send xterm-style keys when xterm-keys is on
+  execute "set <xUp>=\e[1;*A"
+  execute "set <xDown>=\e[1;*B"
+  execute "set <xRight>=\e[1;*C"
+  execute "set <xLeft>=\e[1;*D"
+  execute "set <xHome>=\e[1;*H"
+  execute "set <xEnd>=\e[1;*F"
+  execute "set <Insert>=\e[2;*~"
+  execute "set <Delete>=\e[3;*~"
+  execute "set <PageUp>=\e[5;*~"
+  execute "set <PageDown>=\e[6;*~"
+  execute "set <xF1>=\e[1;*P"
+  execute "set <xF2>=\e[1;*Q"
+  execute "set <xF3>=\e[1;*R"
+  execute "set <xF4>=\e[1;*S"
+  execute "set <F5>=\e[15;*~"
+  execute "set <F6>=\e[17;*~"
+  execute "set <F7>=\e[18;*~"
+  execute "set <F8>=\e[19;*~"
+  execute "set <F9>=\e[20;*~"
+  execute "set <F10>=\e[21;*~"
+  execute "set <F11>=\e[23;*~"
+  execute "set <F12>=\e[24;*~"
 endif
 
 
@@ -1025,17 +910,22 @@ let g:which_key_timeout = 300
 "nnoremap <silent> <leader> :WhichKey 'ü'<CR>
 
 let surround_map = {
-		\ 'name' : '+Surround Menu'                         ,
-		\ 'q'    : ['SurroundWithDoubleQuotes'         , 'double quotes']          ,
-		\ 't'    : ['SurroundWithBackQuotes'           , 'back quotes']            ,
-		\ 'b'    : ['SurroundWithBrackets'             , 'brackets']               ,
-		\ 's'    : ['SurroundWithBackQuotesUntilSpace' , 'back quotes till space'] ,
-		\ }
+  \ 'name' : '+Surround Menu'                         ,
+  \ 'q'    : ['SurroundWithDoubleQuotes'         , 'double quotes']          ,
+  \ 't'    : ['SurroundWithBackQuotes'           , 'back quotes']            ,
+  \ 'b'    : ['SurroundWithBrackets'             , 'brackets']               ,
+  \ 's'    : ['SurroundWithBackQuotesUntilSpace' , 'back quotes till space'] ,
+  \ }
+
+let remove_map = {
+      \ 'name' : '+Remove Menu'                         ,
+      \ 'd'    : ['RemoveLineEndingsDosM'         , 'Remove ^M DOS chars']          ,
+      \ }
 
 let kustom_map2 = {
-		\ 'name': '+Kustom2 Menu',
-		\ 'l':		['CommentLinesClj',   'CommentLinesClj'],
-		\ }
+      \ 'name': '+Kustom2 Menu',
+      \ 'l':                                      ['CommentLinesClj',   'CommentLinesClj'],
+      \ }
 
 command! ColorschemeMonokai :colorscheme Monokai
 command! ColorschemeMountainDew :colorscheme MountainDew
@@ -1048,16 +938,16 @@ command! ColorschemeVotlLight :colorscheme votl_light
 command! ColorschemeSoftlight :colorscheme softlight
 
 let colorscheme_map = {
-		\ 'name': '+Colorscheme Menu',
-		\ 'a':		['ColorschemeAyu',   'ayu'],
-		\ 'k':		['ColorschemeMonokai',   'Monokai'],
-		\ 'm':		['ColorschemeMountainDew',   'MountainDew'],
-		\ 'n':		['ColorschemeNightfly',   'Nightfly'],
-		\ 'o':		['ColorschemeOceanicNext',   'OceanicNext'],
-		\ 'p':		['ColorschemePapayaWhip',   'PapayaWhip'],
-		\ 'r':		['ColorschemeRigel',   'Rigel'],
-		\ 'v':		['ColorschemeVotlLight',   'VotlLight'],
-		\ }
+      \ 'name': '+Colorscheme Menu',
+      \ 'a':                                      ['ColorschemeAyu',   'ayu'],
+      \ 'k':                                      ['ColorschemeMonokai',   'Monokai'],
+      \ 'm':                                      ['ColorschemeMountainDew',   'MountainDew'],
+      \ 'n':                                      ['ColorschemeNightfly',   'Nightfly'],
+      \ 'o':                                      ['ColorschemeOceanicNext',   'OceanicNext'],
+      \ 'p':                                      ['ColorschemePapayaWhip',   'PapayaWhip'],
+      \ 'r':                                      ['ColorschemeRigel',   'Rigel'],
+      \ 'v':                                      ['ColorschemeVotlLight',   'VotlLight'],
+      \ }
 
 " ~/.vim/bundle/vim-www/plugin/www.vim
 command! WwwOpen :call www#www#open_url(0, expand("<cWORD>"))
@@ -1068,25 +958,27 @@ command! WwwOpen :call www#www#open_url(0, expand("<cWORD>"))
 command! VoomToggleMarkdown :VoomToggle markdown<CR>
 
 let kustom_map = {
-		\ 'name': '+Kustom Menu',
-		\ ')':		['OpenCommandInParens',   'Open Path in parantheses'],
-		\ 'c':    colorscheme_map,
-		\ 'e':    ['CreateExFile2', 'CreateExFile2'],
-		\ 'h':    ['HighlightCustom',      'HighlightCustom'],
-		\ 'o':    ['OpenFile',      'OpenFile'],
-		\ 'l':		['OpenCommandInParens',   'Open Path in parantheses'],
-		\ 'p':		['OpenCommand',   'Open Path under cursor'],
-		\ 't':		['VoomToggleMarkdown',   'VoomToggle TOC'],
-		\ 'u':    ['WwwOpen',      'URL WwwOpen'],
-		\ }
+  \ 'name': '+Kustom Menu',
+  \ ')':    ['OpenCommandInParens',   'Open Path in parantheses'],
+  \ 'c':    colorscheme_map,
+  \ 'e':    ['CreateExFile2', 'CreateExFile2'],
+  \ 'h':    ['HighlightCustom',      'HighlightCustom'],
+  \ 'o':    ['OpenFile',      'OpenFile'],
+  \ 'O':    ['ToHtmlAndOpenFile',      'ToHtmlAndOpenFile'],
+  \ 'l':    ['OpenCommandInParens',   'Open Path in parantheses'],
+  \ 'p':    ['OpenCommand',   'Open Path under cursor'],
+  \ 's':    ['SearchNoEscapeFromClipboard',   'SearchNoEscapeFromClipboard'],
+  \ 't':    ['VoomToggleMarkdown',   'VoomToggle TOC'],
+  \ 'u':    ['WwwOpen',      'URL WwwOpen'],
+  \ }
 
 command! TabSplit :tab split
 
 let tab_map = {
-	\ 'name': '+Tab Terminal menu' ,
-	\ 'e':    ['tabe'        , 'tabenew']        ,
-	\ 'o':    ['tabonly'        , 'tabonly']        ,
-	\ 't':    ['TabSplit'        , 'TabSplit']        ,
+  \ 'name': '+Tab Terminal menu' ,
+  \ 'e':  ['tabe'        , 'tabenew']        ,
+  \ 'o':  ['tabonly'        , 'tabonly']        ,
+  \ 't':  ['TabSplit'        , 'TabSplit']        ,
   \ ';' : [':FloatermNew --wintype=popup --height=6'        , 'terminal'],
   \ 'f' : [':FloatermNew fzf'                               , 'fzf'],
   \ 'g' : [':FloatermNew lazygit'                           , 'git'],
@@ -1097,14 +989,14 @@ let tab_map = {
   \ 'r' : [':FloatermNew ranger'                            , 'ranger'],
   \ 'T' : [':FloatermToggle'                                , 'toggle'],
   \ 'y' : [':FloatermNew ytop'                              , 'ytop'],
-	\ }
+  \ }
 
 let buffers_map = {
-	\ 'name': '+buffers menu' ,
-	\ 'b':    ['TelescopeBuffers'        , 'Buffers']        ,
-	\ 'n':    [':norm gt'        , 'next tab']        ,
-	\ 'p':    [':norm gT'        , 'prev tab']        ,
-	\ }
+  \ 'name': '+buffers menu' ,
+  \ 'b':    ['TelescopeBuffers'        , 'Buffers']        ,
+  \ 'n':    [':norm gt'        , 'next tab']        ,
+  \ 'p':    [':norm gT'        , 'prev tab']        ,
+  \ }
 
 command! ClapFiles :Clap files --hidden
 command! ClapBuffers :Clap buffers
@@ -1121,232 +1013,329 @@ command! ClapMarks :Clap marks
 command! ClapBuffers :Clap buffers
 
 let fzf_map = {
-	\ 'name': '+fzf',
+  \ 'name': '+fzf',
   \ 'b':    ['Buffers',        'fzf-buffer']      ,
-	\ 'c':    ['Commands',          'Commands'],
-	\ 'd':    ['Directories',             'Directories'],
-	\ 'F':    ['ClapFiles',             'ClapFiles'],
-	\ 'f':    ['Files',             'Files'],
-	"\ 'F':    ['FilesNoIgnore',            'FilesNoIgnore'],
-	\ 'g':    ['Rg',             'Rg'],
-	\ 'G':    ['ClapGrepAll',             'ClapGrepAll'],
-	\ 'l':    ['BLines',            'BLines'],
-	\ 'm':    ['Marks',             'Marks'],
-	\ 'n':    ['CopyFilename',      'CopyFilename'],
-	\ 'p':    ['CopyDirectoryPath', 'CopyDirectoryPath'],
-	\ 'r':    ['FZFMru',            'FZFMru'],
-	\ 't':    ['ClapFiletypes',            'ClapFiletypes'],
-	\ 'u':    ['CopyPathUrl',       'CopyPathUrl'],
-	\ 'w':    ['Windows',           'Windows'],
-	\ 'y':    ['CopyFilePath',      'CopyFilePath'],
-	\ }
+  \ 'c':    ['Commands',          'Commands'],
+  \ 'd':    ['Directories',             'Directories'],
+  \ 'F':    ['ClapFiles',             'ClapFiles'],
+  \ 'f':    ['Files',             'Files'],
+  \ 'g':    ['Rg',             'Rg'],
+  \ 'G':    ['ClapGrepAll',             'ClapGrepAll'],
+  \ 'l':    ['BLines',            'BLines'],
+  \ 'm':    ['Marks',             'Marks'],
+  \ 'n':    ['CopyFilename',      'CopyFilename'],
+  \ 'p':    ['CopyDirectoryPath', 'CopyDirectoryPath'],
+  \ 'r':    ['FZFMru',            'FZFMru'],
+  \ 't':    ['ClapFiletypes',            'ClapFiletypes'],
+  \ 'u':    ['CopyPathUrl',       'CopyPathUrl'],
+  \ 'w':    ['Windows',           'Windows'],
+  \ 'y':    ['CopyFilePath',      'CopyFilePath'],
+  \ }
 
+" which-key file_map: SPC f id=g12568
+let file_map = {
+  \ 'name': '+files',
+  \ 'b':    ['TelescopeBuffers',          'buffers'],
+  \ 'f':    ['TelescopeFindFiles',             'find_files'],
+  \ 'F':    ['TelescopeGitFiles',             'git_files'],
+  \ 'g':    ['TelescopeGrep',             'live_grep'],
+  \ 'G':    ['TelescopeGrepString',             'grep_string'],
+  \ 'n':    ['CopyFilename',      'CopyFilename'],
+  \ 'p':    ['CopyDirectoryPath', 'CopyDirectoryPath'],
+  \ 'r':    ['TelescopeMru',            'mru'],
+  \ 'R':    ['TelescopeRepoList',            'TelescopeRepoList'],
+  \ 'u':    ['CopyPathUrl',       'CopyPathUrl'],
+  \ 'y':    ['CopyFilePath',      'CopyFilePath'],
+  \ 'Y':    ['CopyFilePath2',      'CopyFilePath2'],
+  \ 'z':    ['TelescopeZoxideList',      'zoxide'],
+  \ }
+
+" which-key yaml_map: SPC ü y   id=g12616
+let yaml_map = {
+  \ 'name': '+yaml_map',
+  \ '_':    ['ConvertLine2YamlKeyUnderline', 'ConvertLine2YamlKeyUnderline'],
+  \ '/':    ['FindYamlElement', 'FindYamlElement'],
+  \ 'a':    ['ConvertLine2YamlKeyA01', 'ConvertLine2YamlKeyA01'],
+  \ 'b':    ['ConvertLine2YamlKeyBasic', 'ConvertLine2YamlKeyBasic'],
+  \ 'c':    ['ConvertLine2YamlKeyKd', 'ConvertLine2YamlKeyKd'],
+  \ 'C':    ['ConvertLine2YamlKeyKdSplitMultiline', 'ConvertLine2YamlKeyKdSplitMultiline'],
+  \ 'd':    ['ConvertLine2YamlKeyDsc', 'ConvertLine2YamlKeyDsc'],
+  \ 'f':    ['ConvertLine2YamlKeyFtr', 'ConvertLine2YamlKeyFtr'],
+  \ 'k':    ['ConvertLine2YamlKey', 'ConvertLine2YamlKey'],
+  \ 'm':    ['ConvertLine2YamlKeyMultiline', 'ConvertLine2YamlKeyMultiline'],
+  \ 'M':    ['ConvertLine2YamlKeySplitMultiline', 'ConvertLine2YamlKeySplitMultiline'],
+  \ 'n':    ['ConvertLine2YamlKeyNrm', 'ConvertLine2YamlKeyNrm'],
+  \ 'r':    ['ConvertLine2YamlKeyRef', 'ConvertLine2YamlKeyRef'],
+  \ 't':    ['ConvertLine2YamlKeyTtl', 'ConvertLine2YamlKeyTtl'],
+  \ '1':    ['ConvertLine2YamlKeyA01Newline', 'ConvertLine2YamlKeyA01Newline'],
+  \ '2':    ['ConvertLine2YamlKeyA02Newline', 'ConvertLine2YamlKeyA02Newline'],
+  \ '3':    ['ConvertLine2YamlKeyA03Newline', 'ConvertLine2YamlKeyA03Newline'],
+  \ '4':    ['ConvertLine2YamlKeyA04Newline', 'ConvertLine2YamlKeyA04Newline'],
+  \ '5':    ['ConvertLine2YamlKeyEx01Newline', 'ConvertLine2YamlKeyEx01Newline'],
+  \ '6':    ['ConvertLine2YamlKeyEx02Newline', 'ConvertLine2YamlKeyEx02Newline'],
+  \ '7':    ['ConvertLine2YamlKeyEx03Newline', 'ConvertLine2YamlKeyEx03Newline'],
+  \ '8':    ['ConvertLine2YamlKeyEx04Newline', 'ConvertLine2YamlKeyEx04Newline'],
+  \ 'j':    ['ConvertYaml2NormalJoinsInline', 'ConvertYaml2NormalJoinsInline'],
+  \ 'J':    ['ConvertYaml2NormalJoins', 'ConvertYaml2NormalJoins'],
+  \ }
+
+" which-key lsp_map: SPC ü l  id=g12593
+let lsp_map = {
+  \ 'name': '+lsp',
+  \ 'l':    ['LspSetLoclist',            'LspSetLoclist'],
+  \ 'n':    ['LspGotoNext',            'LspGotoNext'],
+  \ 'N':    ['LspGotoPrev',            'LspGotoPrev'],
+  \ }
+
+" which-key telescope_map: SPC ü t id=g12569
 let telescope_map = {
-	\ 'name': '+files',
-	\ '-':    ['TelescopeFileBrowser',          'file_browser'],
-	\ '/':    ['TelescopeSearchHistory',          'search_history'],
-	\ ':':    ['TelescopeCommandHistory',          'command_history'],
-	\ 'a':    ['TelescopeCurrentBuffer',          'current_buffer_fuzzy_find'],
-	\ 'b':    ['TelescopeBuffers',          'buffers'],
-	\ 'B':    ['TelescopeBuiltins',          'builtin'],
-	\ 'c':    ['TelescopeCommands',          'commands'],
-	\ 'C':    ['TelescopeColorscheme',          'colorscheme'],
-	\ 'f':    ['TelescopeFindFiles',             'find_files'],
-	\ 'F':    ['TelescopeGitFiles',             'git_files'],
-	\ 'g':    ['TelescopeGrep',             'live_grep'],
-	\ 'G':    ['TelescopeGrepString',             'grep_string'],
-	\ 'h':    ['TelescopeHelpTags',             'help_tags'],
-	\ 'H':    ['TelescopeHighlights',             'highlights'],
-	\ 'j':    ['TelescopeJumpList',             'jumplist'],
-	\ 'k':    ['TelescopeKeymaps',            'keymaps'],
-	\ 'l':    ['TelescopeLoclist',             'loclist'],
-	\ 'L':    ['TelescopeReloader',             'reloader'],
-	\ 'm':    ['TelescopeMarks',             'marks'],
-	\ 'M':    ['TelescopeManPages',             'man_pages'],
-	\ 'n':    ['CopyFilename',      'CopyFilename'],
-	\ 'p':    ['CopyDirectoryPath', 'CopyDirectoryPath'],
-	\ 'r':    ['TelescopeMru',            'mru'],
-	\ 'R':    ['TelescopeRegisters',            'registers'],
-	\ 'q':    ['TelescopeQuickfix',            'quickfix'],
-	\ 's':    ['TelescopeSpellSuggest',            'spell_suggest'],
-	\ 'S':    ['TelescopeSymbols',            'symbols'],
-	\ 't':    ['TelescopeTags',            'tags'],
-	\ 'T':    ['TelescopeFiletypes',            'filetypes'],
-	\ 'u':    ['CopyPathUrl',       'CopyPathUrl'],
-	\ 'v':    ['TelescopeVimOptions',            'vim_options'],
-	\ 'y':    ['CopyFilePath',      'CopyFilePath'],
-	\ }
+  \ 'name': '+files',
+  \ '-':    ['TelescopeFileBrowser',          'file_browser'],
+  \ '/':    ['TelescopeSearchHistory',          'search_history'],
+  \ ':':    ['TelescopeCommandHistory',          'command_history'],
+  \ 'a':    ['TelescopeCurrentBuffer',          'current_buffer_fuzzy_find'],
+  \ 'B':    ['TelescopeBuiltins',          'builtin'],
+  \ 'c':    ['TelescopeCommands',          'commands'],
+  \ 'C':    ['TelescopeColorscheme',          'colorscheme'],
+  \ 'h':    ['TelescopeHelpTags',             'help_tags'],
+  \ 'H':    ['TelescopeHighlights',             'highlights'],
+  \ 'j':    ['TelescopeJumpList',             'jumplist'],
+  \ 'k':    ['TelescopeKeymaps',            'keymaps'],
+  \ 'l':    ['TelescopeLoclist',             'loclist'],
+  \ 'L':    ['TelescopeReloader',             'reloader'],
+  \ 'm':    ['TelescopeMarks',             'marks'],
+  \ 'M':    ['TelescopeManPages',             'man_pages'],
+  \ 'r':    ['TelescopeNeoclip',            'neoclip'],
+  \ 'R':    ['TelescopeRegisters',            'registers'],
+  \ 'q':    ['TelescopeQuickfix',            'quickfix'],
+  \ 's':    ['TelescopeSpellSuggest',            'spell_suggest'],
+  \ 'S':    ['TelescopeSymbols',            'symbols'],
+  \ 't':    ['TelescopeTags',            'tags'],
+  \ 'T':    ['TelescopeFiletypes',            'filetypes'],
+  \ 'v':    ['TelescopeVimOptions',            'vim_options'],
+  \ }
 
 let align_map = {
-	\ 'name': '+align menu' ,
-	\ '|':    [':EasyAlignTable'        , 'align']        ,
-	\ 'r':    [':EasyAlignTable'        , 'tabonly']        ,
-	\ }
+  \ 'name': '+align menu' ,
+  \ '|':    [':EasyAlignTable'        , 'align']        ,
+  \ 'r':    [':EasyAlignTable'        , 'tabonly']        ,
+  \ }
+
+" vim-bookmarks id=g12560
+let bookmark_map = {
+  \ 'name': '+bookmark menu' ,
+  \ 'm':    [':BookmarkToggle'        , 'BookmarkToggle']        ,
+  \ 'i':    [':BookmarkAnnotate'        , 'BookmarkAnnotate']        ,
+  \ 'a':    [':Telescope vim_bookmarks all'        , 'all bookmarks']        ,
+  \ 'f':    [':Telescope vim_bookmarks current_file'        , 'current_file']        ,
+  \ 'j':    [':BookmarkNext'        , 'BookmarkNext']        ,
+  \ 'k':    [':BookmarkPrev'        , 'BookmarkPrev']        ,
+  \ 'c':    [':BookmarkDeleteSelectedOrAtCursor'        , 'BookmarkDeleteSelectedOrAtCursor']        ,
+  \ 'x':    [':BookmarkClearAll'        , 'BookmarkClearAll']        ,
+  \ 'K':    [':BookmarkMoveUp'        , 'BookmarkMoveUp']        ,
+  \ 'J':    [':BookmarkMoveDown'        , 'BookmarkMoveDown']        ,
+  \ 'g':    [':BookmarkMoveToLine'        , 'BookmarkMoveToLine']        ,
+  \ }
 
 let text_map = {
-	\ 'name': '+teXt menu' ,
-	\ 'a' : align_map,
-	\ }
-
-function! OpenFileVsplit()
-	only
-	Utl3
-endfunction
-command! OpenFileVsplit call OpenFileVsplit()
-nnoremap <silent> <leader>ıv :OpenFileVsplit <CR>
+  \ 'name': '+teXt menu' ,
+  \ 'a' : align_map,
+  \ }
 
 let utl_map = {
-	\ 'name' : '+Utl Menu' ,
-	\ 'i'    : ['Utl',     'Utl'],
-	\ 's'    : ['Utl2',     'Utl split'],
-	\ 't'    : ['UtlTab',     'Utl tabe'],
-	\ 'v'    : ['Utl3',     'Utl vsplit'],
-	\ }
+  \ 'name' : '+Utl Menu' ,
+  \ 'i'    : ['Utl',     'Utl'],
+  \ 's'    : ['Utl2',     'Utl split'],
+  \ 't'    : ['UtlTab',     'Utl tabe'],
+  \ 'v'    : ['Utl3',     'Utl vsplit'],
+  \ }
+
+let convert_map = {
+  \ 'name' : '+convert_map' ,
+  \ 'a'    : ['ConvertAnkiMd',     'ConvertAnkiMd'],
+  \ 'A'    : ['ConvertAnkiTsv',     'ConvertAnkiTsv'],
+  \ 'b'    : ['ConvertGooglePlayBookNotes',     'ConvertGooglePlayBookNotes'],
+  \ 'c'    : ['ConvertCmmiPutAF',     'ConvertCmmiPutAF'],
+  \ 'e'    : ['ConvertToExcelFromMultilines',     'ConvertToExcelFromMultilines'],
+  \ 'f'    : ['ConvertFillDown',     'ConvertFillDown'],
+  \ 'm'    : ['ConvertMarksTxt2MarksTsv',     'ConvertMarksTxt2MarksTsv'],
+  \ 'j'    : ['ConvertJavaAttributes2YumlAttributes',     'ConvertJavaAttributes2YumlAttributes'],
+  \ 'h'    : ['ConvertHeadersTxt2HeadersFilteredWordsTxt',     'ConvertHeadersTxt2HeadersFilteredWordsTxt'],
+  \ 's'    : ['ConvertSubscriptChars2NormalChars',     'ConvertSubscriptChars2NormalChars'],
+  \ 't'    : ['ConvertTimesheet2Excel',     'ConvertTimesheet2Excel'],
+  \ 'u'    : ['Convert2Unicode',     'Convert2Unicode'],
+  \ 'y'    : ['ConvertYoutubeHistory',     'ConvertYoutubeHistory'],
+  \ 'U'    : ['ConvertIsoCharsInUtf8',     'ConvertIsoCharsInUtf8'],
+  \ }
 
 let custom_map = {
-	\ 'name' : '+Custom Menu üt' ,
-	\ 'c' :		kustom_map2,
-	\ 'f' : telescope_map,
-	\ 't' : fzf_map,
-  \ 'i' : utl_map,
-	\ 'k' : kustom_map,
-  \ 's' : surround_map,
-  \ 'ü' : ['OpenFileVsplit',     'OpenFileVsplit'],
-	\ }
+  \ 'name' : '+Custom Menu ü',
+  \ 'c'    : kustom_map2,
+  \ 'C'    : convert_map,
+  \ 'f'    : fzf_map,
+  \ 'i'    : utl_map,
+  \ 'k'    : kustom_map,
+  \ 'l'    : lsp_map,
+  \ 'm'    : bookmark_map,
+  \ 'r'    : remove_map,
+  \ 's'    : surround_map,
+  \ 't'    : telescope_map,
+  \ 'ü'    : ['OpenFileVsplit',     'OpenFileVsplit'],
+  \ 'y'    : yaml_map,
+  \ }
 
-let cmmi_map = {
-	\ 'name' : '+cmmi files',
-	\ 'a'    : ['Ecmartifacts', 'gap_analysis_artifacts_database.otl'],
-	\ 'c'    : ['Ecmchecklist', 'gap_analysis_checklist_questions.otl'],
-	\ 'd'    : ['Ecmdictionary', 'dictionary_cmmi_official.md'],
-	\ 'f'    : ['Ecmfindings',  'gap_analysis_findings_database.otl'],
-	\ 'l'    : ['Ecmleadappraiser',    'lead_appraiser_training_20210704.otl'],
-	\ 'm'    : ['Ecmmodel',  'cmmi_model_v20.txt'],
-	\ 'p'    : ['Ecmpascal',    'agenda_pascal.otl'],
-	\ 's'    : ['Ecmstudy',     'study_cmmi.otl'],
-	\ }
+let cmmi_files_map = {
+      \ 'name' : '+cmmi files',
+      \ 'a'    : ['Ecmartifacts', 'gap_analysis_artifacts_database.otl'],
+      \ 'c'    : ['Ecmchecklist', 'gap_analysis_checklist_questions.otl'],
+      \ 'd'    : ['Ecmdictionary', 'dictionary_cmmi_official.md'],
+      \ 'f'    : ['Ecmfindings',  'gap_analysis_findings_database.otl'],
+      \ 'l'    : ['Ecmleadappraiser',    'lead_appraiser_training_20210704.otl'],
+      \ 'm'    : ['Ecmmodel',  'cmmi_model_v20.txt'],
+      \ 'M'    : ['Ecmmdd',  'mdd_ref.otl'],
+      \ 'p'    : ['Ecmpascal',    'agenda_pascal.otl'],
+      \ 's'    : ['Ecmstudy',     'study_cmmi.otl'],
+      \ }
 
-let quickstart_map = {
-	\ 'name' : '+quickstart indexes' ,
-  \ 'c' : ['EquickstartCmmi', 'Quickstart cmmi'],
-  \ 'k' : ['EquickstartKms', 'Quickstart Kms'],
-  \ 'l' : ['EquickstartLym', 'Quickstart lym'],
-  \ 'n' : ['EquickstartNhv', 'Quickstart nhv'],
-  \ 'q' : ['EquickstartQuickstarts', 'Quickstart Quickstarts'],
-	\ }
+let quickstart_files_map = {
+      \ 'name' : '+quickstart indexes' ,
+      \ 'c' : ['EquickstartCmmi', 'Quickstart cmmi'],
+      \ 'k' : ['EquickstartKms', 'Quickstart Kms'],
+      \ 'l' : ['EquickstartLym', 'Quickstart lym'],
+      \ 'n' : ['EquickstartNhv', 'Quickstart nhv'],
+      \ 'q' : ['EquickstartQuickstarts', 'Quickstart Quickstarts'],
+      \ }
 
-let code_map = {
-	\ 'name': '+code files',
-	\ 'k':    quickstart_map,
-	\ 'm':    cmmi_map,
-	\ 'c':    ['Eccode',      'ccode.otl'],
-	\ 'd':    ['Ecodedb',     'cdb.otl'],
-	\ 'e':    ['Eceng',       'cenglish.otl'],
-	\ 'j':    ['Ecodeclojure', 'clojure.otl'],
-	\ 'n':    ['Ecnames',     'names.otl'],
-	\ 'r':    ['Ecoder',      'cr.otl'],
-	\ 's':    ['Ecstuff',     'cstuff.otl'],
-	\ 't':    ['Estuff',      'stuff.otl'],
-	\ 'u':    ['Estuff2',     'stuff2.otl'],
-	\ 'v':    ['Ecvim',       'cvim.otl'],
-	\ }
+let clojure_files_map = {
+      \ 'name': '+clojure files',
+      \ 'f':    ['Ecodefulcro', 'fulcro.otl'],
+      \ 'F':    ['EArticlesFulcro', 'articles_fulcro.otl'],
+      \ 'j':    ['Ecodeclojure', 'clojure.otl'],
+      \ 'J':    ['EArticlesClojure', 'articles_clojure.otl'],
+      \ }
 
-let ref_files_map = {
-	\ 'name': '+ref files',
-	\ 'm':    ['Erefmine',        'refmine.otl'],
-	\ 'b':    ['Erefbookmarks',   'refbookmarks.otl'],
-	\ 'c':    ['Erefcard',        'refcard.otl'],
-	\ 'ca':   ['Erefcardarchive', 'refcard_archive.otl'],
-	\ 'cd':   ['Erconvertdata', 'rfc_convert_data.md'],
-	\ 'cl':   ['Erclojure',       'refcard_clojure.otl'],
-	\ }
+let code_files_map = {
+      \ 'name': '+code files',
+      \ 'k':    quickstart_files_map,
+      \ 'c':    ['Eccode',      'ccode.otl'],
+      \ 'd':    ['Ecodedb',     'cdb.otl'],
+      \ 'e':    ['Eceng',       'cenglish.otl'],
+      \ 'j':    ['Ecodeclojure', 'clojure.otl'],
+      \ 'm':    ['Ecemacs',       'cemacs.otl'],
+      \ 'r':    ['Ecoder',      'cr.otl'],
+      \ 'v':    ['Ecvim',       'cvim.otl'],
+      \ }
 
 let example_files_map = {
-	\ 'name': '+examples files' ,
-	\ 'b':    ['Eexamplesbash'        , 'examples_bash.otl']        ,
-	\ 'r':    ['Eexamplesr'        , 'examples_r.otl']        ,
-	\ }
+      \ 'name': '+examples files' ,
+      \ 'b':    ['Eexamplesbash'        , 'examples_bash.otl']        ,
+      \ 'r':    ['Eexamplesr'        , 'examples_r.otl']        ,
+      \ }
+
+let layermark_files_map = {
+      \ 'name':   '+layermark files' ,
+      \ 'a':    ['Elamsmeeting'        , 'ams_meeting_notes_otl.md']        ,
+      \ 'A':    ['Elamsnotes'        , 'ams_notes.otl']        ,
+      \ 'e':    ['Eleems'        , 'eems_meeting_notes_otl.md']        ,
+      \ 'v':    ['Elvms'        , 'valve_meeting_notes.md']        ,
+      \ 'o':    ['Elopal'        , 'opal_meeting_notes.md']        ,
+      \ }
 
 let logbook_files_map = {
-	\ 'name':   '+logbook files' ,
-	\ 'b':      {
-		\ 'name': '+logbook files' ,
-		\ 'b':    ['Elogbook'        , 'Elogbook']        ,
-		\ 'c':    ['ElogbookCmmi'        , 'ElogbookCmmi']        ,
-		\ 'l':    ['ElogbookLym'        , 'ElogbookLym']        ,
-		\ 'm':    ['ElogbookMyr'        , 'ElogbookMyr']        ,
-		\ } ,
-	\ }
+      \ 'name':   '+logbook files' ,
+      \ 'b':      {
+        \ 'name': '+logbook files' ,
+        \ 'b':    ['Elogbook'        , 'Elogbook']        ,
+        \ 'c':    ['ElogbookCmmi'        , 'ElogbookCmmi']        ,
+        \ 'l':    ['ElogbookLym'        , 'ElogbookLym']        ,
+        \ 'm':    ['ElogbookMyr'        , 'ElogbookMyr']        ,
+        \ } ,
+        \ }
 
-let notes_files_map = {
-	\ 'name': '+notes files',
-	\ 'a':   ['Enotesanki',  'notes_anki.otl'],
-	\ 'd':   ['Enidea',       'nidea.otl'],
-	\ 'n':   ['Eninfop',      'infop.otl'],
-	\ 'r':   ['Enregistry',      'registry.otl'],
-	\ }
+let note_files_map = {
+      \ 'name': '+notes files',
+      \ 'c':    cmmi_files_map,
+      \ 'a':    ['Ennotesanki',  'notes_anki.otl'],
+      \ 'b':    ['Enkms',       'kms_ideas.otl'],
+      \ 'i':    ['Enidea',       'nidea.otl'],
+      \ 'k':    ['Enrules',       'rules.otl'],
+      \ 'm':    ['Enotesme',       'notesme.otl'],
+      \ 'n':    ['Ennames',       'names.otl'],
+      \ 'p':    ['Enpstuff',     'pstuff.otl'],
+      \ 'r':    ['Enregistry',      'registry.otl'],
+      \ 's':    ['Enstuff',     'cstuff.otl'],
+      \ 't':    ['Enstandards',       'standards.otl'],
+      \ 'w':    ['Enwork',      'work.otl'],
+      \ }
 
-let vim_files_map = {
-	\ 'name': '+vim files',
-	\ 'm':    ['Emyvimcustom', 'my-vim-custom.vim']        ,
-	\ 'i':    ['Einfoman',     'vim-infoman.vim']        ,
-	\ }
+let ref_files_map = {
+      \ 'name': '+ref files',
+      \ 'm':    ['Erefmine',        'refmine.otl'],
+      \ 'b':    ['Erefbookmarks',   'refbookmarks.otl'],
+      \ 'c':    ['Erefcard',        'refcard.otl'],
+      \ 'ca':   ['Erefcardarchive', 'refcard_archive.otl'],
+      \ 'cd':   ['Erconvertdata', 'rfc_convert_data.md'],
+      \ 'cl':   ['Erclojure',       'refcard_clojure.otl'],
+      \ }
 
 let study_files_map = {
-	\ 'name': '+study files' ,
-	\ 'c':    ['Escode'        , 'study_code.md']        ,
-	\ 'cl':   ['Esclojure'        , 'study_clojure.md']        ,
-	\ 'ij':   ['Estudyintellij'        , 'study_intellij.md']        ,
-	\ 'r':    ['Estudyr'        , 'study_r.md']        ,
-	\ 's':    ['Estudyspacemacs'        , 'spacemacs.md']        ,
-	\ 'v':    ['Esvim'        , 'study_vim.md']        ,
-	\ }
+      \ 'name': '+study files' ,
+      \ 'c':    ['Escode'        , 'study_code.md']        ,
+      \ 'cl':   ['Esclojure'        , 'study_clojure.md']        ,
+      \ 'ij':   ['Estudyintellij'        , 'study_intellij.md']        ,
+      \ 'r':    ['Estudyr'        , 'study_r.md']        ,
+      \ 's':    ['Estudyspacemacs'        , 'spacemacs.md']        ,
+      \ 'v':    ['Esvim'        , 'study_vim.md']        ,
+      \ }
+
+let vim_files_map = {
+      \ 'name': '+vim files',
+      \ 'm':    ['Evmyvim', 'my-vim-custom.vim']        ,
+      \ 'i':    ['Evinfoman',     'vim-infoman.vim']        ,
+      \ }
 
 let edit_map = {
-	\ 'name':   '+edit',
-	\ 'c':      code_map,
-	\ 'e':      example_files_map,
-	\ 'g':      {
-		\ 'name': '+general files',
-		\ 'r':    ['Egrules',        'rules.otl']        ,
-		\ 'n' : ['Ecnames',       'names.otl'],
-		\ },
-	\ 'l':      logbook_files_map,
-	\ 'n':      notes_files_map,
-	\ 'r':      ref_files_map,
-	\ 's':      study_files_map,
-	\ 'v':      vim_files_map,
- \ '?':       ['Buffers',        'fzf-buffer']      ,
- \ }
+      \ 'name':   '+edit',
+      \ 'b':      logbook_files_map,
+      \ 'c':      code_files_map,
+      \ 'e':      example_files_map,
+      \ 'j':      clojure_files_map,
+      \ 'l':      layermark_files_map,
+      \ 'n':      note_files_map,
+      \ 'r':      ref_files_map,
+      \ 's':      study_files_map,
+      \ 'v':      vim_files_map,
+      \ '?':       ['Buffers',        'fzf-buffer']      ,
+      \ }
 
 " nnoremap <Leader>amm  <Plug>(MarkToggle)
 
 let applications_map = {
-	\ 'name': '+applications',
-	\ 'c':    ['Lflcd',            'Lflcd'],
-	\ 'r':    ['Lf',            'Lf'],
-	\ 'R':    ['LfCurrentDirectory',            'LfCurrentDirectory'],
-	\ }
+      \ 'name': '+applications',
+      \ 'c':    ['Lflcd',            'Lflcd'],
+      \ 'r':    ['Lf',            'Lf'],
+      \ 'R':    ['LfCurrentDirectory',            'LfCurrentDirectory'],
+      \ }
 
 let project_map = {
-	\ 'name': '+project',
-	\ 't':    ['FffCurrentDir',            'FffCurrentDir'],
-	\ }
+      \ 'name': '+project',
+      \ 't':    ['FffCurrentDir',            'FffCurrentDir'],
+      \ }
 
 command! TabSplit :tab split
 
 function! OnlySplitWindow()
-	only
-	Utl3
+  only
+  Utl3
 endfunction
 command! OnlySplitWindow call OnlySplitWindow()
 
 let window_map = {
-	\ 'name': '+window',
-	\ 'm':    ['TabSplit',            'tab split'],
-	\ 'o':    ['only',            'only'],
-	\ 'v':    ['OnlySplitWindow',            'OnlySplitWindow'],
-	\ }
+      \ 'name': '+window',
+      \ 'm':    ['TabSplit',            'tab split'],
+      \ 'o':    ['only',            'only'],
+      \ 'v':    ['OnlySplitWindow',            'OnlySplitWindow'],
+      \ }
 
 command! SessionMkSession :mksession! .quicksave.vim
 command! SessionSource :source .quicksave.vim
@@ -1354,30 +1343,30 @@ command! SessionSource :source .quicksave.vim
 command! DisableLinter :call lsp#disable_diagnostics_for_buffer()
 
 let major_clojure_toggle_map = {
-	\ 'name': '+toggle',
-	\ 'l':    ['DisableLinter',            'DisableLinter'],
-	\ }
+      \ 'name': '+toggle',
+      \ 'l':    ['DisableLinter',            'DisableLinter'],
+      \ }
 
 let major_clojure_map = {
-	\ 'name': '+major clojure map',
-  \ 't' : major_clojure_toggle_map,
-	\ }
+      \ 'name': '+major clojure map',
+      \ 't' : major_clojure_toggle_map,
+      \ }
 
 let session_map = {
-	\ 'name': '+session',
-	\ 'r':    ['SessionSource',            'mksession! .quicksave.vim'],
-	\ 'w':    ['SessionMkSession',            'source .quicksave.vim'],
-	\ }
+      \ 'name': '+session',
+      \ 'r':    ['SessionSource',            'mksession! .quicksave.vim'],
+      \ 'w':    ['SessionMkSession',            'source .quicksave.vim'],
+      \ }
 
 let ref_map = {
-	\ 'name': '+ref',
-	\ 'i':    ['RefId',            'RefId'],
-	\ 'I':    ['RefIdS',            'RefIdS'],
-	\ 'l':    ['RefLine',            'RefLine'],
-	\ 'n':    ['RefIdNewS',            'RefIdNewS'],
-	\ 'p':    ['IdPair',            'IdPair'],
-	\ 'w':    ['RefWord',            'RefWord'],
-	\ }
+      \ 'name': '+ref',
+      \ 'i':    ['RefId',            'RefId'],
+      \ 'I':    ['RefIdS',            'RefIdS'],
+      \ 'l':    ['RefLine',            'RefLine'],
+      \ 'n':    ['RefIdNewS',            'RefIdNewS'],
+      \ 'p':    ['IdPair',            'IdPair'],
+      \ 'w':    ['RefWord',            'RefWord'],
+      \ }
 
 function! MotionPageDown()
   execute "norm! \<c-d>"
@@ -1386,32 +1375,34 @@ endfunction
 command! MotionPageDown call MotionPageDown()
 
 let cd_map = {
-	\ 'name': '+global c',
-	\ 'p':    ['Cdprojects',            'Cdprojects'],
-	\ 's':    ['Cdstudy',            'Cdstudy'],
-	\ }
+      \ 'name': '+global c',
+      \ 'm':    ['CdMyrepo',            'CdMyrepo'],
+      \ 'p':    ['Cdprojects',            'Cdprojects'],
+      \ 'r':    ['CdRoot',            'CdRoot'],
+      \ 's':    ['Cdstudy',            'Cdstudy'],
+      \ }
 
 let global_c_map = {
-	\ 'name': '+global c',
-	\ 'd' : cd_map,
-	\ }
+      \ 'name': '+global c',
+      \ 'd' : cd_map,
+      \ }
 
 let g:which_key_map =  {
-  \ ' ' : ['MotionPageDown',            'MotionPageDown'],
-	\ 'a' : applications_map,
-	\ 'b' : buffers_map,
-	\ 'c' : global_c_map,
-	\ 'e' : edit_map,
-	\ 'f' : telescope_map,
-	\ 'm' : major_clojure_map,
-	\ 'p' : project_map,
-	\ 'r' : ref_map,
-	\ 'ü' : custom_map,
-  \ 's' : session_map,
-  \ 't' : tab_map,
-  \ 'x' : text_map,
-  \ 'ı' : window_map,
-	\ }
+      \ ' ' : ['MotionPageDown',            'MotionPageDown'],
+      \ 'a' : applications_map,
+      \ 'b' : buffers_map,
+      \ 'c' : global_c_map,
+      \ 'e' : edit_map,
+      \ 'f' : file_map,
+      \ 'm' : major_clojure_map,
+      \ 'p' : project_map,
+      \ 'r' : ref_map,
+      \ 'ü' : custom_map,
+      \ 's' : session_map,
+      \ 't' : tab_map,
+      \ 'x' : text_map,
+      \ 'ı' : window_map,
+      \ }
 
 call which_key#register('<Space>', "g:which_key_map")
 
@@ -1419,6 +1410,70 @@ nnoremap <silent> <leader> :<c-u>WhichKey '<Space>'<CR>
 vnoremap <silent> <leader> :<c-u>WhichKeyVisual '<Space>'<CR>
 
 ": }}} which-key
+
+": vim-sexp {{{ 
+" Default
+let g:sexp_mappings = {}
+
+" vim-sexp internal mappings
+let s:sexp_mappings = {
+		\ 'sexp_outer_list':                'af',
+		\ 'sexp_inner_list':                'if',
+		\ 'sexp_outer_top_list':            'aF',
+		\ 'sexp_inner_top_list':            'iF',
+		\ 'sexp_outer_string':              'as',
+		\ 'sexp_inner_string':              'is',
+		\ 'sexp_outer_element':             'ae',
+		\ 'sexp_inner_element':             'ie',
+		\ 'sexp_move_to_prev_bracket':      '(',
+		\ 'sexp_move_to_next_bracket':      ')',
+		\ 'sexp_move_to_prev_element_head': '<M-b>',
+		\ 'sexp_move_to_next_element_head': '<M-w>',
+		\ 'sexp_move_to_prev_element_tail': 'g<M-e>',
+		\ 'sexp_move_to_next_element_tail': '<M-e>',
+		\ 'sexp_flow_to_prev_close':        '<M-[>',
+		\ 'sexp_flow_to_next_open':         '<M-]>',
+		\ 'sexp_flow_to_prev_open':         '<M-{>',
+		\ 'sexp_flow_to_next_close':        '<M-}>',
+		\ 'sexp_flow_to_prev_leaf_head':    '<M-S-b>',
+		\ 'sexp_flow_to_next_leaf_head':    '<M-S-w>',
+		\ 'sexp_flow_to_prev_leaf_tail':    '<M-S-g>',
+		\ 'sexp_flow_to_next_leaf_tail':    '<M-S-e>',
+		\ 'sexp_move_to_prev_top_element':  '[[',
+		\ 'sexp_move_to_next_top_element':  ']]',
+		\ 'sexp_select_prev_element':       '[e',
+		\ 'sexp_select_next_element':       ']e',
+		\ 'sexp_indent':                    '==',
+		\ 'sexp_indent_top':                '=-',
+		\ 'sexp_round_head_wrap_list':      '<LocalLeader>i',
+		\ 'sexp_round_tail_wrap_list':      '<LocalLeader>I',
+		\ 'sexp_square_head_wrap_list':     '<LocalLeader>[',
+		\ 'sexp_square_tail_wrap_list':     '<LocalLeader>]',
+		\ 'sexp_curly_head_wrap_list':      '<LocalLeader>{',
+		\ 'sexp_curly_tail_wrap_list':      '<LocalLeader>}',
+		\ 'sexp_round_head_wrap_element':   '<LocalLeader>w',
+		\ 'sexp_round_tail_wrap_element':   '<LocalLeader>W',
+		\ 'sexp_square_head_wrap_element':  '<LocalLeader>e[',
+		\ 'sexp_square_tail_wrap_element':  '<LocalLeader>e]',
+		\ 'sexp_curly_head_wrap_element':   '<LocalLeader>e{',
+		\ 'sexp_curly_tail_wrap_element':   '<LocalLeader>e}',
+		\ 'sexp_insert_at_list_head':       '<LocalLeader>h',
+		\ 'sexp_insert_at_list_tail':       '<LocalLeader>l',
+		\ 'sexp_splice_list':               '<LocalLeader>@',
+		\ 'sexp_convolute':                 '<LocalLeader>?',
+		\ 'sexp_raise_list':                '<LocalLeader>o',
+		\ 'sexp_raise_element':             '<LocalLeader>O',
+		\ 'sexp_swap_list_backward':        '<M-k>',
+		\ 'sexp_swap_list_forward':         '<M-j>',
+		\ 'sexp_swap_element_backward':     '<M-h>',
+		\ 'sexp_swap_element_forward':      '<M-l>',
+		\ 'sexp_emit_head_element':         '<M-S-j>',
+		\ 'sexp_emit_tail_element':         '<M-S-k>',
+		\ 'sexp_capture_prev_element':      '<M-S-h>',
+		\ 'sexp_capture_next_element':      '<M-S-l>',
+		\ }
+": }}}
+
 
 ": spacemacs normal mode keybindings {{{
 
@@ -1438,7 +1493,6 @@ command! P :pwd
 nnoremap <leader>pp :pwd<cr>
 nnoremap <leader>cd. :ChangeCurrentDirectory<CR>
 command! CdRoot exec 'cd' fnameescape(fnamemodify(finddir('.git', escape(expand('%:p:h'), ' ') . ';'), ':h'))
-nnoremap <leader>cdr :CdRoot<cr>
 
 " split window
 " nnoremap <silent> <leader>ıv :wincmd v<cr>:wincmd l<cr>
@@ -1697,57 +1751,6 @@ function! OutputSplitWindow(...)
 endfunction
 command! -nargs=+ -complete=command Output call OutputSplitWindow(<f-args>)
 
-" https://stackoverflow.com/questions/1642611/how-to-save-and-restore-multiple-different-sessions-in-vim
-" save and restore sessions in vim
-function! MakeSession()
-  "let b:sessiondir = $HOME . "/.vim/sessions" . getcwd()
-  let b:sessiondir = $HOME . "/.vim/sessions"
-  if (filewritable(b:sessiondir) != 2)
-    exe 'silent !mkdir -p ' b:sessiondir
-    redraw!
-  endif
-  let b:filename = b:sessiondir . '/session.vim'
-  exe "mksession! " . b:filename
-endfunction
-function! LoadSession()
-  "let b:sessiondir = $HOME . "/.vim/sessions" . getcwd()
-  let b:sessiondir = $HOME . "/.vim/sessions"
-  let b:sessionfile = b:sessiondir . "/session.vim"
-  if (filereadable(b:sessionfile))
-    exe 'source ' b:sessionfile
-  else
-    echo "No session loaded."
-  endif
-endfunction
-" Adding automatons for when entering or leaving Vim
-function! AutomaticSessions()
-  au VimEnter * nested :call LoadSession()
-  au VimLeave * :call MakeSession()
-endfunction
-
-function! AdjustDate(date, offset)
-" id=g_10173
-" function! AdjustDate(date, offset) <url:file:///~/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#r=g_10173>
-" parse a date like sprintf and strptime
-" https://stackoverflow.com/questions/12325291/parse-a-date-in-vimscript
-" use:
-" call AdjustDate("2017-10-11",0)
-" out:
-" 2017-10-11
-
-python << EOF
-import vim
-import datetime
-
-result = datetime.datetime.strptime(vim.eval("a:date"), "%Y-%m-%d") + \
-        datetime.timedelta(days=int(vim.eval("a:offset")))
-vim.command("let l:result = '" + result.strftime("%Y-%m-%d") + "'")
-vim.command("echo '" + result.strftime("%Y-%m-%d") + "'")
-result = result.strftime("%Y-%m-%d")
-EOF
-return result
-endfunction
-
 function! YoutubeSrc2PlaylistLinks()
   /href=".*watch.*list=[^"]*"
   v//d
@@ -1759,27 +1762,25 @@ endfunction
 command! YoutubeSrc2PlaylistLinks call YoutubeSrc2PlaylistLinks()
 
 function! CleanFileTree()
-	" for file_tree.otl
-	normal zM
-	/qc-ki
-	normal zvzcdd
-	/92-TEMPOR
-	normal zvzcdd
-	/90-TEMPOR
-	normal zvzcdd
-	/10-ANAL
-	normal zvzcdd
-	/40-TECH
-	normal zvzcdd
-	"let c = '/qc-kizcddzczc14kgg/10-ANALzcdd/40-TECHzcdddd3jzo5jzojjzojjzo'
-	"norm @f
+                  " for file_tree.otl
+                  normal zM
+                  /qc-ki
+                  normal zvzcdd
+                  /92-TEMPOR
+                  normal zvzcdd
+                  /90-TEMPOR
+                  normal zvzcdd
+                  /10-ANAL
+                  normal zvzcdd
+                  /40-TECH
+                  normal zvzcdd
 endfunction
 command! CleanFileTree call CleanFileTree()
 
 function! UpdateFileTree()
-	" not working. @todo
-	!baku_tree2
-	CleanFileTree
+                  " not working. @todo
+                  !baku_tree2
+                  CleanFileTree
 endfunction
 command! UpdateFileTree call UpdateFileTree()
 
@@ -1787,11 +1788,11 @@ command! Tme TableModeEnable
 command! Tmd TableModeDisable
 
 function! OpenFilesRecursively()
-	let extensions = "(sql|yuml|yaml|md|otl|sh|txt|csv|R|shaape)"
-	let excluded_folders = "(archieve|archive|view|tmp|software|tr|en|inbox|main_library|10users_alternative|10-Users|temp|progress_reports|versions_of_project_plans|docs_devops|code|btg_team|Analysis|assets|__MACOSX|kariyernet_gis_expert_20151202|external_docs|software_tools|source_az|img|arcgis|azcad|data|progress_reports|other|10-Notes|prototyping|customer_sessions|BPS-03|10users_alternative|evaluations|upwork_jobs)"
-	let excluded_files = "(_en\.|_tr\.|_az\.md$|_deprecated|conflicted)"
-	let cmd = "find -L | ack '." . extensions . "$' | ack -v '/" . excluded_folders . "/' | ack -v '" . excluded_files . "'"
-	for i in (split(system(cmd),'\n')) | execute("e ".i) | endfor
+                  let extensions = "(sql|yuml|yaml|md|otl|sh|txt|csv|R|shaape)"
+                  let excluded_folders = "(archieve|archive|view|tmp|software|tr|en|inbox|main_library|10users_alternative|10-Users|temp|progress_reports|versions_of_project_plans|docs_devops|code|btg_team|Analysis|assets|__MACOSX|kariyernet_gis_expert_20151202|external_docs|software_tools|source_az|img|arcgis|azcad|data|progress_reports|other|10-Notes|prototyping|customer_sessions|BPS-03|10users_alternative|evaluations|upwork_jobs)"
+                  let excluded_files = "(_en\.|_tr\.|_az\.md$|_deprecated|conflicted)"
+                  let cmd = "find -L | ack '." . extensions . "$' | ack -v '/" . excluded_folders . "/' | ack -v '" . excluded_files . "'"
+                  for i in (split(system(cmd),'\n')) | execute("e ".i) | endfor
 endfun
 command! OpenFilesRecursively call OpenFilesRecursively()
 
@@ -2050,27 +2051,46 @@ endfunction
 
 ": }}} deprecated 
 
-": folding and navigation settings {{{ 
+": folding and navigation settings {{{  id=g12604
 
-" use spaces instead of tabs
-nmap zN :set expandtab \| :retab<cr>
-" in md + otl files use zn instead of zm
-nmap zn :set ft=votl \| :norm! mnzMzrzr'nzm \| :set expandtab \| :retab \| :norm! 'n<cr>
+" zn
+" nmap zĞ :norm! mnzMzrzr'nzm \| :set expandtab \| :retab \| :norm! 'n<cr>
+" nmap zğ :set ft=votl \| :norm! mnzMzrzr'nzm \| :set expandtab \| :retab \| :norm! 'n<cr>
 nmap zV znzMzv
 nmap zö zMzvzczOzt
 " next section
-nmap zj zcjzö
+" zj
+nmap zJ zcjzö
 nmap <S-RIGHT> zcjzö
 " note that ]l [l ]L defined by NextIndent
-nmap zJ ]lzO
+" zi ~ zj ~ zJ
+nmap zi zVzc]lzOzt
+" ze ~ zk ~ zK
+nmap ze zVzc[lzOzt
 " prev section
-nmap zk zckzö
-nmap zK [lzO
+" zk
+nmap zK zckzö
 " open and go to last child
 nmap zÖ zo]Lk
 " left hand navigation of otl trees
 nmap cö zj
 nmap cv zk
+
+" indentLine
+let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+let g:indentLine_concealcursor = 'inc'
+let g:indentLine_conceallevel = 2
+
+" in md + otl files use zn instead of zm
+" nmap zn :set ft=votl \| :norm! mnzMzrzr'nzm \| :set expandtab \| :retab \| :norm! 'n<cr>
+
+function! WipFoldOpenOnlyCurrentBlock()
+  norm! zMzv
+  if ( foldclosed(line(".")) > 0 )
+    norm! zczO
+  endif
+  norm! zt
+endfunction
 
 " move to prev line with same indentation
 " http://vim.wikia.com/wiki/Move_to_next/previous_line_with_same_indentation
@@ -2079,8 +2099,8 @@ nmap cv zk
 "
 " usage:
 "
-" [l ]l		prev/next same indent
-" [L ]L		prev/next lower indent
+" [l ]l                                 prev/next same indent
+" [L ]L                                 prev/next lower indent
 " `[l` and `]l` jump to the previous or the next line with the same indentation level as the current line.
 " `[L` and `]L` jump to the previous or the next line with an indentation level lower than the current line.
 " These movements also work in visual mode and in operator pending mode, meaning that you can enter commands like `d]l` to delete lines. The motion is specified as being exclusive when in operator pending mode.
@@ -2145,7 +2165,7 @@ vnoremap üqk "ky:ThesaurusQueryReplace <C-r>k<CR>
 command! Rmarkdown :!R -e 'rmarkdown::render("%")'
 command! OpenHtml :execute '!open ' . expand("%:r") . '.html'
 command! OpenFile :!open %
-command! Ohtml OpenHtml
+command! ToHtmlAndOpenFile :TOhtml | :!open %
 command! SyncRmdToBlogDir :!sync_rmd_to_blog_dirs
 command! Srmd :SyncRmdToBlogDir
 command! OpenMd :execute '!marked2 ' . expand("%:p")
@@ -2153,12 +2173,12 @@ command! Omd OpenMd
 
 " cd to the directory containing the file in the buffer
 function! ChangeCurrentDirectory()
-	let path = expand("%:p:h")
-	let path = substitute(path, "/Users/mertnuhoglu", "\\~", "")
-	let path = substitute(path, "Dropbox (Personal)", "Dropbox", "")
-	let @* = path
-	lcd %:h
-	pwd
+                  let path = expand("%:p:h")
+                  let path = substitute(path, "/Users/mertnuhoglu", "\\~", "")
+                  let path = substitute(path, "Dropbox (Personal)", "Dropbox", "")
+                  let @* = path
+                  lcd %:h
+                  pwd
 endfunction
 command! ChangeCurrentDirectory call ChangeCurrentDirectory()
 command! Ccd call ChangeCurrentDirectory()
@@ -2205,7 +2225,7 @@ nnoremap <S-F1> :args<CR>
 
 ": surround settings {{{ 
 function! SurroundMdImage() range
-	exe a:firstline.",".a:lastline."g/\\(\\.jpg\\>\\)\\|\\(\\.png\\)/ s#\\(^\\)\\(.*/\\)\\([^/]\\+\\)\\(\\..*$\\)#![\\3](\\2\\3\\4)#"
+                  exe a:firstline.",".a:lastline."g/\\(\\.jpg\\>\\)\\|\\(\\.png\\)/ s#\\(^\\)\\(.*/\\)\\([^/]\\+\\)\\(\\..*$\\)#![\\3](\\2\\3\\4)#"
 endfunction
 command! -nargs=* -range=% SurroundMdImage <line1>,<line2>call SurroundMdImage()
 
@@ -2245,7 +2265,7 @@ vnoremap üse s**<c-r>***<esc>
 
 function! ConvertAnkiMd()
   set expandtab
-	retab
+                  retab
   g/<url:/ s/<url:file:...// | s/>$//
   " indented lines match this regex:
   " \(  \+\)\(.*\)\(<br>$\)\@!
@@ -2255,11 +2275,11 @@ function! ConvertAnkiMd()
   %s/^\(  \+\)\(.*\)/\1`` \2 `` <br>/
   " replace indentation spaces with center dots · because anki ignores spaces
   g/^  / s/  /··/g
-	%s/··``/  ``/
+                  %s/··``/  ``/
   " escape [..](..)
   " wrap underscore words with backquote
   v/^·/ s/](/\&#093;(/ | s/\( \)\@<=[^ `]\+_[^ `]\+/`\0`/g
-	g/<br>/left
+                  g/<br>/left
 endfunction
 command! ConvertAnkiMd call ConvertAnkiMd()
 
@@ -2273,6 +2293,40 @@ function! UnconvertAnkiMd()
   %s/&gt;/>/g
 endfunction
 command! UnconvertAnkiMd call UnconvertAnkiMd()
+
+function! ConvertAnkiTsv()
+  g/<url:/ s/<url:file:...// | s/>$//
+  " indented lines match this regex:
+  " \(  \+\)\(.*\)\(<br>$\)\@!
+  " escape < > ` in not indented lines
+  v/\(  \+\)\(.*\)\(<br>$\)\@!/ s/<\(br>\)\@!/\&lt;/g | s/\(<br\)\@<!>/\&gt;/g
+  " append <br>
+                  v/"$/norm A <br>
+  " replace indentation spaces with center dots · because anki ignores spaces
+  g/^\t/ s/\t/·· /
+  g/^  / s/  /·· /
+  g/·· \t/ s/\t/·· /
+  g/··   / s/  /·· /
+  g/·· \t/ s/\t/·· /
+  g/··   / s/  /·· /
+  g/·· \t/ s/\t/·· /
+  g/··   / s/  /·· /
+  g/·· \t/ s/\t/·· /
+  g/··   / s/  /·· /
+  g/·· \t/ s/\t/·· /
+  g/··   / s/  /·· /
+  g/·· \t/ s/\t/·· /
+  g/··   / s/  /·· /
+  g/·· \t/ s/\t/·· /
+  g/··   / s/  /·· /
+  g/·· \t/ s/\t/·· /
+  g/··   / s/  /·· /
+  %s/· ·/··/g
+  " wrap underscore words with backquote
+  v/^·/ s/](/\&#093;(/ | s/\( \)\@<=[^ `]\+_[^ `]\+/`\0`/g
+                  g/<br>/left
+endfunction
+command! ConvertAnkiTsv call ConvertAnkiTsv()
 
 function! AnkiFilterSuspended()
   " delete all anki questions except "suspended" ones
@@ -2309,58 +2363,65 @@ vnoremap ükk s[...]<esc>
 
 ": convert cmmi piid docs {{{ 
 
+function! ConvertCmmiPutAF()
+  g/^".*\*/s#"#"AF: # 
+  g/^[^"].*\*/s#^#AF: # 
+  v/AF:/s#^#AR: #
+endfunction
+command! ConvertCmmiPutAF call ConvertCmmiPutAF()
+
 function! ConvertPIID2Normalize()
-	g/^\d\+\t\+$/d
-	g/^\t\+/d
-	g/^SG\|PF\|GG/d
-	g/^SP\|GP/norm >>>>
+                  g/^\d\+\t\+$/d
+                  g/^\t\+/d
+                  g/^SG\|PF\|GG/d
+                  g/^SP\|GP/norm >>>>
 endfunction
 
 function! ConvertPIID_PA() " id=g_11462
-	" input:
-	" 		SP1.1	Establish and maintain measurement objectives derived from identified information needs and objectives.
-	" 1	MADIOS_Ölçüm Planı
-	" 2	YBS/YPTS_Ölçüm Planı
-	" 		SP1.2	Specify measures to address measurement objectives.
-	" output:
-	" 		SP1.1	Establish and maintain measurement objectives derived from identified information needs and objectives.
-	" SP1.1	1	MADIOS_Ölçüm Planı
-	" SP1.1	2	YBS/YPTS_Ölçüm Planı
-	" 		SP1.2	Specify measures to address measurement objectives.
-	/\<\(SP\|GP\)
-	?\<\(SP\|GP\)
-	norm! "uy3e
-	norm! j
-	norm! ma
-	/\<\(SP\|GP\)
-	norm! k
-	norm! mb
-	execute ":'a,'b s/^/" . @u . "\t/"
-	norm! j0
+                  " input:
+                  "                                           SP1.1                 Establish and maintain measurement objectives derived from identified information needs and objectives.
+                  " 1                   MADIOS_Ölçüm Planı
+                  " 2                   YBS/YPTS_Ölçüm Planı
+                  "                                           SP1.2                 Specify measures to address measurement objectives.
+                  " output:
+                  "                                           SP1.1                 Establish and maintain measurement objectives derived from identified information needs and objectives.
+                  " SP1.1               1                     MADIOS_Ölçüm Planı
+                  " SP1.1               2                     YBS/YPTS_Ölçüm Planı
+                  "                                           SP1.2                 Specify measures to address measurement objectives.
+                  /\<\(SP\|GP\)
+                  ?\<\(SP\|GP\)
+                  norm! "uy3e
+                  norm! j
+                  norm! ma
+                  /\<\(SP\|GP\)
+                  norm! k
+                  norm! mb
+                  execute ":'a,'b s/^/" . @u . "\t/"
+                  norm! j0
 endfunction
 
 function! ConvertGapReportBulgular()
-	v/\tBulgular\t/d
-	v/:/d
-	v/\d\s*$/norm A	1	0	0
-	%s# !0!0\s*$#\t0\t0\t0#
-	%s# !1!0\s*$#\t0\t1\t0#
-	%s# !0!1\s*$#\t1\t0\t1#
-	%s/!/\t/g
-	%s/\t\t\+/\t/
+                  v/\tBulgular\t/d
+                  v/:/d
+                  v/\d\s*$/norm A       1                     0                     0
+                  %s# !0!0\s*$#\t0\t0\t0#
+                  %s# !1!0\s*$#\t0\t1\t0#
+                  %s# !0!1\s*$#\t1\t0\t1#
+                  %s/!/\t/g
+                  %s/\t\t\+/\t/
 endfunction
 function! ConvertGapReportNotlar()
-	v/\tNotlar\t/d
-	g/\tNotlar\s*$/d
-	g/\tNotlar\t\S*\s*$/d
-	v/\t\d$/d
+                  v/\tNotlar\t/d
+                  g/\tNotlar\s*$/d
+                  g/\tNotlar\t\S*\s*$/d
+                  v/\t\d$/d
 endfunction
 function! ConvertGapReportKanitlar()
-	v/\tKanıtlar\t/d
-	g/\tKanıtlar\s*$/d
-	g/\tKanıtlar\t\S*\s*$/d
-	g/\tKanıtlar\t\S*\t\S*\s*$/d
-	g/\tKanıtlar\t\S*\t[^\t]*\s*$/d
+                  v/\tKanıtlar\t/d
+                  g/\tKanıtlar\s*$/d
+                  g/\tKanıtlar\t\S*\s*$/d
+                  g/\tKanıtlar\t\S*\t\S*\s*$/d
+                  g/\tKanıtlar\t\S*\t[^\t]*\s*$/d
 endfunction
 
 ": }}} convert cmmi piid docs 
@@ -2381,9 +2442,9 @@ function! s:CopyMatches(line1, line2, reg)
     while idx >= 0
       let end = matchend(txt, @/, idx)
       if end > idx
-	call add(hits, strpart(txt, idx, end-idx))
+                  call add(hits, strpart(txt, idx, end-idx))
       else
-	let end += 1
+                  let end += 1
       endif
       if @/[0] == '^'
         break  " to avoid false hits
@@ -2421,98 +2482,98 @@ endfunction
 command! GetTags call GetTagsFunc()
 
 function! ConvertMarksTxt2MarksTsv()
-	" Convert `^M` into new line
-	%s//\r/g
-	" delete number lines such as 24
-	g/^\d\+$/d
-	" delete html tags
-	%s/<\/\?\w\+>//g
-	" wrap text lines inside double quotes
-	" note that a text line may start with -.'":;, symbols
-	%s/"/'/g
-	v/^\d\d:\d\d:\d\d/ s/\(^\([-()# .'":;,]\|\k\).*\n\)\+/"\0"/
-	" put ### at the start of each scene
-	g/^"$/ s/\n/###/g
-	" replace all newlines
-	%s/\n/@@@/g
-	" put each scene into a new line
-	%s/###/\r/g
-	" delete the last @@@
-	%s/@@@"$/"/
-	" delete all intermediate time digits
-	%s#--> \([0-9:,]\+@@@[0-9:,]\+ --> \)\+#--> #g
-	%s/@@@"/\t"/
-	%s/ --> /\t/
-	g/^@@@$/d
-	%s/@@@/ <br> /g
-	%s/([A-Z]\+)//g
-	%s#\(\d\d\),\(\d\d\d\)#\1.\2#g
+  " Convert `^M` into new line
+  %s//\r/g
+  " delete number lines such as 24
+  g/^\d\+$/d
+  " delete html tags
+  %s/<\/\?\w\+>//g
+  " wrap text lines inside double quotes
+  " note that a text line may start with -.'":;, symbols
+  %s/"/'/g
+  v/^\d\d:\d\d:\d\d/ s/\(^\([-()# .'":;,]\|\k\).*\n\)\+/"\0"/
+  " put ### at the start of each scene
+  g/^"$/ s/\n/###/g
+  " replace all newlines
+  %s/\n/@@@/g
+  " put each scene into a new line
+  %s/###/\r/g
+  " delete the last @@@
+  %s/@@@"$/"/
+  " delete all intermediate time digits
+  %s#--> \([0-9:,]\+@@@[0-9:,]\+ --> \)\+#--> #g
+  %s/@@@"/\t"/
+  %s/ --> /\t/
+  g/^@@@$/d
+  %s/@@@/ <br> /g
+  %s/([A-Z]\+)//g
+  %s#\(\d\d\),\(\d\d\d\)#\1.\2#g
 endfunction
 command! ConvertMarksTxt2MarksTsv call ConvertMarksTxt2MarksTsv()
 
 command! Convert2Unicode set bomb | set fileencoding=utf-8 <CR>
 
 function! SurroundTagsWithBracketsAndQuotes()
-	" surround tags: with []
-	g/^tags:/ s/\(\w\+\) /"\1", /g
-	g/^tags:/ s/\(\w\+\)$/"\1"/g
-	g/^tags:/ s/\(^tags: \)\@<=\(.*\)/[\2]/
-	g/^categories:/ s/\(\w\+\) /"\1", /g
-	g/^categories:/ s/\(\w\+\)$/"\1"/g
-	g/^categories:/ s/\(^categories: \)\@<=\(.*\)/[\2]/
+                  " surround tags: with []
+                  g/^tags:/ s/\(\w\+\) /"\1", /g
+                  g/^tags:/ s/\(\w\+\)$/"\1"/g
+                  g/^tags:/ s/\(^tags: \)\@<=\(.*\)/[\2]/
+                  g/^categories:/ s/\(\w\+\) /"\1", /g
+                  g/^categories:/ s/\(\w\+\)$/"\1"/g
+                  g/^categories:/ s/\(^categories: \)\@<=\(.*\)/[\2]/
 endfunction
 command! SurroundTagsWithBracketsAndQuotes call SurroundTagsWithBracketsAndQuotes()
 
 function! s:SummarizeInputOutputFiles()
-	g/^\(input\|output\|script\):/ co$
+                  g/^\(input\|output\|script\):/ co$
 endfunction
 command! SummarizeInputOutputFiles :call s:SummarizeInputOutputFiles()
 
 function! ConvertSubscriptChars2NormalChars()
-	%s/₂/2/g
-	%s/₁/1/g
-	%s/₅/5/g
-	%s/₄/4/g
-	%s/₃/3/g
-	%s/⁺/+/g
-	%s/‾/-/g
-	%s/⁰/0/g
+                  %s/₂/2/g
+                  %s/₁/1/g
+                  %s/₅/5/g
+                  %s/₄/4/g
+                  %s/₃/3/g
+                  %s/⁺/+/g
+                  %s/‾/-/g
+                  %s/⁰/0/g
 endfun
 command! ConvertSubscriptChars2NormalChars call ConvertSubscriptChars2NormalChars()
 
 function! ConvertKariyerNetPage2Csv()
-	g/kontör/d
-	g/Ad Soyad/d
-	g/Yazdır/d
-	g/@/,/@/-j
-	"g/\w/,/^\s*$/-j
-	%s/^\s*//
-	RemoveBlankLines
-	%s/\s*\t/,/g
-	" move email addresses to first column
-	%s#\(.*\),\([^,]*@[^,]*\)\(,.*\)#\2,\1\3#
+                  g/kontör/d
+                  g/Ad Soyad/d
+                  g/Yazdır/d
+                  g/@/,/@/-j
+                  "g/\w/,/^\s*$/-j
+                  %s/^\s*//
+                  RemoveBlankLines
+                  %s/\s*\t/,/g
+                  " move email addresses to first column
+                  %s#\(.*\),\([^,]*@[^,]*\)\(,.*\)#\2,\1\3#
 endfun
 command! -range=% ConvertKariyerNetPage2Csv <line1>,<line2>call ConvertKariyerNetPage2Csv()
 
 function! CorrectUseCases()
   " baku project analysis report generation
-	g/^\d\+[a-z]/m$
-	%s/^\(\d\+\w*\>\)/\1.
-	s/$/\r/
-	%s/\.\</\. /
-	%s/. \<ci\>/./
-	%s/. \<cü\>/./
-	%s/  / /
-	%s/	/ /
-	g/./<<
-	g/^Not/norm O
-	g/^Not/norm o
-	g/^Not/>>
-	g/^\d\+[a-z]/norm o
-	SqueezeMultipleBlankLines
-	%s/\<Not /Not: /
-	g/^ \?[a-z]/-1,. j
-	g/^\d\+[a-z]/norm o
+                  g/^\d\+[a-z]/m$
+                  %s/^\(\d\+\w*\>\)/\1.
+                  s/$/\r/
+                  %s/\.\</\. /
+                  %s/. \<ci\>/./
+                  %s/. \<cü\>/./
+                  %s/  / /
+                  %s/                   / /
+                  g/./<<
+                  g/^Not/norm O
+                  g/^Not/norm o
+                  g/^Not/>>
+                  g/^\d\+[a-z]/norm o
+                  SqueezeMultipleBlankLines
+                  %s/\<Not /Not: /
+                  g/^ \?[a-z]/-1,. j
+                  g/^\d\+[a-z]/norm o
 endfunction
 command! CorrectUseCases call CorrectUseCases()
 
@@ -2523,53 +2584,53 @@ endfunction
 command! -nargs=* -range=% ConvertROutputToLines <line1>,<line2>call s:ConvertROutputToLines()
 
 function! s:ConvertTsv2Json() range
-	exe a:firstline.",".a:lastline."s#\t#", "#g"
-	exe a:firstline.",".a:lastline."s#^#[#"
-	exe a:firstline.",".a:lastline."s#$#]"
-	exe a:firstline.",".a:lastline."s#^#["#"
-	exe a:firstline.",".a:lastline."s#$#"]#"
-	exe a:firstline.",".a:lastline."s#$#,#"
-	exe a:firstline.",".a:lastline."join"
+                  exe a:firstline.",".a:lastline."s#\t#', '#g"
+                  exe a:firstline.",".a:lastline."s#^#[#"
+                  exe a:firstline.",".a:lastline."s#$#]"
+                  exe a:firstline.",".a:lastline."s#^#['#"
+                  exe a:firstline.",".a:lastline."s#$#']#"
+                  exe a:firstline.",".a:lastline."s#$#,#"
+                  exe a:firstline.",".a:lastline."join"
 endfunction
 command! -nargs=* -range=% ConvertTsv2Json <line1>,<line2>call s:ConvertTsv2Json()
 
 function! s:ConvertLines2CSV() range
-	exe a:firstline.",".a:lastline."SurroundWordsWithDQuotes"
-	exe a:firstline.",".a:lastline."s#$#,#"
-	exe a:firstline.",".a:lastline."join"
-	s/,$//
+                  exe a:firstline.",".a:lastline."SurroundWordsWithDQuotes"
+                  exe a:firstline.",".a:lastline."s#$#,#"
+                  exe a:firstline.",".a:lastline."join"
+                  s/,$//
 endfunction
 command! -nargs=* -range=% ConvertLines2CSV <line1>,<line2>call s:ConvertLines2CSV()
 
 function! s:ConvertYoutubeHistory()
-	Rbl
-	g/views$/d
-	g/•/d
-	g/^\d\+:\d\+$/j | exe 'norm A @@' | j | +1le2
-	g/@@/le
+                  Rbl
+                  g/views$/d
+                  g/•/d
+                  g/^\d\+:\d\+$/j | exe 'norm A @@' | j | +1le2
+                  g/@@/le
 endfunction
 command! ConvertYoutubeHistory :call s:ConvertYoutubeHistory()
 function! s:ConvertYoutubeHistory2()
-	Rbl
-	g/•/d
-	g/views$/ -2 | exe 'norm A @@' | j | +1d | le2
-	g/@@/le
-	"| +1d | +1le2
+                  Rbl
+                  g/•/d
+                  g/views$/ -2 | exe 'norm A @@' | j | +1d | le2
+                  g/@@/le
+                  "| +1d | +1le2
 endfunction
 command! ConvertYoutubeHistory2 :call s:ConvertYoutubeHistory2()
 
 function! s:ConvertGooglePlayBookNotes()
-	g/^$/d
-	g/^\s*$/d
-	g/^\s*\d*$/d
-	g/2019$/d
-	g/2018$/d
+                  g/^$/d
+                  g/^\s*$/d
+                  g/^\s*\d*$/d
+                  g/2019$/d
+                  g/2018$/d
 endfunction
 command! ConvertGooglePlayBookNotes :call s:ConvertGooglePlayBookNotes()
 
 function! ConvertJavaAttributes2YumlAttributes()
-	" String dataDir;
-	" String masterDataDir;
+                  " String dataDir;
+                  " String masterDataDir;
   "
   " -->>
   "
@@ -2587,100 +2648,139 @@ endfunction
 command! ConvertJavaAttributes2YumlAttributes call ConvertJavaAttributes2YumlAttributes()
 
 function! ConvertHeadersTxt2HeadersFilteredWordsTxt()
-	/\(\k\|?\)\+
-	MatchesOnly
+                  /\(\k\|?\)\+
+                  MatchesOnly
 endfunction
 function! ConvertHeadersTxt2HeadersFilteredWordsTxt2()
-	exe '/\(\k\|?\)\+'
-	MatchesOnly
+                  exe '/\(\k\|?\)\+'
+                  MatchesOnly
 endfunction
 function! ConvertHeadersTxt2HeadersFilteredWordsTxt3()
-	exe '/\(\k\|?\)\+'
-	exe 'MatchesOnly'
+                  exe '/\(\k\|?\)\+'
+                  exe 'MatchesOnly'
 endfunction
 command! ConvertHeadersTxt2HeadersFilteredWordsTxt call ConvertHeadersTxt2HeadersFilteredWordsTxt3()
 
 function! ConvertIsoCharsInUtf8()
-	" pdf dosyalarından metin kopyaladıktan sonra bunu çalıştır
-	silent! %s/Ä±/ı/g
-	silent! %s/Ã¶/ö/g
-	silent! %s/Ã§/ç/g
-	silent! %s/Ã¼/ü/g
-	silent! %s/Ä°/İ/g
-	silent! %s/Ã\%x96/Ö/g
-	silent! %s/Ä\%x9f/ğ/g
-	silent! %s/Å\%x9f/ş/g
-	silent! %s/Å\%x9e/Ş/g
-	silent! %s/Ã\%x87/Ç/g
-	silent! %s/Ã\%x9c/Ü/g
-	silent! %s/Â\%x92/'/g
-	silent! %s/Â\%x91/'/g
-	silent! %s/Â´/'/g
-	silent! %s/Â\%x85//g
-	silent! %s/Â\%x95/-/g
-	silent! %s/Â·/-/g
-	silent! %s/Â©/©/g
-	silent! %s/Â»/>/g
-	silent! %s/Â·/-/g
-	silent! %s/Â¨/"/g
-	silent! %s/Â //g
-	silent! %s/Â°/°/g
-	silent! %s/Â¤//g
-	silent! %s/-Â /- /g
-	silent! %s/Â\%x96/-/g
-	silent! %s/Â«/</g
-	silent! %s/Â­/-/g
-	silent! %s/Â¦/-/g
-	silent! %s/Â®/®/g
-	silent! %s/Â\%x93/-/g
-	silent! %s/Â\%x94/-/g
-	silent! %s/Â\%x82//g
-	silent! %s/Â\%x97//g
-	silent! %s/Ã¢/a/g
-	silent! %s/Ã®/i/g
-	silent! %s/ü/ü/g
-	silent! %s/ü/ü/g
-	silent! %s/ş/ş/g
-	silent! %s/ğ/ğ/g
-	silent! %s/ö/ö/g
-	silent! %s/ç/ç/g
-	silent! %s/Ç/Ç/g
-	silent! %s/Ü/Ü/g
-	silent! %s/Ş/Ş/g
-	silent! %s/Ö/Ö/g
-	silent! %s/İ/İ/g
-	silent! %s//\r/g
+                  " pdf dosyalarından metin kopyaladıktan sonra bunu çalıştır
+                  silent! %s/Ä±/ı/g
+                  silent! %s/Ã¶/ö/g
+                  silent! %s/Ã§/ç/g
+                  silent! %s/Ã¼/ü/g
+                  silent! %s/Ä°/İ/g
+                  silent! %s/Ã\%x96/Ö/g
+                  silent! %s/Ä\%x9f/ğ/g
+                  silent! %s/Å\%x9f/ş/g
+                  silent! %s/Å\%x9e/Ş/g
+                  silent! %s/Ã\%x87/Ç/g
+                  silent! %s/Ã\%x9c/Ü/g
+                  silent! %s/Â\%x92/'/g
+                  silent! %s/Â\%x91/'/g
+                  silent! %s/Â´/'/g
+                  silent! %s/Â\%x85//g
+                  silent! %s/Â\%x95/-/g
+                  silent! %s/Â·/-/g
+                  silent! %s/Â©/©/g
+                  silent! %s/Â»/>/g
+                  silent! %s/Â·/-/g
+                  silent! %s/Â¨/"/g
+                  silent! %s/Â //g
+                  silent! %s/Â°/°/g
+                  silent! %s/Â¤//g
+                  silent! %s/-Â /- /g
+                  silent! %s/Â\%x96/-/g
+                  silent! %s/Â«/</g
+                  silent! %s/Â­/-/g
+                  silent! %s/Â¦/-/g
+                  silent! %s/Â®/®/g
+                  silent! %s/Â\%x93/-/g
+                  silent! %s/Â\%x94/-/g
+                  silent! %s/Â\%x82//g
+                  silent! %s/Â\%x97//g
+                  silent! %s/Ã¢/a/g
+                  silent! %s/Ã®/i/g
+                  silent! %s/ü/ü/g
+                  silent! %s/ü/ü/g
+                  silent! %s/ş/ş/g
+                  silent! %s/ğ/ğ/g
+                  silent! %s/ö/ö/g
+                  silent! %s/ç/ç/g
+                  silent! %s/Ç/Ç/g
+                  silent! %s/Ü/Ü/g
+                  silent! %s/Ş/Ş/g
+                  silent! %s/Ö/Ö/g
+                  silent! %s/İ/İ/g
+                  silent! %s//\r/g
 endfun
 command! ConvertIsoCharsInUtf8 call ConvertIsoCharsInUtf8()
 
 function! MigrateRmdToHugo()
-	" remove curly braces like {bash}
-	%s/{\<\(bash\|js\|css\|html\|r\)\>}/\1/
-	:SurroundTagsWithBracketsAndQuotes
-	%s#github.com/mertnuhoglu/study/js#github.com/mertnuhoglu/study/tree/master/js#
-	" delete <style> tags upto </style>
-	g/^<style>/ .,/^<\/style>$/ d
-	g/^path:/ s/Rmd$/md/
-	g/r set-options/ .,+3 d
-	" replace img/x.png with /image/x.png
-	%s#(img/\([^)]\+.png\)#(/images/\1#
-	%s#(data/\([^)]\+.png\)#(/images/\1#
-	%s#(data/img/\([^)]\+.png\)#(/images/\1#
-	%s#(/assets/img/\([^)]\+.png\)#(/images/\1#
-	" indent comment lines
-	%s/^#>/  #>/
-	%s/## \[\(\d\+\)/  ## \[\1/
+                  " remove curly braces like {bash}
+                  %s/{\<\(bash\|js\|css\|html\|r\)\>}/\1/
+                  :SurroundTagsWithBracketsAndQuotes
+                  %s#github.com/mertnuhoglu/study/js#github.com/mertnuhoglu/study/tree/master/js#
+                  " delete <style> tags upto </style>
+                  g/^<style>/ .,/^<\/style>$/ d
+                  g/^path:/ s/Rmd$/md/
+                  g/r set-options/ .,+3 d
+                  " replace img/x.png with /image/x.png
+                  %s#(img/\([^)]\+.png\)#(/images/\1#
+                  %s#(data/\([^)]\+.png\)#(/images/\1#
+                  %s#(data/img/\([^)]\+.png\)#(/images/\1#
+                  %s#(/assets/img/\([^)]\+.png\)#(/images/\1#
+                  " indent comment lines
+                  %s/^#>/  #>/
+                  %s/## \[\(\d\+\)/  ## \[\1/
 endfunction
 
 command! MigrateRmdToHugo call MigrateRmdToHugo()
 ": }}} other convert functions
 
 ": convert excel {{{ 
+
+function! RemoveLineEndingsDosM()
+  %s///
+endfunction
+command! RemoveLineEndingsDosM call RemoveLineEndingsDosM()
+
+function! ConvertToExcelFromMultilines()
+  " row 1 - line 1
+  " row 1 - line 2
+  " 
+  " row 2 - line 1
+  " ->
+  " "row 1 - line 1
+  " row 1 - line 2"
+  " 
+  " "row 2 - line 1"
+  %s/"/""/g
+  g/^$/s/$/###/
+  g/###/norm jI@!@
+  g/###/norm kA@!@
+  norm ggI@!@
+  norm GA@!@
+  %s/@!@/"/g
+  g/^###$/d
+  %s#/Users.*\(scs202\w\+\.jpg\)#<img src='\1'>#
+endfunction
+command! ConvertToExcelFromMultilines call ConvertToExcelFromMultilines()
+
+function! ConvertTimesheet2Excel()
+  " parametrik: 11 ile başlamayanları içeri hizala
+  v/^11\d\+/norm >>
+  " run awk: Fill down = outline tree to linear tree <url:file:///~/projects/study/bash/table_fill_down.md#r=g12547>
+  " ~/projects/myrepo/scrap/awk01.sh
+  " ~/projects/myrepo/scrap/input20211202.txt
+  %s/^/2021/
+  g/^202111\d\+$/d
+endfunction
+command! ConvertTimesheet2Excel call ConvertTimesheet2Excel()
+
 function! ConvertFillDown() " id=g_11596
-	" fill down empty rows like excel
-	"
-	" for complex cases use: Table Text Processing: Fill Down 20200927  <url:file:///~/projects/study/bash/table_fill_down.md#r=g_11617>
-	"
+  " fill down empty rows like excel
+  "
+  " for complex cases use: Table Text Processing: Fill Down 20200927  <url:file:///~/projects/study/bash/table_fill_down.md#r=g_11617>
+  "
   " input:
   "
   " ```tsv
@@ -2704,13 +2804,13 @@ function! ConvertFillDown() " id=g_11596
   " P2
   " P1
   " ```
-	/^.
-	?^.
-	norm! "uy$
-	norm! ma
-	/^.
-	norm! mb
-	execute ":'a,'b v/^./ s/^/" . @u
+  /^.
+  ?^.
+  norm! "uy$
+  norm! ma
+  /^.
+  norm! mb
+  execute ":'a,'b v/^./ s/^/" . @u
 endfunction
 command! ConvertFillDown :call ConvertFillDown()
 
@@ -2955,7 +3055,6 @@ iab %y> ŷ
 digraph a5 594
 "ɒ
 "β ç ᵈ ḑ ┬ │å ık
-"Ā		mynotes altında listesi vardı galiba ā
 
 " [Mathematical symbol macros for [idea]vim](https://gist.github.com/breandan/ed814aba2cee6d27a0efff655e231b09)
 "iab \alpha α
@@ -3028,8 +3127,8 @@ function! BuildAndRunTypeScript()
 endfunction
 nnoremap üüt :call BuildAndRunTypeScript()<cr>
 function! BuildAndRunBabelNodeScript()
-	:wa
-	:!yarn babel-node --presets env % | tee >(pbcopy)
+  :wa
+  :!yarn babel-node --presets env % | tee >(pbcopy)
 endfunction
 nnoremap üüb :call BuildAndRunBabelNodeScript()<cr>
 
@@ -3048,27 +3147,27 @@ call add(g:gutentags_project_info, {"type": "r", 'file': 'utils.R'})
 " tagbar
 " r support
 let g:tagbar_type_r = {
-    \ 'ctagstype' : 'r',
-    \ 'kinds'     : [
-        \ 'f:Functions',
-        \ 'g:GlobalVariables',
-        \ 'v:FunctionVariables',
-    \ ]
+  \ 'ctagstype' : 'r',
+  \ 'kinds'     : [
+    \ 'f:Functions',
+    \ 'g:GlobalVariables',
+    \ 'v:FunctionVariables',
+  \ ]
 \ }
 " markdown support
 let g:tagbar_type_markdown = {
-    \ 'ctagstype': 'markdown',
-    \ 'ctagsbin' : '/path/to/markdown2ctags.py',
-    \ 'ctagsargs' : '-f - --sort=yes',
-    \ 'kinds' : [
-        \ 's:sections',
-        \ 'i:images'
-    \ ],
-    \ 'sro' : '|',
-    \ 'kind2scope' : {
-        \ 's' : 'section',
-    \ },
-    \ 'sort': 0,
+  \ 'ctagstype': 'markdown',
+  \ 'ctagsbin' : '/path/to/markdown2ctags.py',
+  \ 'ctagsargs' : '-f - --sort=yes',
+  \ 'kinds' : [
+    \ 's:sections',
+    \ 'i:images'
+  \ ],
+  \ 'sro' : '|',
+  \ 'kind2scope' : {
+    \ 's' : 'section',
+  \ },
+  \ 'sort': 0,
 \ }
 
 ": }}} ctags tagbar settings 
@@ -3090,40 +3189,40 @@ endif
 
 " rainbow settings
 let g:rainbow_conf = {
-\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
-\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
-\	'guis': [''],
-\	'cterms': [''],
-\	'operators': '_,_',
-\	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
-\	'separately': {
-\		'*': {
-\			'ctermfgs': [3,5,8,12,214,142], 
-\   },
-\		'markdown': {
-\			'parentheses_options': 'containedin=markdownCode contained', 
-\		},
-\		'clojure': {
-\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'], 
-\			'ctermfgs': ['LightRed', 'LightGrey', 'Gray', 'DarkCyan', 'White'], 
-\		},
-\		'lisp': {
-\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'], 
-\		},
-\		'haskell': {
-\			'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/\v\{\ze[^-]/ end=/}/ fold'], 
-\		},
-\		'vim': {
-\			'parentheses_options': 'containedin=vimFuncBody', 
-\		},
-\		'perl': {
-\			'syn_name_prefix': 'perlBlockFoldRainbow', 
-\		},
-\		'stylus': {
-\			'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'], 
-\		},
-\		'css': 0, 
-\	}
+  \ 'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
+  \ 'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
+  \ 'guis': [''],
+  \ 'cterms': [''],
+  \ 'operators': '_,_',
+  \ 'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
+  \ 'separately': {
+  \ '*': {
+  \ 'ctermfgs': [3,5,8,12,214,142], 
+  \   },
+  \ 'markdown': {
+  \ 'parentheses_options': 'containedin=markdownCode contained', 
+  \ },
+  \ 'clojure': {
+  \ 'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'], 
+  \ 'ctermfgs': ['LightRed', 'LightGrey', 'Gray', 'DarkCyan', 'White'], 
+  \ },
+  \ 'lisp': {
+  \ 'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'], 
+  \ },
+  \ 'haskell': {
+  \ 'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/\v\{\ze[^-]/ end=/}/ fold'], 
+  \ },
+  \ 'vim': {
+  \ 'parentheses_options': 'containedin=vimFuncBody', 
+  \ },
+  \ 'perl': {
+  \ 'syn_name_prefix': 'perlBlockFoldRainbow', 
+  \ },
+  \ 'stylus': {
+  \ 'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'], 
+  \ },
+  \ 'css': 0, 
+  \ }
 \}
 :RainbowToggle
 
@@ -3190,23 +3289,23 @@ let NERDTreeHijackNetrw = 0
 let NERDTreeWinSize = 31
 
 function! SwitchToNerdTree()
-	" <url:~/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#tn=function! SwitchToNerdTree()>
-	let bufid = bufwinnr("NERD_tree_*")
-	echo bufid
-	let current_bufid = bufwinnr("%")
-	if current_bufid == bufid
-		NERDTreeToggle
-		return
-	endif
-	if bufid > 0
-		exe bufid.'wincmd w'
-	else
-		" map <Tab> for this buffer only
-		"exe "nnoremap <buffer><silent> ".g:voom_tab_key." :SwitchToNerdTree<CR>"
-		exe "nnoremap <silent> "."<Tab>"." :SwitchToNerdTree<CR>"
-		NERDTreeToggle
-		exe "nnoremap <silent> "."<Tab>"." :SwitchToNerdTree<CR>"
-	endif
+  " <url:~/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#tn=function! SwitchToNerdTree()>
+  let bufid = bufwinnr("NERD_tree_*")
+  echo bufid
+  let current_bufid = bufwinnr("%")
+  if current_bufid == bufid
+    NERDTreeToggle
+    return
+  endif
+  if bufid > 0
+    exe bufid.'wincmd w'
+  else
+    " map <Tab> for this buffer only
+    "exe "nnoremap <buffer><silent> ".g:voom_tab_key." :SwitchToNerdTree<CR>"
+    exe "nnoremap <silent> "."<Tab>"." :SwitchToNerdTree<CR>"
+    NERDTreeToggle
+    exe "nnoremap <silent> "."<Tab>"." :SwitchToNerdTree<CR>"
+  endif
 endfun
 command! SwitchToNerdTree call SwitchToNerdTree()
 
@@ -3214,99 +3313,47 @@ command! SwitchToNerdTree call SwitchToNerdTree()
 
 ": utl settings {{{ 
 
-fu! Utl_AddressScheme_yt(url, fragment, dispMode)
-	" open <url:yt:T-1265>
-	" opens: http://yt.teuis.net/issue/T-1265
-	let btId = UtlUri_unescape( UtlUri_opaque(a:url) )
-	let btUrl = 'http://yt.teuis.net/issue/'.btId
-	return  Utl_AddressScheme_http(btUrl, a:fragment, a:dispMode)
-endfu
+" utl open pdf files
+let g:utl_cfg_hdl_mt_application_pdf = "open"
 
+" utl.vim open urls setup
+"let g:utl_cfg_hdl_scm_http_system = "silent !open '%u#%f'"
+let g:utl_cfg_hdl_scm_http_system = "silent !open '%u'"
+" open generic file
+let g:utl_cfg_hdl_mt_generic = 'silent !open "%p" &'
+let g:utl_cfg_hdl_mt_application_jpg = 'silent !open -a Snagit "%p" &'
+let g:utl_cfg_hdl_mt_jpg = 'silent !open -a Snagit "%p" &'
+
+fu! Utl_AddressScheme_yt(url, fragment, dispMode)
+  " open <url:yt:T-1265>
+  " opens: http://yt.teuis.net/issue/T-1265
+  let btId = UtlUri_unescape( UtlUri_opaque(a:url) )
+  let btUrl = 'http://yt.teuis.net/issue/'.btId
+  return  Utl_AddressScheme_http(btUrl, a:fragment, a:dispMode)
+endfu
+  
 function! Utl_AddressScheme_f(url, fragment, dispMode)
-	" link:
-	"   <url:f:$VRP_PSK_DIR/db/src/sample_data/reset.sql>
-	"   f:$VRP_PSK_DIR/db/src/sample_data/reset.sql
-	" opens: $VRP_PSK_DIR/db/src/sample_data/reset.sql
-	"let $VRP_PSK_DIR = '~/codes/pg/vrp_psk'
-	"let path = '$VRP_PSK_DIR/db/src/sample_data/reset.sql'
-	let path = UtlUri_unescape( UtlUri_opaque(a:url) )
+  " link:
+  "   <url:f:$VRP_PSK_DIR/db/src/sample_data/reset.sql>
+  "   f:$VRP_PSK_DIR/db/src/sample_data/reset.sql
+  " opens: $VRP_PSK_DIR/db/src/sample_data/reset.sql
+  "let $VRP_PSK_DIR = '~/codes/pg/vrp_psk'
+  "let path = '$VRP_PSK_DIR/db/src/sample_data/reset.sql'
+  let path = UtlUri_unescape( UtlUri_opaque(a:url) )
   echom path
-	"echom a:url
-	"echom a:fragment
-	"echom a:dispMode
-	let env_var = substitute(path, '\/.*', '', '')
-	let path_remaining = substitute(path, '\$\w\+\/', '', '')
-	exec 'let env = ' . env_var
-	let file_path = env . '/' . path_remaining
-	"echom file_path
-	let result = Utl_AddressScheme_file(file_path, a:fragment, a:dispMode)
-	return result
+  "echom a:url
+  "echom a:fragment
+  "echom a:dispMode
+  let env_var = substitute(path, '\/.*', '', '')
+  let path_remaining = substitute(path, '\$\w\+\/', '', '')
+  exec 'let env = ' . env_var
+  let file_path = env . '/' . path_remaining
+  "echom file_path
+  let result = Utl_AddressScheme_file(file_path, a:fragment, a:dispMode)
+  return result
 endfunction
 
 ": }}} utl settings 
-
-": lightline settings {{{ 
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Here begins automated wordcount addition from [Vim Word Count and Useful Status Line](https://cromwell-intl.com/open-source/vim-word-count.html)
-" This combines several ideas from:
-" http://stackoverflow.com/questions/114431/fast-word-count-function-in-vim
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:word_count="<unknown>"
-function WordCount()
-	return g:word_count
-endfunction
-function UpdateWordCount()
-	let lnum = 1
-	let n = 0
-	while lnum <= line('$')
-		let n = n + len(split(getline(lnum)))
-		let lnum = lnum + 1
-	endwhile
-	let g:word_count = n
-endfunction
-" Update the count when cursor is idle in command or insert mode.
-" Update when idle for 1000 msec (default is 4000 msec).
-set updatetime=1000
-augroup WordCounter
-	au! CursorHold,CursorHoldI * call UpdateWordCount()
-augroup END
-
-" vim statusline configured by lightline
-function! RelativePath()
-	return expand("%:~:h")
-endfunction
-function! CurrentDirNameOnly()
-	return expand("%:h:t")
-endfunction
-function CtagsRunning()
-	return gutentags#statusline()
-endfunction
-augroup MyGutentagsStatusLineRefresher
-    autocmd!
-    autocmd User GutentagsUpdating call lightline#update()
-    autocmd User GutentagsUpdated call lightline#update()
-augroup END
-" https://github.com/itchyny/lightline.vim/blob/master/README.md
-let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'relativepath', 'modified', 'wordcount', 'gutentags' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'fugitive#head',
-      \   'relativepath': 'CurrentDirNameOnly',
-			\   'wordcount': 'WordCount',
-			\   'gutentags': 'CtagsRunning'
-      \ },
-			"\ 'enable': { 'tabline': 0 },
-      "\ 'colorscheme': 'solarized',
-      \ }
-
-call lightline#init()
-
-": }}} lightline settings 
 
 ": EasyAlign table settings {{{ 
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -3349,19 +3396,19 @@ command! -bang -nargs=* Save :call Save(<q-bang>, <q-args>)
 command! -bang -nargs=* Cd :call Cd(<q-bang>, <q-args>)
 
 function! E(bang, filename)
-    :exe "e".a:bang." ". fnameescape(a:filename)
+  :exe "e".a:bang." ". fnameescape(a:filename)
 endfu
 
 function! W(bang, filename)
-    :exe "w".a:bang." ". fnameescape(a:filename)
+  :exe "w".a:bang." ". fnameescape(a:filename)
 endfu
 
 function! Save(bang, filename)
-    :exe "save".a:bang." ". fnameescape(a:filename)
+  :exe "save".a:bang." ". fnameescape(a:filename)
 endfu
 
 function! Cd(bang, filename)
-    :exe "cd".a:bang." ". fnameescape(a:filename)
+  :exe "cd".a:bang." ". fnameescape(a:filename)
 endfu
 
 ": }}} file paths with spaces commands 
@@ -3380,20 +3427,20 @@ nmap <F4> :call FindExecuteCommand()<CR>
 "!!:open /Users/mertnuhoglu/Downloads/panda01.jpg
 
 function! OpenCommand() " id=g_11775
-	" /Users/mertnuhoglu/gdrive/btg/cmmi/clients/simsoft/img/scs20201119_105547.jpg
-	" Press `F5` on above line
-	let path = substitute(getline('.'), "\\s", "", "g")
-	execute "silent !open ". path
+  " /Users/mertnuhoglu/gdrive/btg/cmmi/clients/simsoft/img/scs20201119_105547.jpg
+  " Press `F5` on above line
+  let path = substitute(getline('.'), "\\s", "", "g")
+  execute "silent !open ". path
 endfunction
 nmap <F5> :call OpenCommand()<CR>
 command! OpenCommand :call OpenCommand()
 
 function! OpenCommandInParens() " id=g_11775
-	" /Users/mertnuhoglu/gdrive/btg/cmmi/clients/simsoft/img/scs20201119_105547.jpg
-	" Press `F5` on above line
-	let path = matchstr(getline('.'), "([^)]*)")
-	let path = substitute(path, "[()]", "", "g")
-	execute "silent !open ". path
+  " /Users/mertnuhoglu/gdrive/btg/cmmi/clients/simsoft/img/scs20201119_105547.jpg
+  " Press `F5` on above line
+  let path = matchstr(getline('.'), "([^)]*)")
+  let path = substitute(path, "[()]", "", "g")
+  execute "silent !open ". path
 endfunction
 nmap <S-F5> :call OpenCommandInParens()<CR>
 command! OpenCommandInParens :call OpenCommandInParens()
@@ -3558,6 +3605,10 @@ nnoremap E gT
 nnoremap R gt
 
 set grepprg=rg\ --vimgrep
+if executable('ugrep')
+  set grepprg=ugrep\ -RInk\ -j\ -u\ --tabs=1\ --ignore-files
+  set grepformat=%f:%l:%c:%m,%f+%l+%c+%m,%-G%f\\\|%l\\\|%c\\\|%m
+endif
 
 " ctags sorting when multiple tags file exist
 "set tags=./tags,./../tags,./../../tags,./../../../tags,tags
@@ -3565,51 +3616,51 @@ set tags^=./tags,tags,$HOME
 set tags^=./tags,tags,$HOME
 
 function! Test5()
-	"let bufid = bufnr("NERD_tree_*")
-	"let winids = win_findbuf(bufid)
-	"echo winids
-	let bufid = bufwinnr("NERD_tree_*")
-	echo bufid
+  "let bufid = bufnr("NERD_tree_*")
+  "let winids = win_findbuf(bufid)
+  "echo winids
+  let bufid = bufwinnr("NERD_tree_*")
+  echo bufid
 endfun
 
 function! CollectLineMarkTargetFile()
-	let g:target=win_getid(winnr())
-	normal mt
+  let g:target=win_getid(winnr())
+  normal mt
 endfunction
 command! CollectLineMarkTargetFile call CollectLineMarkTargetFile()
 function! CollectLine()
-	" <url:~/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#tn=function! CollectLine()>
-	" precondition:
-	" call `CollectLineMarkTargetFile` in the target file
-	" mark `mt` the target location
-	"
-	" usage:
-	" go to any file
-	" :CollectLine
-	"
-	" expected output:
-	" the line is copy pasted to target location
-	normal yy
-	normal mo
-	let origin = win_getid(winnr())
-	call win_gotoid(g:target)
-	normal 'tpmt
-	call win_gotoid(origin)
+  " <url:~/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#tn=function! CollectLine()>
+  " precondition:
+  " call `CollectLineMarkTargetFile` in the target file
+  " mark `mt` the target location
+  "
+  " usage:
+  " go to any file
+  " :CollectLine
+  "
+  " expected output:
+  " the line is copy pasted to target location
+  normal yy
+  normal mo
+  let origin = win_getid(winnr())
+  call win_gotoid(g:target)
+  normal 'tpmt
+  call win_gotoid(origin)
 endfunction
 command! CollectLine call CollectLine()
 
 " ale settings
 
 function! s:ColorSchemeToggle()
-	colorscheme NeoSolarized
-	"let v = &background
-	"echo v
-	if (&background == 'light')
-		set background=dark
-		highlight Normal guibg=#1b2631
-	else
-		set background=light
-	endif
+  colorscheme NeoSolarized
+  "let v = &background
+  "echo v
+  if (&background == 'light')
+    set background=dark
+    highlight Normal guibg=#1b2631
+  else
+    set background=light
+  endif
 endfunction
 command! ColorSchemeToggle :call s:ColorSchemeToggle()
 nnoremap <silent> cst :ColorSchemeToggle<cr>
@@ -3617,13 +3668,13 @@ nnoremap <silent> cst :ColorSchemeToggle<cr>
 nmap ,l :exe ":Utl ol https://dict.leo.org/?search=" . expand("<cword>")
 
 function! ClearAllButMatches()
-    let old = @c
-    let @c=""
-    %s//\=setreg('C', submatch(0), 'l')/g
-    %d _
-    put c
-    0d _
-    let @c = old
+  let old = @c
+  let @c=""
+  %s//\=setreg('C', submatch(0), 'l')/g
+  %d _
+  put c
+  0d _
+  let @c = old
 endfunction
 
 " match html tags with %
@@ -3639,8 +3690,8 @@ command! RemoveLineNumbersAtBeginning %s/^ *\\d\\+ *//g
 command! DC DeleteColumn<CR>
 
 function! Test4()
-	let words=['DTR002', 'DTR003']
-	call FindWordsInText(words)
+  let words=['DTR002', 'DTR003']
+  call FindWordsInText(words)
 endfunction
 command! Test4 call Test4()
 
@@ -3655,10 +3706,10 @@ let r_syntax_folding = 1
 command! SetTab4 set tabstop=4 | set shiftwidth=4 | set softtabstop=4
 
 function! WpCliDeleteInactivePlugins()
-    v/inactive/d
-    %s/^| //
-    %s/ .*//g
-    %s/^/wp plugin delete /g
+  v/inactive/d
+  %s/^| //
+  %s/ .*//g
+  %s/^/wp plugin delete /g
 endfunction
 command! WpCliDeleteInactivePlugins call WpCliDeleteInactivePlugins()
 
@@ -3679,9 +3730,9 @@ function! ToggleList(bufname, pfx)
     endif
   endfor
   if a:pfx == 'l' && len(getloclist(0)) == 0
-      echohl ErrorMsg
-      echo "Location List is Empty."
-      return
+    echohl ErrorMsg
+    echo "Location List is Empty."
+    return
   endif
   let winnr = winnr()
   exec(a:pfx.'open')
@@ -3743,8 +3794,8 @@ nnoremap üa <C-w>=<cr>
 " copy current line from start to line end
 nnoremap üüç ^y$
 " delete word with alt backspace
-inoremap <M-BS>	<ESC>ldbi
-"inoremap <M-BS>	<C-[>ldbi
+inoremap <M-BS>   <ESC>ldbi
+"inoremap <M-BS>  <C-[>ldbi
 
 
 ": }}} mappings keybindings 
@@ -3758,14 +3809,14 @@ inoremap <M-BS>	<ESC>ldbi
 " taken from: <url:~/.vim/bundle/fzf.vim/autoload/fzf/vim.vim#tn=function! s:buffer_lines()>
 function! s:buffer_lines()
   let linefmt = s:yellow(" %4d ", "LineNr")."\t%s"
-	echo linefmt
+  echo linefmt
   return map(getline(1, "$"), 'printf(linefmt, v:key + 1, v:val)')
 endfunction
 command! BLines2 call fzf#run({
-\ 'source':  s:buffer_lines(),
-\ 'sink':    'edit',
-\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\ 'down':    '40%' })
+      \ 'source':  s:buffer_lines(),
+      \ 'sink':    'edit',
+      \ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \ 'down':    '40%' })
 command! BLines3 call fzf#vim#md_headers()
 
 " Select Buffer
@@ -3776,88 +3827,88 @@ function! s:buflist()
   return split(ls, '\n')
 endfunction
 function! s:bufopen(e)
-	execute 'buffer' matchstr(a:e, '^[ 0-9]*')
-	"echo a:e
+  execute 'buffer' matchstr(a:e, '^[ 0-9]*')
+  "echo a:e
 endfunction
 nnoremap <silent> <Leader><Enter> :call fzf#run({
-\   'source':  reverse(<sid>buflist()),
-\   'sink':    function('<sid>bufopen'),
-\ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\   'down':    '40%'
-\ })<CR>
+      \   'source':  reverse(<sid>buflist()),
+      \   'sink':    function('<sid>bufopen'),
+      \ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \   'down':    '40%'
+      \ })<CR>
 
 function! s:ExtractUnicode(s)
-	" call ExtractUnicode("22   ϊ       j*      03CA    0970    GREEK SMALL LETTER IOTA WITH DIALYTIKA")
-	" ->
-	" ϊ
-	let t = substitute(a:s, "^[ 0-9]*", "", "")
-	let result = substitute(t, "\\s\\+.*", "", "")
-	echo result
-	exe "normal! a" . result . "\<Esc>"
-	return result
+  " call ExtractUnicode("22   ϊ       j*      03CA    0970    GREEK SMALL LETTER IOTA WITH DIALYTIKA")
+  " ->
+  " ϊ
+  let t = substitute(a:s, "^[ 0-9]*", "", "")
+  let result = substitute(t, "\\s\\+.*", "", "")
+  echo result
+  exe "normal! a" . result . "\<Esc>"
+  return result
 endfunction
 command! FDigraph call fzf#run({
-\   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/digraph_table_ref.tsv"),
-\   'sink':    function('<sid>ExtractUnicode'),
-\ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\   'down':    '40%'
-\ })
+      \   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/digraph_table_ref.tsv"),
+      \   'sink':    function('<sid>ExtractUnicode'),
+      \ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \   'down':    '40%'
+      \ })
 command! FUnicode call fzf#run({
-\   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/unicode_table_ref.tsv"),
-\   'sink':    function('<sid>ExtractUnicode'),
-\ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\   'down':    '40%'
-\ })
+      \   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/unicode_table_ref.tsv"),
+      \   'sink':    function('<sid>ExtractUnicode'),
+      \ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \   'down':    '40%'
+      \ })
 
 command! FMarks :Marks
 command! FHelptags :Helptags
 command! FCommits :Commits
 
 function! s:ExtractEmoji(s)
-	" call ExtractEmoji("💴		(yen)  ")
-	" ->
-	" 💴
-	let t = substitute(a:s, "^\\s*", "", "")
-	let result = substitute(t, "\\s\\+.*", "", "")
-	echo result
-	exe "normal! a" . result . "\<Esc>"
-	return result
+  " call ExtractEmoji("💴                                           (yen)  ")
+  " ->
+  " 💴
+  let t = substitute(a:s, "^\\s*", "", "")
+  let result = substitute(t, "\\s\\+.*", "", "")
+  echo result
+  exe "normal! a" . result . "\<Esc>"
+  return result
 endfunction
 command! FEmoji call fzf#run({
-\   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/emoji_ref.md"),
-\   'sink':    function('<sid>ExtractEmoji'),
-\   'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\   'down':    '40%' })
+      \   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/emoji_ref.md"),
+      \   'sink':    function('<sid>ExtractEmoji'),
+      \   'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \   'down':    '40%' })
 command! FIpaPhoneticSymbols call fzf#run({
-\   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/ipa_phonetic_symbols.tsv"),
-\   'sink':    function('<sid>ExtractEmoji'),
-\   'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\   'down':    '40%' })
+      \   'source':  readfile("/Users/mertnuhoglu/gdrive/mynotes/content/fork/ipa_phonetic_symbols.tsv"),
+      \   'sink':    function('<sid>ExtractEmoji'),
+      \   'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \   'down':    '40%' })
 
 function! MRU_LoadList()
-	return readfile(g:MRU_File)
+  return readfile(g:MRU_File)
 endfun
 command! Ehistoryvim exec 'e ' . g:MRU_File
 command! FZFTest call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/projects/study/js/vrp/cyclejs_vrp.Rmd"),
-\ 'down':    '40%' })
+      \ 'source':  readfile("/Users/mertnuhoglu/projects/study/js/vrp/cyclejs_vrp.Rmd"),
+      \ 'down':    '40%' })
 command! FZFMru call fzf#run({
-\ 'source':  MRU_LoadList(),
-\ 'sink':    'edit',
-\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
-\ })
+      \ 'source':  MRU_LoadList(),
+      \ 'sink':    'edit',
+      \ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
+      \ })
 command! FM FZFMru
 command! History FZFMru
 
 command! FZFRefVrp call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/projects/study/js/vrp/cyclejs_vrp.md"),
-\ 'down':    '40%' })
+      \ 'source':  readfile("/Users/mertnuhoglu/projects/study/js/vrp/cyclejs_vrp.md"),
+      \ 'down':    '40%' })
 command! Frv FZFRefVrp
 function! s:all_files()
   return extend(
-  \ filter(copy(v:oldfiles),
-  \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
-  \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
+        \ filter(copy(v:oldfiles),
+        \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
+        \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
 endfunction
 "nnoremap ıı :FZFMru<CR>
 "nnoremap ııt :tabe<CR>:FZFMru<CR>
@@ -3868,25 +3919,25 @@ endfunction
 "unmap ııv
 
 function! s:cdg(lines)
-	exec 'cd ' . a:lines[0]
+  exec 'cd ' . a:lines[0]
 endfunction
 command! FZFCdg call fzf#run({
-\ 'source':  readfile("/Users/mertnuhoglu/.cdg_paths"),
-\ 'sink*':   function('s:cdg'),
-\ 'down':    '40%' })
+      \ 'source':  readfile("/Users/mertnuhoglu/.cdg_paths"),
+      \ 'sink*':   function('s:cdg'),
+      \ 'down':    '40%' })
 command! Fcd FZFCdg
 command! Cdg FZFCdg
 function! s:all_files()
   return extend(
-  \ filter(copy(v:oldfiles),
-  \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
-  \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
+        \ filter(copy(v:oldfiles),
+        \        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
+        \ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
 endfunction
 
 " open buffers search
 command! Buffers call fzf#run(fzf#wrap({
       \ 'source': map(range(1, bufnr('$')), 'bufname(v:val)'),
-			\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
+      \ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden'
       \  }))
 "nnoremap cb :Buffers<CR>
 
@@ -3896,9 +3947,9 @@ command! -nargs=1 -bang Mdfind call fzf#run(fzf#wrap(
 
 " Jump to tags
 "command! -bar Tags if !empty(tagfiles()) | call fzf#run({
-"\   'source': "sed '/^\\!/d;s/\t.*//' " . join(tagfiles()) . ' | uniq',
-"\   'sink':   'tag',
-"\ }) | else | echo 'Preparing tags' | call system('ctags -R') | FZFTag | endif
+      "\   'source': "sed '/^\\!/d;s/\t.*//' " . join(tagfiles()) . ' | uniq',
+      "\   'sink':   'tag',
+      "\ }) | else | echo 'Preparing tags' | call system('ctags -R') | FZFTag | endif
 
 " ~/.vim/bundle/fzf.vim/plugin/fzf.vim
 " taken from: /Users/mertnuhoglu/.vim/bundle/fzf.vim/autoload/fzf/vim.vim
@@ -3938,58 +3989,65 @@ endfor
 " preview enabled with "?" key
 " hidden by default due to 'right:50%:hidden'
 command! -bang -nargs=* Ag
-  \ call fzf#vim#ag(<q-args>,
-  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
-  \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \                 <bang>0)
+      \ call fzf#vim#ag(<q-args>,
+      \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+      \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+      \                 <bang>0)
 
 command! Files call fzf#run({
-\ 'source':     'fd . --color=never --hidden --type=file ' . getcwd(),
-\ 'sink':    'edit',
-\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\ 'down':    '40%' })
+      \ 'source':     'fd . --color=never --hidden --type=file ' . getcwd(),
+      \ 'sink':    'edit',
+      \ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \ 'down':    '40%' })
 
 
 command! FilesNoIgnore call fzf#run({
-\ 'source':     'fd . --color=never --hidden --type=file --no-ignore ' . getcwd(),
-\ 'sink':    'edit',
-\ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\ 'down':    '40%' })
+      \ 'source':     'fd . --color=never --hidden --type=file --no-ignore ' . getcwd(),
+      \ 'sink':    'edit',
+      \ 'options':    '-m -x -s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \ 'down':    '40%' })
 
 " preview enabled with "?" key
 " hidden by default
 command! -bang -nargs=* Rg
-	\ call fzf#vim#grep(
-	\   'rg --follow --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-	\   <bang>0 ? fzf#vim#with_preview('up:60%')
-	\           : fzf#vim#with_preview('right:50%:hidden', '?'),
-	\   <bang>0)
+      \ call fzf#vim#grep(
+      \   'rg --follow --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+      \   <bang>0 ? fzf#vim#with_preview('up:60%')
+      \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+      \   <bang>0)
+
+" [Preview window with git grep · Issue #676 · junegunn/fzf.vim](https://github.com/junegunn/fzf.vim/issues/676)
+command! -bang -nargs=* GGrep
+      \ call fzf#vim#grep(
+      \   'git grep --line-number '.shellescape(<q-args>), 0,
+      \   fzf#vim#with_preview({ 'dir': systemlist('git rev-parse --show-toplevel')[0] }), <bang>0)
+
 
 command! Ffp call fzf#run({
-\ 'source':     'fd . --color=never --hidden --type=file ~/projects/study',
-\ 'sink':    'edit',
-\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\ 'down':    '40%' })
+      \ 'source':     'fd . --color=never --hidden --type=file ~/projects/study',
+      \ 'sink':    'edit',
+      \ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \ 'down':    '40%' })
 
 command! Ffs call fzf#run({
-\ 'source':     'fd . --color=never --hidden --type=file ~/projects ~/gdrive/mynotes ~/gdrive/mynotes/content ~/.vim/bundle',
-\ 'sink':    'edit',
-\ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-\ 'down':    '40%' })
+      \ 'source':     'fd . --color=never --hidden --type=file ~/projects ~/gdrive/mynotes ~/gdrive/mynotes/content ~/.vim/bundle',
+      \ 'sink':    'edit',
+      \ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
+      \ 'down':    '40%' })
 
 " @todo: doesn't work
 command! -bang -nargs=* Frv
-	\ call fzf#vim#grep(
-	\   'frv '.shellescape(<q-args>), 1,
-	\   <bang>0 ? fzf#vim#with_preview('up:60%')
-	\           : fzf#vim#with_preview('right:50%:hidden', '?'),
-	\   <bang>0)
+      \ call fzf#vim#grep(
+      \   'frv '.shellescape(<q-args>), 1,
+      \   <bang>0 ? fzf#vim#with_preview('up:60%')
+      \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+      \   <bang>0)
 
 " change theme
 " Override Colors command. You can safely do this in your .vimrc as fzf.vim
 " will not override existing commands.
 command! -bang Colors
-  \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
+      \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
 
 " completion with fzf completion
 imap <c-x><c-k> <plug>(fzf-complete-word)
@@ -4020,6 +4078,7 @@ command! TelescopeTreesitter :lua require('telescope.builtin').treesitter()
 command! TelescopeGitFiles :lua require('telescope.builtin').git_files()
 command! TelescopeGitCommits :lua require('telescope.builtin').git_commits()
 command! TelescopeBuiltins :lua require('telescope.builtin').builtin()
+command! TelescopeCommands :lua require('telescope.builtin').commands()
 command! TelescopeQuickfix :lua require('telescope.builtin').quickfix()
 command! TelescopeLoclist :lua require('telescope.builtin').loclist()
 command! TelescopeMru :lua require('telescope.builtin').oldfiles()
@@ -4036,7 +4095,7 @@ command! TelescopeHighlights :lua require('telescope.builtin').highlights()
 command! TelescopeSpellSuggest :lua require('telescope.builtin').spell_suggest()
 command! TelescopeTags :lua require('telescope.builtin').tags()
 command! TelescopeCurrentBufferTags :lua require('telescope.builtin').current_buffer_tags()
-command! TelescopeSymbols :lua require('telescope.builtin').symbols()
+command! TelescopeSymbols :lua require'telescope.builtin'.symbols{ sources = {'emoji', 'kaomoji', 'gitmoji'} }
 
 command! TelescopeTagstack :lua require('telescope.builtin').tagstack()
 command! TelescopeJumpList :lua require('telescope.builtin').jumplist()
@@ -4053,22 +4112,36 @@ command! TelescopeVimOptions :lua require('telescope.builtin').vim_options()
 
 command! TelescopeSearchStudy :lua require('mytelescope').search_dotfiles()
 
+
+" vim-bookmarks
+let g:bookmark_no_default_key_mappings = 1
+" ref: [tom-anders/telescope-vim-bookmarks.nvim: Integrates vim-bookmarks into telescope.nvim](https://github.com/tom-anders/telescope-vim-bookmarks.nvim)
+command! BookmarkDeleteAtCursor :lua require('telescope').extensions.vim_bookmarks.delete_at_cursor()
+command! BookmarkDeleteSelected :lua require('telescope').extensions.vim_bookmarks.delete_selected()
+command! BookmarkDeleteSelectedOrAtCursor :lua require('telescope').extensions.vim_bookmarks.delete_selected_or_at_cursor()
+
+" telescope-zoxide
+command! TelescopeZoxideList :Telescope zoxide list
+
+" telescope-repo
+command! TelescopeRepoList :Telescope repo list
+
+" neoclip
+command! TelescopeNeoclip :Telescope neoclip
+
 " highlights
 ": }}}
 
-if executable('ugrep')
-    set grepprg=ugrep\ -RInk\ -j\ -u\ --tabs=1\ --ignore-files
-    set grepformat=%f:%l:%c:%m,%f+%l+%c+%m,%-G%f\\\|%l\\\|%c\\\|%m
-endif
-
 ": conjure {{{
 
+nnoremap <leader>mcc :ConjureConnect<cr>
 command! CC :ConjureConnect
 let g:conjure#mapping#prefix = " m"
+let g:conjure#mapping#eval_root_form = "ed"
 
 function! ConjureEvalToComment()
   norm! ,ee
-	norm! %
+  norm! %
   execute "norm! o\<c-r>c"
   "norm! "cP
   norm! I;;=> 
@@ -4100,13 +4173,6 @@ endfunction
 command! HighlightCustom call HighlightCustom()
 ": highlight specific words }}}
 
-command! TestCtags call HighlightCustom()
-command! TestCtags2 call HighlightCustom()
-command! TestCtags3 call HighlightCustom()
-command! TestCtags4 call HighlightCustom()
-command! TestCtags5 call HighlightCustom()
-command! TestCtags6 call HighlightCustom()
-
 ": himalaya email client {{{ 
 
 " [himalaya/vim at master · soywod/himalaya](https://github.com/soywod/himalaya/tree/master/vim)
@@ -4124,35 +4190,255 @@ let g:himalaya_telescope_preview_enabled = 0
 set completeopt=menuone,noselect
 let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
 
+" Diagnostic mesajlarını location liste ekleme id=g12596
+" [LSP: show workspace/buffer diagnostics in the quickfix window · Issue #14481 · neovim/neovim](https://github.com/neovim/neovim/issues/14481)
+command! LspSetLoclist :lua vim.lsp.diagnostic.set_loclist()<CR>
+command! LspGotoNext :lua vim.lsp.diagnostic.goto_next()<CR>
+command! LspGotoPrev :lua vim.lsp.diagnostic.goto_prev()<CR>
+
 ": highlight specific words }}}
 
-": scraping }}}
-function! GenerateNumberedLinks()
-	normal! $bhhh"nye
-	normal! ce01
-	normal! yy
-  $bbhh"nyece01yy:norm! npk$bbhh:execute "nomÄkbrmal! \<C-v>lnj":II:normal! ndd0
-
-	$bhhh"nye:normal! 19p
-	uyy:normal! 19p
-	k$bhhhce01
-endfunction
-function! GenerateNumberedLinksMacros()
-  $bbhh"nyece01yy:norm! npk$bbhh:execute "nomÄkbrmal! \<C-v>lnj":II:normal! ndd0
-
-	$bhhh"nye:normal! 19p
-	uyy:normal! 19p
-	k$bhhhce01
-endfunction
+": data scraping {{{
 command! HighlightCustom call HighlightCustom()
+
 ": scraping }}}
 
-function! UseSpaces()
-  set tabstop=2     " Size of a hard tabstop (ts).
-  set shiftwidth=2  " Size of an indentation (sw).
-  set expandtab     " Always uses spaces instead of tab characters (et).
-  set softtabstop=0 " Number of spaces a <Tab> counts for. When 0, featuer is off (sts).
-  set autoindent    " Copy indent from current line when starting a new line.
-  set smarttab      " Inserts blanks on a <Tab> key (as per sw, ts and sts).
+": excel {{{
+
+": excel }}}
+
+": yaml2 yaml convert {{{
+
+" FindYamlElement: bulunduğun yaml elementine referansları bul id=g12617
+function! FindYamlElement()
+  let line0 = Strip(getline("."))
+  let a1 = substitute(line0, ':.*', '', '')
+  let @* = a1
+  SearchNoEscapeFromClipboard
 endfunction
+command! FindYamlElement call FindYamlElement()
+
+" FindYamlElement: bulunduğun yaml elementine referansları bul id=g12617
+function! FindYamlElement()
+  " input:
+  "   ## apply.lapply/ex01 id=g12618
+  " out:
+  "   apply.lapply/ex01:
+  "     ref: apply.lapply/ex01 <url:file:///~/projects/study/r/examples_r.Rmd#r=g12618>
+
+  let ref = RefId()
+  "> 	apply.lapply/ex01 <url:file:///~/projects/study/r/examples_r.Rmd#r=g12618>
+  let title = substitute(ref, ' <url:.*', '', '')
+
+endfunction
+command! FindYamlElement call FindYamlElement()
+
+" convert otl tree 2 yaml key-value pairs id=g12587
+function! ConvertLine2YamlKey()
+  s#: \<#:- #ge
+  s#: >\s*$##e
+  s#:\s*$##e
+  s#\s*$#:#e
+endfunction
+command! ConvertLine2YamlKey call ConvertLine2YamlKey()
+
+function! ConvertLine2YamlKeyMultiline()
+  ConvertLine2YamlKey
+  s#$# >#e
+endfunction
+command! ConvertLine2YamlKeyMultiline call ConvertLine2YamlKeyMultiline()
+
+function! ConvertLine2YamlKeySplitMultiline()
+  " input:
+  "   kd: library(jsonlite)
+  " out:
+  "   kd: >
+  "     library(jsonlite)
+  execute "norm! ^f:wi\<cr>"
+  norm! k
+  ConvertLine2YamlKeyMultiline
+endfunction
+command! ConvertLine2YamlKeySplitMultiline call ConvertLine2YamlKeySplitMultiline()
+
+function! ConvertLine2YamlKeyA01()
+  s#\<#a01: #e
+endfunction
+command! ConvertLine2YamlKeyA01 call ConvertLine2YamlKeyA01()
+
+function! ConvertLine2YamlKeyBasic()
+  s#\<#base: #e
+endfunction
+command! ConvertLine2YamlKeyBasic call ConvertLine2YamlKeyBasic()
+
+function! ConvertLine2YamlKeyDsc()
+  s#\<#dsc: #e
+endfunction
+command! ConvertLine2YamlKeyDsc call ConvertLine2YamlKeyDsc()
+
+function! ConvertLine2YamlKeyFtr()
+  s#\<#ftr: #e
+endfunction
+command! ConvertLine2YamlKeyFtr call ConvertLine2YamlKeyFtr()
+
+function! ConvertLine2YamlKeyKd()
+  s#\<#kd: #e
+endfunction
+command! ConvertLine2YamlKeyKd call ConvertLine2YamlKeyKd()
+
+function! ConvertLine2YamlKeyKdSplitMultiline()
+  s#\<#kd: #e
+  ConvertLine2YamlKeySplitMultiline
+endfunction
+command! ConvertLine2YamlKeyKdSplitMultiline call ConvertLine2YamlKeyKdSplitMultiline()
+
+function! ConvertLine2YamlKeyNrm()
+  s#\<#nrm: #e
+endfunction
+command! ConvertLine2YamlKeyNrm call ConvertLine2YamlKeyNrm()
+
+function! ConvertLine2YamlKeyRef()
+  s#\<#ref: #e
+endfunction
+command! ConvertLine2YamlKeyRef call ConvertLine2YamlKeyRef()
+
+function! ConvertLine2YamlKeyTtl()
+  s#\<#ttl: #e
+endfunction
+command! ConvertLine2YamlKeyTtl call ConvertLine2YamlKeyTtl()
+
+function! ConvertLine2YamlKeyUnderline()
+  ConvertLine2YamlKey
+  s#$# _#e
+endfunction
+command! ConvertLine2YamlKeyUnderline call ConvertLine2YamlKeyUnderline()
+
+function! ConvertLine2YamlKeyA01Newline()
+  norm yyP
+  s#\<.*#a01: >#e
+endfunction
+command! ConvertLine2YamlKeyA01Newline call ConvertLine2YamlKeyA01Newline()
+
+function! ConvertLine2YamlKeyA02Newline()
+  norm yyP
+  s#\<.*#a02: >#e
+endfunction
+command! ConvertLine2YamlKeyA02Newline call ConvertLine2YamlKeyA02Newline()
+
+function! ConvertLine2YamlKeyA03Newline()
+  norm yyP
+  s#\<.*#a03: >#e
+endfunction
+command! ConvertLine2YamlKeyA03Newline call ConvertLine2YamlKeyA03Newline()
+
+function! ConvertLine2YamlKeyA04Newline()
+  norm yyP
+  s#\<.*#a04: >#e
+endfunction
+command! ConvertLine2YamlKeyA04Newline call ConvertLine2YamlKeyA04Newline()
+
+function! ConvertLine2YamlKeyEx01Newline()
+  norm yyP
+  s#\<.*#ex01: >#e
+endfunction
+command! ConvertLine2YamlKeyEx01Newline call ConvertLine2YamlKeyEx01Newline()
+
+function! ConvertLine2YamlKeyEx02Newline()
+  norm yyP
+  s#\<.*#ex02: >#e
+endfunction
+command! ConvertLine2YamlKeyEx02Newline call ConvertLine2YamlKeyEx02Newline()
+
+function! ConvertLine2YamlKeyEx03Newline()
+  norm yyP
+  s#\<.*#ex03: >#e
+endfunction
+command! ConvertLine2YamlKeyEx03Newline call ConvertLine2YamlKeyEx03Newline()
+
+function! ConvertLine2YamlKeyEx04Newline()
+  norm yyP
+  s#\<.*#ex04: >#e
+endfunction
+command! ConvertLine2YamlKeyEx04Newline call ConvertLine2YamlKeyEx04Newline()
+
+nnoremap üy_ :ConvertLine2YamlKeyUnderline<cr>
+nnoremap üya :ConvertLine2YamlKeyA01<cr>
+nnoremap üyb :ConvertLine2YamlKeyBasic<cr>
+nnoremap üyc :ConvertLine2YamlKeyKd<cr>
+nnoremap üyC :ConvertLine2YamlKeyKdSplitMultiline<cr><esc>
+nnoremap üyd :ConvertLine2YamlKeyDsc<cr>
+nnoremap üyf :ConvertLine2YamlKeyFtr<cr>
+nnoremap üyk :ConvertLine2YamlKey<cr>
+nnoremap üym :ConvertLine2YamlKeyMultiline<cr><esc>
+nnoremap üyM :ConvertLine2YamlKeySplitMultiline<cr><esc>
+nnoremap üyn :ConvertLine2YamlKeyNrm<cr>
+nnoremap üyr :ConvertLine2YamlKeyRef<cr>
+nnoremap üyt :ConvertLine2YamlKeyTtl<cr>
+nnoremap üy1 :ConvertLine2YamlKeyA01Newline<cr>
+nnoremap üy2 :ConvertLine2YamlKeyA02Newline<cr>
+nnoremap üy3 :ConvertLine2YamlKeyA03Newline<cr>
+nnoremap üy4 :ConvertLine2YamlKeyA04Newline<cr>
+nnoremap üy5 :ConvertLine2YamlKeyEx01Newline<cr>
+nnoremap üy6 :ConvertLine2YamlKeyEx02Newline<cr>
+nnoremap üy7 :ConvertLine2YamlKeyEx03Newline<cr>
+nnoremap üy8 :ConvertLine2YamlKeyEx04Newline<cr>
+
+" search regex without escaping slash characters id=g12591
+" [Searching for expressions which include slashes | Vim Tips Wiki | Fandom](https://vim.fandom.com/wiki/Searching_for_expressions_which_include_slashes)
+command! -nargs=1 SearchNoEscape let @/ = <q-args>|set hlsearch
+" :let @/=@+  Set search register to value from clipboard (@+).
+command! SearchNoEscapeFromClipboard let @/=@+  
+
+function! ConvertYaml2NormalJoins() " id=g12585
+  " input:
+  "     apply/cases for lapply, map:
+  "       we need to loop over this function:
+  "         find_correct_tag = function(fn, revenue, xdca) {..}
+  "     apply/lapply over names: >
+  "       example_apply_with_names = function() {
+  "         ls = list( a = 3, b = 5 )
+  " out:
+  "     apply/cases for lapply, map: [info, apply/cases for lapply, map]
+  "     apply/lapply over names: [info, apply/lapply over names]
+  %s/\t/  /ge
+  g/ \{5,\}/d
+  %s/:\s*>*$/:/e
+
+  " input:
+  "   operators:-
+  " match:
+  "   operators:- [info, namespace/operators]
+  %s/^\( \+\)\(.*\):$/\1\2: [info, \2]/e
+endfunction
+command! ConvertYaml2NormalJoins call ConvertYaml2NormalJoins()
+
+function! ConvertYaml2NormalJoinsInline() " 
+  " input:
+  "   operators:-
+  " match:
+  "   operators:- [info, namespace/operators]
+  let line0 = getline(".")
+  let line1 = substitute(line0, '^\( \+\)\(.*\):$', '\1\2: [info, \2]', 'e')
+  let @* = line1
+endfunction
+command! ConvertYaml2NormalJoinsInline call ConvertYaml2NormalJoinsInline()
+
+nnoremap üyj :ConvertYaml2NormalJoinsInline<cr>
+nnoremap üyJ :ConvertYaml2NormalJoins<cr>
+
+": yaml convert }}}
+
+": autocmd filetype {{{
+" update a buffer's contents on focus if it was changed outside of vim
+autocmd FocusGained, BufEnter * :checktime
+
+autocmd BufNewFile,BUfRead *.vim set filetype=vim
+autocmd BufNewFile,BUfRead .vimrc set filetype=vim
+autocmd BufNewFile,BUfRead *.otl set filetype=votl
+
+" disable autocompletion based on file types id=g12612
+autocmd BufNewFile,BUfRead *.otl lua require('cmp').setup.buffer { enabled = false }
+autocmd BufNewFile,BUfRead *.txt lua require('cmp').setup.buffer { enabled = false }
+autocmd BufNewFile,BUfRead *.md lua require('cmp').setup.buffer { enabled = false }
+autocmd BufNewFile,BUfRead *.Rmd lua require('cmp').setup.buffer { enabled = false }
+": autocmd filetype }}} 
 
