@@ -432,14 +432,20 @@ let g:javascript_conceal_arrow_function       = "⇒"
 let g:voom_always_allow_move_left = 1
 
 " conceallevel=1 olursa markdown içindeki `` gibi semboller gizlenir
-autocmd BufRead,BufNewFile,BufWritePost *.md setlocal nospell conceallevel=0
-autocmd FileType markdown set conceallevel=0
+" autocmd BufRead,BufNewFile,BufWritePost *.md setlocal nospell conceallevel=0
+" autocmd BufRead,BufNewFile,BufWritePost *.markdown setlocal nospell conceallevel=0
+" rfr: ~/prj/private_dotfiles/.vim/after/ftplugin/markdown.vim
+" autocmd FileType markdown set conceallevel=0
 " spell check
 autocmd BufRead,BufNewFile *.otl setlocal nospell
 autocmd BufRead,BufNewFile *.txt setlocal nospell
-set nospell
+" set nospell
 " word completion with ^N ^P
 set complete+=kspell
+" spell check exclude: id=g93092
+syn match mygIdWords +\<g\d\+\>+ contains=@NoSpell
+" spell check exclude: p01 a01
+syn match p01a01Words +\<\w\d\d\>+ contains=@NoSpell
 
 " naming conventions for custom commands:
 " Put
@@ -761,16 +767,11 @@ command! Ecmprocess :e ~/prj/myrepo/prj/cmmi/process_cmmi.otl
 command! Ecmcurrentappraisal :e ~/gdrive/cmmi_appraisals_private/Shenzen-Super-Electron/cmmi_super_electron.otl
 
 " vim scripts
-command! Evinitvim e $HOME/projects/private_dotfiles/.config/nvim/init.vim
 command! Evmyvim e $HOME/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim
-command! Evpluginslua e $HOME/prj/private_dotfiles/.config/nvim/lua/plugins.lua
-command! Evwhichkey e ~/projects/private_dotfiles/.config/nvim/lua/mert/which-key.lua
 command! Evinfoman e $HOME/.vim/bundle/vim-infoman/plugin/vim-infoman.vim
 command! Evkeybindings e $HOME/.vim/bundle/my-custom-keybindings/plugin/my-custom-keybindings.vim
 command! Evdataflow e $HOME/.vim/bundle/vim-dataflow-generator-r/plugin/vim-dataflow-generator-r.vim
 command! Evmymertprojects e $HOME/.vim/bundle/my-mert-projects/plugin/my-mert-projects.vim
-command! Evwhichkey e $HOME/projects/private_dotfiles/.config/nvim/lua/mert/which-key.lua
-command! Evplugins e $HOME/projects/private_dotfiles/.config/nvim/lua/plugins.lua
 command! Evhammerspoon e $HOME/prj/private_dotfiles/.hammerspoon/init.lua " SPC Evh
 command! EvhammerspoonMenu e $HOME/prj/private_dotfiles/.hammerspoon/menuHammerCustomConfig.lua " SPC EvH
 
@@ -1132,8 +1133,8 @@ let g:which_key_timeout = 300
 ": https://github.com/liuchengxu/vim-which-key
 "nnoremap <silent> <leader> :WhichKey 'ü'<CR>
 
-command! ColorschemeGithubDark :colorscheme github_dark
-command! ColorschemeGithubLight :colorscheme github_light
+command! ColorschemeGithubDark :colorscheme github-dark
+command! ColorschemeGithubLight :colorscheme github-light
 command! ColorschemeGithub :colorscheme github
 command! ColorschemeMonokai :colorscheme Monokai
 command! ColorschemeMountainDew :colorscheme MountainDew
@@ -1258,9 +1259,6 @@ nnoremap <A-j>  <Plug>(sexp_flow_to_next_open)
 nnoremap <A-j> k
 
 
-" toggle spell check
-nnoremap <leader>tS :setlocal spell! spelllang=en_us<CR>
-
 command! P :pwd
 command! CdRoot exec 'cd' fnameescape(fnamemodify(finddir('.git', escape(expand('%:p:h'), ' ') . ';'), ':h'))
 
@@ -1291,7 +1289,7 @@ nnoremap <silent> <leader>ıa :wincmd =<cr>
 "nnoremap <leader>tte :tabe<CR>
 
 " custom commands. mnemonics: Kustom
-nnoremap <leader>üko :OpenFile<cr>
+" nnoremap <leader>üko :OpenFile<cr>
 
 " nnoremap <leader>tn :ColorSchemeBrowse<CR>
 
@@ -3059,7 +3057,7 @@ let g:vim_markdown_fenced_languages = ['csharp=cs','clojure=clj']
 " override default keybinding <leader>f
 let g:lf_map_keys = 0
 " use lf instead of default vinegar
-nnoremap - :LfCurrentFile<cr>
+" nnoremap - :LfCurrentFile<cr>
 " Opening lf instead of netrw when you open a directory
 let g:NERDTreeHijackNetrw = 0 " Add this line if you use NERDTree
 let g:lf_replace_netrw = 1 " Open lf when vim opens a directory
@@ -3190,14 +3188,14 @@ command! -range=% EasyAlignComma :execute ":<line1>,<line2>EasyAlign *,"
 "xmap ğt gaip*\|
 nnoremap ğt :execute "norm gaip*\|"<cr>
 
-map <leader>vga :call Vhdl_GA_All()<CR>
+" map <leader>vga :call Vhdl_GA_All()<CR>
 
 " Alignment
-function! Vhdl_GA_All()
-   exe ":'<,'> EasyAlign *<space>"
-   exe ":'<,'> EasyAlign ("
-   exe ":'<,'> EasyAlign )"
-endfunction
+" function! Vhdl_GA_All()
+"    exe ":'<,'> EasyAlign *<space>"
+"    exe ":'<,'> EasyAlign ("
+"    exe ":'<,'> EasyAlign )"
+" endfunction
 
 ": }}} EasyAlign table settings 
 
@@ -3333,7 +3331,7 @@ endfunction
 
 " underline using dashes automatically
 " Underline the current line with dashes in normal mode
-nnoremap <Leader>u yyp<c-v>$r-
+" nnoremap <Leader>u yyp<c-v>$r-
 " change working directory to current file
 "nnoremap ,cd :cd %:p:h<CR>:pwd<CR>
 " increment and decrement under windows
@@ -3574,37 +3572,6 @@ inoremap <M-BS>   <ESC>ldbi
 " https://github.com/junegunn/fzf/wiki/Examples-(vim)
 
 " BLines override
-" taken from: <url:~/.vim/bundle/fzf.vim/autoload/fzf/vim.vim#tn=function! s:buffer_lines()>
-function! s:buffer_lines()
-  let linefmt = s:yellow(" %4d ", "LineNr")."\t%s"
-  echo linefmt
-  return map(getline(1, "$"), 'printf(linefmt, v:key + 1, v:val)')
-endfunction
-command! BLines2 call fzf#run({
-      \ 'source':  s:buffer_lines(),
-      \ 'sink':    'edit',
-      \ 'options':    '-m -x +s --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-      \ 'down':    '40%' })
-command! BLines3 call fzf#vim#md_headers()
-
-" Select Buffer
-function! s:buflist()
-  redir => ls
-  silent ls
-  redir END
-  return split(ls, '\n')
-endfunction
-function! s:bufopen(e)
-  execute 'buffer' matchstr(a:e, '^[ 0-9]*')
-  "echo a:e
-endfunction
-nnoremap <silent> <Leader><Enter> :call fzf#run({
-      \   'source':  reverse(<sid>buflist()),
-      \   'sink':    function('<sid>bufopen'),
-      \ 'options':    '+m --bind "ctrl-p:toggle-preview" --ansi --preview="bat {} --color=always" --preview-window=right:60%:hidden',
-      \   'down':    '40%'
-      \ })<CR>
-
 function! s:ExtractUnicode(s)
   " call ExtractUnicode("22   ϊ       j*      03CA    0970    GREEK SMALL LETTER IOTA WITH DIALYTIKA")
   " ->
@@ -4472,8 +4439,8 @@ command! DapSidebarUI :lua require("dapui").toggle()
 " Add <slient> for the rhs is Ex-cmd as some GUI app, e.g., gnvim,
 " flashes when you use these mappings.
 " Quit normal mode
-nnoremap <silent> <Leader>q  :q<CR>
-nnoremap <silent> <Leader>Q  :qa!<CR>
+" nnoremap <silent> <Leader>q  :q<CR>
+" nnoremap <silent> <Leader>Q  :qa!<CR>
 " Move half page faster
 " nnoremap <Leader>d  <C-d>
 " nnoremap <Leader>u  <C-u>
@@ -4517,62 +4484,17 @@ nnoremap Y y$
 " Auto indent pasted text
 " nnoremap p p=`]<C-o>
 " Open shell in vim
-if has('nvim') || has('terminal')
-  map <silent> <Leader>' :terminal<CR>
-else
-  map <silent> <Leader>' :shell<CR>
-endif
+" if has('nvim') || has('terminal')
+"   map <silent> <Leader>' :terminal<CR>
+" else
+"   map <silent> <Leader>' :shell<CR>
+" endif
+
 " Search result highlight countermand
 " nnoremap <silent> <Leader>sc :nohlsearch<CR>
 " Toggle pastemode
-nnoremap <silent> <Leader>tp :setlocal paste!<CR>
-" }
+" nnoremap <silent> <Leader>tp :setlocal paste!<CR>
 
-" Buffer {
-" }
-
-" File {
-" File save
-nnoremap <silent> <Leader>fs :update<CR>
-" }
-
-" Fold {
-nnoremap <silent> <Leader>f0 :set foldlevel=0<CR>
-nnoremap <silent> <Leader>f1 :set foldlevel=1<CR>
-nnoremap <silent> <Leader>f2 :set foldlevel=2<CR>
-nnoremap <silent> <Leader>f3 :set foldlevel=3<CR>
-nnoremap <silent> <Leader>f4 :set foldlevel=4<CR>
-nnoremap <silent> <Leader>f5 :set foldlevel=5<CR>
-nnoremap <silent> <Leader>f6 :set foldlevel=6<CR>
-nnoremap <silent> <Leader>f7 :set foldlevel=7<CR>
-nnoremap <silent> <Leader>f8 :set foldlevel=8<CR>
-nnoremap <silent> <Leader>f9 :set foldlevel=9<CR>
-" }
-
-" Window {
-nnoremap <Leader>w- <C-W>s
-nnoremap <Leader>w2 <C-W>v
-nnoremap <Leader>w= <C-W>=
-nnoremap <Leader>wH <C-W>5<
-nnoremap <Leader>wJ :resize +5<CR>
-nnoremap <Leader>wK :resize -5<CR>
-nnoremap <Leader>wL <C-W>5>
-nnoremap <Leader>w\| <C-W>v
-nnoremap <Leader>wd <C-W>c
-nnoremap <Leader>wf <C-W>f
-nnoremap <Leader>wh <C-W>h
-nnoremap <Leader>wj <C-W>j
-nnoremap <Leader>wk <C-W>k
-nnoremap <Leader>wl <C-W>l
-nnoremap <Leader>wq <C-W>q
-nnoremap <Leader>wr <C-W>r
-nnoremap <Leader>ws <C-W>s
-nnoremap <Leader>wv <C-W>v
-nnoremap <Leader>ww <C-W>w
-tnoremap <Leader>wh <C-W>h
-tnoremap <Leader>wj <C-W>j
-tnoremap <Leader>wk <C-W>k
-tnoremap <Leader>wl <C-W>l
 " }
 
 ": }}} better default settings 
@@ -4858,7 +4780,7 @@ function! ConvertTurkish2AsciiKebabCase() "  SPC
   s/İ/I/g
   s/^\(#\+\)-*/\1 /
   " aralardaki sembolleri sil veya `-` ile değiştir
-  s/[:/]/-/g
+  s/[:/()]/-/g
   s/["`']//g
   s/-*$//
 endfunction
@@ -4956,10 +4878,10 @@ command! MdParentHeader call MdParentHeader()
 let s:toggle =0
 function! ToggleColorScheme() " SPC tn id=g13823
     if s:toggle 
-      ColorschemeGithubDark
+      colorscheme rigel
       let s:toggle =0
     else
-      ColorschemeGithubLight
+      colorscheme github-light
       let s:toggle =1
     endif
     return s:toggle 
@@ -5321,4 +5243,8 @@ command! LogseqExtractTags call LogseqExtractTags()
 ": }}}
 
 let g:markdown_fenced_languages = ['html', 'python', 'ruby', 'vim']
+
+nmap gp  <Plug>ReplaceWithRegisterOperator
+nmap gP <Plug>ReplaceWithRegisterLine
+xmap gp  <Plug>ReplaceWithRegisterVisual
 
